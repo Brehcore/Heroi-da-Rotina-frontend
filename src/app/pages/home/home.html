@@ -1,0 +1,51 @@
+<div class="home-page">
+	<div class="page-header">
+		<nav class="main-nav">
+			<ul>
+				<li class="active">Início</li>
+				<li>Membros</li>
+				<li>Configurações</li>
+				<li>Ajuda</li>
+			</ul>
+		</nav>
+
+		<div class="profile-area">
+			<button class="profile-btn" (click)="toggleProfileMenu()">
+				<img src="/Login.png" alt="profile" />
+			</button>
+		</div>
+	</div>
+
+	<!-- Profile modal -->
+	<div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
+		<div class="profile-modal" (click)="$event.stopPropagation()">
+			<ul>
+				<li (click)="openProfile()">Meu Perfil</li>
+				<li class="danger" (click)="logout()">Sair</li>
+			</ul>
+		</div>
+	</div>
+
+	<div class="content">
+		<div class="subtitle-area">
+			<button class="change-family-btn" (click)="changeFamilyNavigation()">Mudar Família</button>
+			<p class="subtitle">Escolha um membro para fazer as configurações necessárias</p>
+		</div>
+
+		<div *ngIf="loading">Carregando membros...</div>
+		<div class="members-list">
+			<div class="member-card" *ngFor="let m of members">
+				<div class="card-top">
+					<div class="card-title">{{ m.name }}</div>
+					<div class="card-sub">{{ m.role === 'MONITOR' ? 'Monitor' : 'Menor' }}</div>
+				</div>
+
+				<div class="avatar-wrap">
+					<div class="avatar-circle">
+						<img [src]="m.avatarUrl || '/Login.png'" [alt]="m.name" />
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

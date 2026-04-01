@@ -1,0 +1,56 @@
+.home-page {
+	min-height: 100vh;
+	background: #fff;
+}
+
+.page-header {
+	background: #ffe600;
+	padding: 12px 24px;
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+
+.main-nav ul { display:flex; gap:24px; list-style:none; padding:0; margin:0; align-items:center }
+.main-nav li { font-weight:700; font-family: 'Courier New', Courier, monospace; }
+.main-nav li.active { text-decoration: underline; }
+
+.content { padding: 28px 40px; }
+.subtitle-area { display: flex; flex-direction: column; align-items: center; gap: 16px; margin-bottom: 18px }
+.subtitle { color:#333; margin: 0; text-align: center }
+.change-family-btn { padding: 8px 16px; background: #ffe600; border: none; border-radius: 6px; font-weight: 700; cursor: pointer; }
+.change-family-btn:hover { opacity: 0.9 }
+
+.members-list { display:flex; gap:28px; flex-wrap:wrap }
+
+.member-card {
+	width: 200px;
+	background: #f0f0f0;
+	border-radius: 16px;
+	overflow: hidden;
+	text-align: center;
+}
+
+.card-top { background: #ffe600; padding: 10px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px }
+.card-title { font-weight:700 }
+.card-sub { font-size:12px; color:#333 }
+
+.avatar-wrap { padding: 18px 0 28px 0 }
+.avatar-circle { width: 120px; height: 120px; margin: 0 auto; border-radius: 50%; overflow: hidden; background:#fff; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 12px rgba(0,0,0,0.08) }
+.avatar-circle img { width:100%; height:100%; object-fit:cover }
+
+@media (max-width: 700px) {
+	.members-list { justify-content:center }
+}
+
+/* Profile button + modal */
+.profile-area { position: absolute; top: 12px; right: 20px }
+.profile-btn { width:44px; height:44px; border-radius:50%; border:none; padding:0; background:transparent; cursor:pointer; overflow:hidden }
+.profile-btn img { width:100%; height:100%; object-fit:cover; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,0.12) }
+
+.profile-modal-overlay { position: fixed; inset: 0; display:flex; align-items:flex-start; justify-content:flex-end; padding: 80px 20px 20px 20px; z-index: 50 }
+.profile-modal { background:#fff; border-radius:8px; width:220px; box-shadow: 0 8px 32px rgba(0,0,0,0.16); overflow:hidden }
+.profile-modal ul { list-style:none; margin:0; padding:8px 0 }
+.profile-modal li { padding:12px 16px; cursor:pointer; }
+.profile-modal li:hover { background:#f5f5f5 }
+.profile-modal li.danger { color:#c62828; font-weight:700 }
+

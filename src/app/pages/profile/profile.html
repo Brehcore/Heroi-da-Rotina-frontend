@@ -1,0 +1,17 @@
+<div class="profile-page">
+  <div class="profile-card">
+    <h1 class="title">Escolha uma Família</h1>
+
+    <div class="families">
+      <div *ngIf="loading">Carregando famílias...</div>
+      <div *ngIf="!loading && families.length === 0">Nenhuma família encontrada.</div>
+
+      <div class="family" *ngFor="let f of families" (click)="selectFamily(f.id)">
+        <div class="avatar">
+          <img [src]="f.avatarUrl || '/Login.png'" [alt]="f.name" />
+        </div>
+        <div class="label">{{ f.name }}</div>
+      </div>
+    </div>
+  </div>
+</div>
