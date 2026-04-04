@@ -28,11 +28,17 @@ export class Login {
       this.authService.login( this.loginForm.value as UserLoginDTO ).subscribe({
         next: () => {
           const role = this.authService.getUserRole();
+          console.log('Login realizado com role:', role);
           
           if (role === 'MONITOR') {
             this.router.navigate(['/profile']);
+          } else if (role === 'MINOR') {
+            // Redirecionar direto para minor-portal
+            // O componente lidará com buscar os dados via endpoint existente
+            this.router.navigate(['/minor-portal']);
           } else {
-            this.router.navigate(['/home']);
+            console.warn('Role desconhecida:', role);
+            this.router.navigate(['/login']);
           }
         },
         error: (err) => {

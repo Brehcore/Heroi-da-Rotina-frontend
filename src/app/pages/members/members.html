@@ -1,0 +1,203 @@
+<div class="members-page">
+  <div class="page-header">
+    <nav class="main-nav">
+      <ul>
+        <li routerLink="/home" routerLinkActive="active">Início</li>
+        <li routerLink="/members" routerLinkActive="active" class="active">Membros</li>
+        <li>Configurações</li>
+        <li>Ajuda</li>
+      </ul>
+    </nav>
+
+    <div class="profile-area">
+      <button class="profile-btn" title="Abrir menu de perfil" (click)="toggleProfileMenu()">
+        <svg class="profile-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Profile modal -->
+  <div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
+    <div class="profile-modal" (click)="$event.stopPropagation()">
+      <ul>
+        <li (click)="openProfile()">Meu Perfil</li>
+        <li (click)="toggleCreateFamilyForm()" class="create-family-option">Criar Família</li>
+
+        <!-- Create Family Form Inside Modal (moved into list for semantic correctness) -->
+        <li *ngIf="showCreateFamilyForm" class="create-family-form-modal">
+          <form class="family-form" (ngSubmit)="onCreateFamily()">
+            <input type="text" placeholder="Nome da família" [(ngModel)]="familyNameInput" name="familyName" class="family-input" [disabled]="loading" autofocus />
+            <div class="form-actions">
+              <button type="submit" class="btn-confirm" [disabled]="loading || !familyNameInput.trim()">{{ loading ? '...' : 'OK' }}</button>
+              <button type="button" class="btn-cancel" (click)="closeCreateFamilyForm()" [disabled]="loading">Cancelar</button>
+            </div>
+          </form>
+        </li>
+
+        <li class="danger" (click)="logout()">Sair</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- Error message -->
+    <div *ngIf="error" class="error-banner">
+      <span>{{ error }}</span>
+      <button (click)="error = null" class="close-btn">&times;</button>
+    </div>
+
+    <!-- Create Family Section -->
+    <!-- Removed: Form moved to profile modal -->
+
+    <!-- Members Section -->
+    <div class="members-section">
+      <div class="members-header">
+        <h2>Membros da Família</h2>
+        <button class="btn-add-member" (click)="toggleCreateUserForm()" [disabled]="loading">
+          + Adicionar Membro
+        </button>
+      </div>
+
+      <!-- Create User Form Modal -->
+      <div *ngIf="showCreateUserForm" class="create-user-modal-overlay" (click)="closeCreateUserForm()">
+        <div class="create-user-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Adicionar Novo Membro</h3>
+            <button class="close-btn" (click)="closeCreateUserForm()" [disabled]="loading">&times;</button>
+          </div>
+
+          <form class="user-form" (ngSubmit)="createUser()">
+            <div class="form-group">
+              <label for="userName">Nome *</label>
+              <input
+                id="userName"
+                type="text"
+                placeholder="Digite o nome"
+                [(ngModel)]="newUser.name"
+                name="name"
+                class="form-input"
+                [disabled]="loading"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="userEmail">Email *</label>
+              <input
+                id="userEmail"
+                type="email"
+                placeholder="Digite o email"
+                [(ngModel)]="newUser.email"
+                name="email"
+                class="form-input"
+                [disabled]="loading"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="userPassword">Senha *</label>
+              <input
+                id="userPassword"
+                type="password"
+                placeholder="Digite a senha"
+                [(ngModel)]="newUser.password"
+                name="password"
+                class="form-input"
+                [disabled]="loading"
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="userRole">Tipo de Usuário *</label>
+              <select
+                id="userRole"
+                [(ngModel)]="newUser.role"
+                name="role"
+                class="form-input"
+                [disabled]="loading"
+              >
+                <option value="MINOR">Menor</option>
+                <option value="MONITOR">Monitor</option>
+              </select>
+            </div>
+
+            <div class="form-actions">
+              <button
+                type="submit"
+                class="btn-confirm"
+                [disabled]="loading || !newUser.name.trim() || !newUser.email.trim() || !newUser.password.trim()"
+              >
+                {{ loading ? 'Criando...' : 'Criar Membro' }}
+              </button>
+              <button
+                type="button"
+                class="btn-cancel"
+                (click)="closeCreateUserForm()"
+                [disabled]="loading"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div *ngIf="loading && members.length === 0" class="loading-state">
+        Carregando membros...
+      </div>
+
+      <div *ngIf="!loading && members.length === 0" class="empty-state">
+        Nenhum membro encontrado na família.
+      </div>
+
+      <div class="members-grid" *ngIf="members.length > 0">
+        <!-- Card para MONITOR (não clicável) -->
+        <div class="member-card" 
+          *ngFor="let member of members" 
+          [style.cursor]="member.role === 'MONITOR' ? 'default' : 'pointer'"
+          [routerLink]="member.role !== 'MONITOR' ? ['/minor'] : null"
+          [queryParams]="member.role !== 'MONITOR' ? { minorId: member.id, minorName: member.name } : null">
+          <div class="card-top">
+            <div class="card-title">{{ member.name }}</div>
+            <div class="card-role">
+              <ng-container *ngIf="member.role === 'MONITOR'">
+                <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+                Monitor
+              </ng-container>
+              <ng-container *ngIf="member.role !== 'MONITOR'">
+                <svg class="role-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                Menor
+              </ng-container>
+            </div>
+          </div>
+
+          <div class="avatar-wrap">
+            <div class="avatar-circle">
+              <svg class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="card-info">
+            <div class="info-item">
+              <span class="label">Email:</span>
+              <span class="value">{{ member.email }}</span>
+            </div>
+            <div class="info-item">
+              <span class="label">Família:</span>
+              <span class="value">{{ member.familyName }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

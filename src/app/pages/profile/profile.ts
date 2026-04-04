@@ -12,7 +12,7 @@ import { FamilyDTO } from '../../core/services/models/auth.models';
   templateUrl: './profile.html',
   styleUrls: ['./profile.scss']
 })
-export class Profile {
+export class Profile implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
 
@@ -20,9 +20,11 @@ export class Profile {
   loading = false;
 
   ngOnInit(): void {
+    console.log('Profile ngOnInit iniciado');
     this.loading = true;
     this.authService.getMyFamilies().subscribe({
       next: (res) => {
+        console.log('Famílias carregadas:', res);
         this.families = res || [];
         this.loading = false;
       },
@@ -33,14 +35,15 @@ export class Profile {
     });
   }
 
-  selectFamily(id: string) {
+  selectFamily(id: number | string) {
+    const familyId = String(id);
     try {
       // Armazenar em sessionStorage para reduzir persistência além da sessão
-      sessionStorage.setItem('selectedFamilyId', id);
+      sessionStorage.setItem('selectedFamilyId', familyId);
     } catch (e) {
       console.warn('Não foi possível salvar sessionStorage, fallback para localStorage', e);
-      localStorage.setItem('selectedFamilyId', id);
+      localStorage.setItem('selectedFamilyId', familyId);
     }
-    this.router.navigate(['/home'], { queryParams: { family: id } });
+    this.router.navigate(['/home'], { queryParams: { family: familyId } });
   }
 }

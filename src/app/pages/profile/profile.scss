@@ -17,7 +17,7 @@
 }
 
 .title {
-  font-family: 'Courier New', Courier, monospace;
+  font-family: Roboto, Arial, sans-serif;
   margin-bottom: 36px;
 }
 
@@ -52,8 +52,11 @@
 }
 
 .label {
-  margin-top: 12px;
-  font-weight: 600;
+  margin-top: 16px;
+  font-weight: 700;
+  font-size: 18px;
+  color: #333;
+  font-family: Roboto, Arial, sans-serif;
 }
 
 @media (max-width: 600px) {

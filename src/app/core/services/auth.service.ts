@@ -37,6 +37,7 @@ export class AuthService {
     getMyFamilies(): Observable<FamilyDTO[]> {
         const token = this.getToken();
         const url = `${this.API_BASE}/api/families/me`;
+        console.log('getMyFamilies - token:', !!token, 'url:', url);
         if (token) {
             const headers = { Authorization: `Bearer ${token}` } as Record<string, string>;
             return this.http.get<FamilyDTO[]>(url, { headers });
@@ -65,6 +66,7 @@ isAuthenticated(): boolean {
 logout() {
     if (isPlatformBrowser(this.platformId)) {
         localStorage.removeItem('token');
-        }
     }
+    this.userRole = null;
+}
 }

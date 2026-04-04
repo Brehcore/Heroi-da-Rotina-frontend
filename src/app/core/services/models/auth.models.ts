@@ -11,8 +11,9 @@ export interface LoginResponseDTO {
 }
 
 export interface FamilyDTO {
-    id: string;
-    name: string;
+    id: number;
+    familyName: string;
+    members?: MemberDTO[];
     avatarUrl?: string;
 }
 

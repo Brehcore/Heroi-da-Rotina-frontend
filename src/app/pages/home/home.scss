@@ -11,7 +11,7 @@
 }
 
 .main-nav ul { display:flex; gap:24px; list-style:none; padding:0; margin:0; align-items:center }
-.main-nav li { font-weight:700; font-family: 'Courier New', Courier, monospace; }
+.main-nav li { font-weight:700; font-family: Roboto, Arial, sans-serif; }
 .main-nav li.active { text-decoration: underline; }
 
 .content { padding: 28px 40px; }
@@ -44,8 +44,9 @@
 
 /* Profile button + modal */
 .profile-area { position: absolute; top: 12px; right: 20px }
-.profile-btn { width:44px; height:44px; border-radius:50%; border:none; padding:0; background:transparent; cursor:pointer; overflow:hidden }
-.profile-btn img { width:100%; height:100%; object-fit:cover; border-radius:50%; box-shadow:0 2px 6px rgba(0,0,0,0.12) }
+.profile-btn { width:44px; height:44px; border-radius:50%; border:none; padding:0; background:#e8e8e8; cursor:pointer; overflow:hidden; transition:all 0.3s ease; display:flex; align-items:center; justify-content:center; color:#666; }
+.profile-btn svg { width:24px; height:24px; }
+.profile-btn:hover { transform:scale(1.05); background:#d8d8d8; }
 
 .profile-modal-overlay { position: fixed; inset: 0; display:flex; align-items:flex-start; justify-content:flex-end; padding: 80px 20px 20px 20px; z-index: 50 }
 .profile-modal { background:#fff; border-radius:8px; width:220px; box-shadow: 0 8px 32px rgba(0,0,0,0.16); overflow:hidden }
@@ -53,4 +54,142 @@
 .profile-modal li { padding:12px 16px; cursor:pointer; }
 .profile-modal li:hover { background:#f5f5f5 }
 .profile-modal li.danger { color:#c62828; font-weight:700 }
+
+/* Task approval section */
+.approval-section { 
+	background: #f9f9f9; 
+	border-radius: 8px; 
+	padding: 24px; 
+	margin-bottom: 32px; 
+	border-left: 4px solid #ffc107;
+}
+
+.section-title {
+	margin: 0 0 16px 0;
+	font-size: 18px;
+	font-weight: 700;
+	color: #333;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+.tasks-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.task-card {
+	background: #fff;
+	border-radius: 8px;
+	padding: 16px;
+	border: 1px solid #e0e0e0;
+	border-left: 4px solid #ffc107;
+	transition: all 0.3s ease;
+}
+
+.task-card:hover {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	border-left-color: #ff9800;
+}
+
+.task-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+
+.task-title {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: #333;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+.task-status {
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	padding: 4px 8px;
+	border-radius: 4px;
+	background: rgba(0, 0, 0, 0.05);
+	white-space: nowrap;
+}
+
+.task-description {
+	margin: 0 0 12px 0;
+	color: #666;
+	font-size: 14px;
+	line-height: 1.4;
+}
+
+.task-info {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 12px;
+	font-size: 13px;
+	color: #666;
+}
+
+.task-minor {
+	font-weight: 600;
+	color: #333;
+}
+
+.task-reward {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-weight: 600;
+}
+
+.reward-icon {
+	display: inline-block;
+	font-size: 14px;
+}
+
+.task-dates {
+	margin-bottom: 12px;
+	font-size: 12px;
+	color: #999;
+}
+
+.approve-btn {
+	width: 100%;
+	padding: 10px;
+	background: #4caf50;
+	color: white;
+	border: none;
+	border-radius: 6px;
+	font-weight: 700;
+	font-family: Roboto, Arial, sans-serif;
+	cursor: pointer;
+	transition: all 0.3s ease;
+}
+
+.approve-btn:hover {
+	background: #45a049;
+	transform: translateY(-2px);
+	box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.approve-btn:active {
+	transform: translateY(0);
+}
+
+.empty-tasks {
+	text-align: center;
+	padding: 32px 16px;
+	color: #999;
+	font-style: italic;
+	font-family: Roboto, Arial, sans-serif;
+}
+
+.empty-tasks p {
+	margin: 0;
+	font-size: 14px;
+}
 
