@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { isPlatformBrowser } from "@angular/common";
 import { inject, Injectable, PLATFORM_ID } from "@angular/core";
 import {Observable, tap } from 'rxjs';
-import { UserLoginDTO, LoginResponseDTO, FamilyDTO, MemberDTO } from "./models/auth.models";
+import { UserLoginDTO, LoginResponseDTO, FamilyDTO, MemberDTO, ForgotPasswordDTO, ResetPasswordDTO, UserRegisterDTO } from "./models/auth.models";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -21,6 +21,21 @@ export class AuthService {
                 }
             })
         );
+    }
+
+    register(data: UserRegisterDTO): Observable<void> {
+        const url = `${this.API_BASE}/api/users/register`;
+        return this.http.post<void>(url, data);
+    }
+
+    forgotPassword(data: ForgotPasswordDTO): Observable<void> {
+        const url = `${this.API_BASE}/auth/forgot-password`;
+        return this.http.post<void>(url, data);
+    }
+
+    resetPassword(data: ResetPasswordDTO): Observable<void> {
+        const url = `${this.API_BASE}/auth/reset-password`;
+        return this.http.post<void>(url, data);
     }
 
     getToken(): string | null {
