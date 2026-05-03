@@ -1,0 +1,111 @@
+<div class="avatar-selector-container">
+  <form [formGroup]="form" class="avatar-form">
+    <!-- Avatar Preview Section -->
+    <div class="avatar-preview-section">
+      <div class="avatar-frame">
+        <img 
+          *ngIf="avatarUrl" 
+          [src]="avatarUrl" 
+          alt="Avatar preview" 
+          title="Preview do avatar"
+          class="avatar-image"
+          [class.loading]="isLoading"
+        />
+      </div>
+      <p class="avatar-hint">Seu avatar será atualizado em tempo real</p>
+    </div>
+
+    <!-- Form Fields Section -->
+    <div class="form-fields-section">
+      <!-- Avatar Style Selection -->
+      <div class="form-group">
+        <label for="style" class="form-label">
+          Estilo do Avatar
+          <span class="required">*</span>
+        </label>
+        <div class="avatar-styles-grid">
+          <button
+            *ngFor="let style of avatarStyles"
+            type="button"
+            class="style-option"
+            [class.selected]="form.get('style')?.value === style.value"
+            (click)="form.get('style')?.setValue(style.value)"
+            [attr.title]="style.label"
+          >
+            <span class="style-label">{{ style.label }}</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Nome Field -->
+      <div class="form-group">
+        <label for="name" class="form-label">
+          Nome
+          <span class="required">*</span>
+        </label>
+        <input
+          id="name"
+          type="text"
+          formControlName="name"
+          placeholder="Digite o nome completo"
+          class="form-input"
+          [class.error]="isFieldInvalid('name')"
+        />
+        <span *ngIf="isFieldInvalid('name')" class="error-message">
+          {{ getErrorMessage('name') }}
+        </span>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">
+          Email
+          <span class="required">*</span>
+        </label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          placeholder="Digite o email"
+          class="form-input"
+          [class.error]="isFieldInvalid('email')"
+        />
+        <span *ngIf="isFieldInvalid('email')" class="error-message">
+          {{ getErrorMessage('email') }}
+        </span>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">
+          Senha
+          <span class="required">*</span>
+        </label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          placeholder="Digite a senha (mín. 6 caracteres)"
+          class="form-input"
+          [class.error]="isFieldInvalid('password')"
+        />
+        <span *ngIf="isFieldInvalid('password')" class="error-message">
+          {{ getErrorMessage('password') }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="form-actions">
+      <button
+        type="submit"
+        class="btn-primary"
+        (click)="onSave()"
+        [disabled]="form.invalid || isLoading"
+      >
+        <span *ngIf="!isLoading">✓ Salvar</span>
+        <span *ngIf="isLoading">Salvando...</span>
+      </button>
+    </div>
+  </form>
+</div>

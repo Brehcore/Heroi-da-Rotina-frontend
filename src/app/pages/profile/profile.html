@@ -4,62 +4,13 @@
 
     <div class="families">
       <div *ngIf="loading">Carregando famílias...</div>
-      <div *ngIf="!loading && families.length === 0" class="no-families">
-        <p>Nenhuma família encontrada.</p>
-        <button class="btn-create-family" (click)="toggleCreateFamilyForm()" [disabled]="loading">
-          + Criar Família
-        </button>
-      </div>
+      <div *ngIf="!loading && families.length === 0">Nenhuma família encontrada.</div>
 
       <div class="family" *ngFor="let f of families" (click)="selectFamily(f.id)">
         <div class="avatar">
-          <img [src]="f.avatarUrl || '/Login.png'" alt="{{ f.familyName || 'Família' }}" title="{{ f.familyName || 'Avatar da família' }}" />
+          <img [src]="f.avatarUrl || '/Login.png'" [alt]="f.name" />
         </div>
-        <div class="label">{{ f.familyName }}</div>
-      </div>
-    </div>
-
-    <!-- Create Family Form Modal -->
-    <div *ngIf="showCreateFamilyForm" class="create-family-modal-overlay" (click)="toggleCreateFamilyForm()">
-      <div class="create-family-modal" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h2>Criar Nova Família</h2>
-          <button class="close-btn" (click)="toggleCreateFamilyForm()" [disabled]="loading">&times;</button>
-        </div>
-
-        <form class="family-form" (ngSubmit)="createFamily()">
-          <div class="form-group">
-            <label for="familyName">Nome da Família *</label>
-            <input
-              id="familyName"
-              type="text"
-              placeholder="Digite o nome da família"
-              [(ngModel)]="familyNameInput"
-              name="familyName"
-              class="form-input"
-              [disabled]="loading"
-              autofocus
-            />
-          </div>
-
-          <div class="form-actions">
-            <button
-              type="submit"
-              class="btn-confirm"
-              [disabled]="loading || !familyNameInput.trim()"
-            >
-              {{ loading ? 'Criando...' : 'Criar Família' }}
-            </button>
-            <button
-              type="button"
-              class="btn-cancel"
-              (click)="toggleCreateFamilyForm()"
-              [disabled]="loading"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+        <div class="label">{{ f.name }}</div>
       </div>
     </div>
   </div>

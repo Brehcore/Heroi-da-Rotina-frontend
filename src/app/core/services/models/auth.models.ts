@@ -10,25 +10,9 @@ export interface LoginResponseDTO {
     role: string;
 }
 
-export interface ForgotPasswordDTO {
-    email: string;
-}
-
-export interface ResetPasswordDTO {
-    token: string;
-    newPassword: string;
-}
-
-export interface UserRegisterDTO {
-    name: string;
-    email: string;
-    password: string;
-}
-
 export interface FamilyDTO {
-    id: number;
-    familyName: string;
-    members?: MemberDTO[];
+    id: string;
+    name: string;
     avatarUrl?: string;
 }
 

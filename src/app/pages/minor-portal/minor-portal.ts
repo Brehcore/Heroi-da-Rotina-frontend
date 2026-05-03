@@ -5,6 +5,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
+import { Navbar } from '../../shared/navbar/navbar';
 
 export interface WalletDTO {
   id: number;
@@ -29,12 +30,12 @@ export interface TaskDTO {
 @Component({
   selector: 'app-minor-portal',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './minor-portal.html',
   styleUrls: ['./minor-portal.scss']
 })
 export class MinorPortal implements OnInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -51,7 +52,6 @@ export class MinorPortal implements OnInit {
   completedTasks: TaskDTO[] = [];
   loading = false;
   error: string | null = null;
-  showProfileMenu = false;
   private loadingWallet = false;
   private loadingTasks = false;
 
@@ -236,19 +236,6 @@ export class MinorPortal implements OnInit {
     });
   }
 
-  toggleProfileMenu(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-  }
-
-  closeProfileMenu(): void {
-    this.showProfileMenu = false;
-  }
-
-  logout(): void {
-    this.authService.logout();
-    this.router.navigate(['/login']);
-  }
-
   getTaskStatusColor(status: string): string {
     switch (status) {
       case 'PENDING':
@@ -273,5 +260,9 @@ export class MinorPortal implements OnInit {
       default:
         return status;
     }
+  }
+
+  getUserName(): string {
+    return 'Menor';
   }
 }

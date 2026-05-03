@@ -1,12 +1,11 @@
 <div class="login-page">
     <div class="login-card">
         <div class="login-left">
-            <img src="/Login.png" alt="Ilustração família" title="Ilustração família" />
+            <img src="/Login.png" alt="Ilustração família" />
         </div>
 
         <div class="login-right">
-            <!-- Formulário de Login -->
-            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" *ngIf="!showForgotPassword && !showResetPassword && !showRegister">
+            <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                 <h1 class="title">Herói da Rotina</h1>
 
                 <label>E-mail</label>
@@ -23,107 +22,8 @@
 
                 <div class="alt-links">
                     <span>ou</span>
-                    <button type="button" class="create-account" (click)="toggleRegister()">Criar uma Conta</button>
+                    <a class="create-account" routerLink="/register">Criar uma Conta</a>
                 </div>
-
-                <div class="forgot-password">
-                    <button type="button" class="link-btn" (click)="toggleForgotPassword()">
-                        Esqueci minha senha
-                    </button>
-                </div>
-            </form>
-
-            <!-- Formulário de Esqueci Minha Senha -->
-            <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPassword()" *ngIf="showForgotPassword && !showResetPassword && !showRegister">
-                <h1 class="title">Recuperar Senha</h1>
-
-                <p class="description">Informe seu e-mail para receber as instruções de reset.</p>
-
-                <label>E-mail</label>
-                <div class="field">
-                    <input type="email" formControlName="email" placeholder="Seu e-mail cadastrado" required />
-                </div>
-
-                <button type="submit" class="btn" [disabled]="forgotPasswordForm.invalid || loadingForgotPassword">
-                    {{ loadingForgotPassword ? 'Enviando...' : 'Enviar E-mail' }}
-                </button>
-
-                <button type="button" class="btn-secondary" (click)="toggleForgotPassword()">
-                    Voltar para Login
-                </button>
-
-                <div *ngIf="messageError" class="message error">{{ messageError }}</div>
-            </form>
-
-            <!-- Formulário de Reset de Senha -->
-            <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPassword()" *ngIf="showResetPassword && !showRegister">
-                <h1 class="title">Alterar Senha</h1>
-
-                <p class="description">Insira o token recebido e sua nova senha.</p>
-
-                <label>Token</label>
-                <div class="field">
-                    <input type="text" formControlName="token" placeholder="Token recebido no e-mail" required />
-                </div>
-
-                <label>Nova Senha</label>
-                <div class="field">
-                    <input type="password" formControlName="newPassword" placeholder="Nova senha (mínimo 6 caracteres)" required />
-                </div>
-
-                <label>Confirmar Senha</label>
-                <div class="field">
-                    <input type="password" formControlName="confirmPassword" placeholder="Confirme a nova senha" required />
-                </div>
-
-                <button type="submit" class="btn" [disabled]="resetPasswordForm.invalid || loadingResetPassword">
-                    {{ loadingResetPassword ? 'Alterando...' : 'Alterar Senha' }}
-                </button>
-
-                <button type="button" class="btn-secondary" (click)="cancelReset()">
-                    Cancelar
-                </button>
-
-                <div *ngIf="messageSuccess" class="message success">{{ messageSuccess }}</div>
-                <div *ngIf="messageError" class="message error">{{ messageError }}</div>
-            </form>
-
-            <!-- Formulário de Registro -->
-            <form [formGroup]="registerForm" (ngSubmit)="onRegister()" *ngIf="showRegister">
-                <h1 class="title">Criar Conta</h1>
-
-                <p class="description">Preencha os dados abaixo para criar sua conta.</p>
-
-                <label>Nome Completo</label>
-                <div class="field">
-                    <input type="text" formControlName="name" placeholder="Seu nome completo" required />
-                </div>
-
-                <label>E-mail</label>
-                <div class="field">
-                    <input type="email" formControlName="email" placeholder="Seu e-mail" required />
-                </div>
-
-                <label>Senha</label>
-                <div class="field">
-                    <input type="password" formControlName="password" placeholder="Senha (mínimo 6 caracteres)" required />
-                </div>
-
-                <label>Confirmar Senha</label>
-                <div class="field">
-                    <input type="password" formControlName="confirmPassword" placeholder="Confirme a senha" required />
-                </div>
-
-                <button type="submit" class="btn" [disabled]="registerForm.invalid || loadingRegister">
-                    {{ loadingRegister ? 'Criando conta...' : 'Criar Conta' }}
-                </button>
-
-                <button type="button" class="btn-secondary" (click)="toggleRegister()">
-                    Voltar para Login
-                </button>
-
-                <div *ngIf="messageSuccess" class="message success">{{ messageSuccess }}</div>
-                <div *ngIf="messageError" class="message error">{{ messageError }}</div>
             </form>
         </div>
     </div>

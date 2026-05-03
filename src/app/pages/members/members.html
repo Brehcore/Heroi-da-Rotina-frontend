@@ -1,45 +1,5 @@
 <div class="members-page">
-  <div class="page-header">
-    <nav class="main-nav">
-      <ul>
-        <li routerLink="/home" routerLinkActive="active">Início</li>
-        <li routerLink="/members" routerLinkActive="active" class="active">Membros</li>
-        <li>Configurações</li>
-        <li>Ajuda</li>
-      </ul>
-    </nav>
-
-    <div class="profile-area">
-      <button class="profile-btn" title="Abrir menu de perfil" (click)="toggleProfileMenu()">
-        <svg class="profile-icon" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
-      </button>
-    </div>
-  </div>
-
-  <!-- Profile modal -->
-  <div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
-    <div class="profile-modal" (click)="$event.stopPropagation()">
-      <ul>
-        <li (click)="openProfile()">Meu Perfil</li>
-        <li (click)="toggleCreateFamilyForm()" class="create-family-option">Criar Família</li>
-
-        <!-- Create Family Form Inside Modal (moved into list for semantic correctness) -->
-        <li *ngIf="showCreateFamilyForm" class="create-family-form-modal">
-          <form class="family-form" (ngSubmit)="onCreateFamily()">
-            <input type="text" placeholder="Nome da família" [(ngModel)]="familyNameInput" name="familyName" class="family-input" [disabled]="loading" autofocus />
-            <div class="form-actions">
-              <button type="submit" class="btn-confirm" [disabled]="loading || !familyNameInput.trim()">{{ loading ? '...' : 'OK' }}</button>
-              <button type="button" class="btn-cancel" (click)="closeCreateFamilyForm()" [disabled]="loading">Cancelar</button>
-            </div>
-          </form>
-        </li>
-
-        <li class="danger" (click)="logout()">Sair</li>
-      </ul>
-    </div>
-  </div>
+  <app-navbar></app-navbar>
 
   <div class="content">
     <!-- Error message -->
@@ -68,78 +28,12 @@
             <button class="close-btn" (click)="closeCreateUserForm()" [disabled]="loading">&times;</button>
           </div>
 
-          <form class="user-form" (ngSubmit)="createUser()">
-            <div class="form-group">
-              <label for="userName">Nome *</label>
-              <input
-                id="userName"
-                type="text"
-                placeholder="Digite o nome"
-                [(ngModel)]="newUser.name"
-                name="name"
-                class="form-input"
-                [disabled]="loading"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="userEmail">Email *</label>
-              <input
-                id="userEmail"
-                type="email"
-                placeholder="Digite o email"
-                [(ngModel)]="newUser.email"
-                name="email"
-                class="form-input"
-                [disabled]="loading"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="userPassword">Senha *</label>
-              <input
-                id="userPassword"
-                type="password"
-                placeholder="Digite a senha"
-                [(ngModel)]="newUser.password"
-                name="password"
-                class="form-input"
-                [disabled]="loading"
-              />
-            </div>
-
-            <div class="form-group">
-              <label for="userRole">Tipo de Usuário *</label>
-              <select
-                id="userRole"
-                [(ngModel)]="newUser.role"
-                name="role"
-                class="form-input"
-                [disabled]="loading"
-              >
-                <option value="MINOR">Menor</option>
-                <option value="MONITOR">Monitor</option>
-              </select>
-            </div>
-
-            <div class="form-actions">
-              <button
-                type="submit"
-                class="btn-confirm"
-                [disabled]="loading || !newUser.name.trim() || !newUser.email.trim() || !newUser.password.trim()"
-              >
-                {{ loading ? 'Criando...' : 'Criar Membro' }}
-              </button>
-              <button
-                type="button"
-                class="btn-cancel"
-                (click)="closeCreateUserForm()"
-                [disabled]="loading"
-              >
-                Cancelar
-              </button>
-            </div>
-          </form>
+          <div class="modal-content">
+            <app-avatar-selector 
+              [initialRole]="'MINOR'"
+              (avatarSelected)="onAvatarSelected($event)">
+            </app-avatar-selector>
+          </div>
         </div>
       </div>
 
@@ -180,7 +74,19 @@
 
           <div class="avatar-wrap">
             <div class="avatar-circle">
-              <svg class="avatar-icon" viewBox="0 0 24 24" fill="currentColor">
+              <img 
+                *ngIf="member.avatarUrl" 
+                [src]="member.avatarUrl" 
+                [alt]="member.name" 
+                title="{{ member.name }}"
+                class="avatar-image"
+              />
+              <svg 
+                *ngIf="!member.avatarUrl" 
+                class="avatar-icon" 
+                viewBox="0 0 24 24" 
+                fill="currentColor"
+              >
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>

@@ -1,66 +1,37 @@
 <div class="home-page">
-	<div class="page-header">
-		<nav class="main-nav">
-			<ul>
-					<li class="active" routerLink="/home" routerLinkActive="active">Início</li>
-					<li routerLink="/members" routerLinkActive="active">Membros</li>
-					<li>Configurações</li>
-					<li>Ajuda</li>
-				</ul>
-			</nav>
-
-		<div class="profile-area">
-			<button class="profile-btn" title="Abrir menu de perfil" (click)="toggleProfileMenu()">
-				<svg class="profile-icon" viewBox="0 0 24 24" fill="currentColor">
-					<path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-				</svg>
-			</button>
-		</div>
-	</div>
-
-	<!-- Profile modal -->
-	<div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
-		<div class="profile-modal" (click)="$event.stopPropagation()">
-			<ul>
-				<li (click)="openProfile()">Meu Perfil</li>
-				<li class="danger" (click)="logout()">Sair</li>
-			</ul>
-		</div>
-	</div>
+	<app-navbar></app-navbar>
 
 	<div class="content">
 		<div class="subtitle-area">
 			<button class="change-family-btn" (click)="changeFamilyNavigation()">Mudar Família</button>
-			<p class="subtitle">Família Selecionada: <strong>{{ familyName || 'Carregando...' }}</strong></p>
+			<p class="subtitle">Tarefas aguardando aprovação</p>
 		</div>
 
-		<!-- Tarefas pendentes de aprovação -->
-		<div class="approval-section">
-			<h3 class="section-title">Tarefas Pendentes de Aprovação</h3>
-			<div class="tasks-list" *ngIf="tasksToApprove && tasksToApprove.length > 0">
-				<div class="task-card" *ngFor="let task of tasksToApprove">
-					<div class="task-header">
-						<h4 class="task-title">{{ task.title }}</h4>
-						<span class="task-status" [style.color]="getTaskStatusColor(task.status)">
-							{{ getTaskStatusText(task.status) }}
-						</span>
-					</div>
-					<p class="task-description">{{ task.description }}</p>
-					<div class="task-info">
-						<div class="task-minor">{{ task.minorName }}</div>
-						<div class="task-reward">
-							<i class="reward-icon">⭐</i>
-							{{ task.rewardTask }} token
-						</div>
-					</div>
-					<div class="task-dates">
-						<small>Criada: {{ task.creationDate | date:'short' }}</small>
-					</div>
-					<button class="approve-btn" (click)="approveTask(task.id)">Aprovar</button>
+		<div *ngIf="loading" class="loading-state">
+			Carregando tarefas...
+		</div>
+
+		<div *ngIf="!loading && pendingTasks.length === 0" class="empty-state">
+			Nenhuma tarefa aguardando aprovação no momento.
+		</div>
+
+		<div class="tasks-list" *ngIf="pendingTasks.length > 0">
+			<div class="task-card pending" *ngFor="let task of pendingTasks">
+				<div class="task-header">
+					<div class="task-title">{{ task.title }}</div>
+					<div class="task-status pending">{{ task.minorName }}</div>
 				</div>
-			</div>
-			<div class="empty-tasks" *ngIf="!tasksToApprove || tasksToApprove.length === 0">
-				<p>Nenhuma tarefa pendente de aprovação</p>
+
+				<div class="task-description">{{ task.description }}</div>
+
+				<div class="task-footer">
+					<div class="task-reward">
+						<span class="reward-label">Recompensa:</span>
+						<span class="reward-value">{{ task.rewardTask }} tokens</span>
+					</div>
+					<button class="btn-approve" (click)="approveTask(task.id)" [disabled]="loading">
+						✓ Aprovar
+					</button>
 			</div>
 		</div>
 	</div>

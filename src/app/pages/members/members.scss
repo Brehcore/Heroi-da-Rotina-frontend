@@ -1,9 +1,4 @@
 .members-page{min-height:100vh;background:#fff}
-.page-header{background:#ffe600;padding:12px 24px;border-radius:8px}
-.main-nav ul{display:flex;gap:24px;list-style:none;padding:0;margin:0}
-.main-nav li{font-weight:700;cursor:pointer}
-.main-nav li:hover{opacity:.8}
-.main-nav li.active{text-decoration:underline}
 .content{padding:28px 40px}
 .error-banner{background:#ffebee;border-left:4px solid #c62828;padding:12px 16px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;color:#c62828;font-weight:500}
 .error-banner .close-btn{background:0;border:0;font-size:24px;cursor:pointer;color:#c62828;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
@@ -16,8 +11,9 @@
     .members-header{flex-direction:column;align-items:stretch}
     .btn-add-member{width:100%}}
     .create-user-modal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:60;background:rgba(0,0,0,.5)}
-    .create-user-modal{background:#fff;border-radius:12px;width:100%;max-width:400px}
+    .create-user-modal{background:#fff;border-radius:12px;width:100%;max-width:450px;max-height:95vh;overflow-y:auto}
     .modal-header{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#ffe600;padding:16px;border-bottom:1px solid #ffd700}
+    .modal-content{padding:24px}
     .modal-header h3{margin:0;font-size:16px;color:#333;font-weight:700}
     .modal-header .close-btn{background:0;border:0;font-size:24px;cursor:pointer;color:#333;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
     .user-form{padding:24px;display:flex;flex-direction:column;gap:16px}
@@ -41,33 +37,14 @@
     .card-role{font-size:12px;color:#555;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
     .role-icon{width:16px;height:16px;display:inline-block}
     .avatar-wrap{padding:20px 0;background:#f0f0f0}
-    .avatar-circle{width:140px;height:140px;margin:0 auto;border-radius:50%;overflow:hidden;background:#fff;display:flex;align-items:center;justify-content:center;border:3px solid #ffe600;color:#ccc}
-    .avatar-circle img{width:100%;height:100%;object-fit:cover}
+    .avatar-circle{width:140px;height:140px;margin:0 auto;border-radius:50%;overflow:hidden;background:#383636;display:flex;align-items:center;justify-content:center;border:3px solid #ffe600;color:#ccc}
+    .avatar-circle img{width:100%;height:100%;object-fit:cover;display:block}
+    .avatar-image{width:100%;height:100%;object-fit:cover;display:block}
     .avatar-icon{width:70px;height:70px;color:#ccc}
     .card-info{padding:16px 12px;background:#fff}
     .info-item{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:12px}
     .info-item .label{font-weight:600;color:#666;min-width:50px}
     .info-item .value{color:#333;text-align:right;word-break:break-word;flex:1}
-    .profile-area{position:absolute;top:12px;right:20px}.profile-btn{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:#e8e8e8;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#666}
-    .profile-btn .profile-icon{width:24px;height:24px}
-    .profile-btn:hover{background:#d8d8d8}
-    .profile-modal-overlay{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:80px 20px 20px;z-index:50;background:rgba(0,0,0,.5)}
-    .profile-modal{background:#fff;border-radius:8px;width:220px;overflow:hidden}
-    .profile-modal ul{list-style:0;margin:0;padding:8px 0}.profile-modal li{padding:12px 16px;cursor:pointer}
-    .profile-modal li:hover{background:#f5f5f5}
-    .profile-modal li.danger{color:#c62828;font-weight:700}
-    .profile-modal li.create-family-option{border-top:1px solid #eee;border-bottom:1px solid #eee}
-    .create-family-form-modal{padding:12px 8px}
-    .create-family-form-modal 
-    .family-form{display:flex;flex-direction:column;gap:8px}
-    .family-input{padding:8px 12px;border:1px solid #ddd;border-radius:4px;font-size:12px}
-    .family-input:focus{outline:0;border-color:#ffe600}
-    .family-input:disabled{background:#f0f0f0;cursor:not-allowed}
-    .form-actions-small{display:flex;gap:6px}
-    .form-actions-small button{flex:1;padding:6px 8px;border:0;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer}
-    .form-actions-small button:disabled{opacity:.6;cursor:not-allowed}
-    .btn-confirm-small{background:#ffe600;color:#333}
-    .btn-cancel-small{background:#f0f0f0;color:#666}
     @media (max-width:700px){
         .members-grid{justify-content:center}
         .content{padding:16px 20px}}

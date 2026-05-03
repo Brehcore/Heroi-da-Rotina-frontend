@@ -5,6 +5,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
+import { Navbar } from '../../shared/navbar/navbar';
 
 export interface WalletDTO {
   id: number;
@@ -37,12 +38,12 @@ export interface CreateTaskDTO {
 @Component({
   selector: 'app-minor',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, Navbar],
   templateUrl: './minor.html',
   styleUrls: ['./minor.scss']
 })
 export class Minor implements OnInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -57,7 +58,6 @@ export class Minor implements OnInit {
   pendingTasks: TaskDTO[] = [];
   loading = false;
   error: string | null = null;
-  showProfileMenu = false;
 
   // Form states
   showCreateTaskForm = false;
@@ -254,26 +254,6 @@ export class Minor implements OnInit {
     };
   }
 
-  toggleProfileMenu(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-  }
-
-  closeProfileMenu(): void {
-    this.showProfileMenu = false;
-  }
-
-  openProfile(): void {
-    this.showProfileMenu = false;
-    this.router.navigate(['/profile']);
-  }
-
-  logout(): void {
-    this.showProfileMenu = false;
-    localStorage.removeItem('token');
-    sessionStorage.clear();
-    this.router.navigate(['/login']);
-  }
-
   goBack(): void {
     this.router.navigate(['/members']);
   }
@@ -302,5 +282,9 @@ export class Minor implements OnInit {
       default:
         return status;
     }
+  }
+
+  getUserName(): string {
+    return 'Monitor';
   }
 }

@@ -1,0 +1,70 @@
+<div class="page-header">
+  <nav class="main-nav">
+    <ul>
+      <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Início</a></li>
+      <li><a routerLink="/members" routerLinkActive="active">Membros</a></li>
+      <li>Configurações</li>
+      <li>Ajuda</li>
+    </ul>
+  </nav>
+
+  <div class="profile-area">
+    <button class="profile-btn" title="Abrir menu de perfil" (click)="toggleProfileMenu()">
+      <ng-container *ngIf="userProfilePictureUrl; else noPic">
+        <img
+          [src]="userProfilePictureUrl"
+          alt="Perfil do usuário"
+          title="Foto do perfil"
+          class="profile-picture"
+        />
+      </ng-container>
+      <ng-template #noPic>
+        <svg class="profile-placeholder" viewBox="0 0 24 24" fill="currentColor" width="24" height="24" aria-hidden="true">
+          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+        </svg>
+      </ng-template>
+    </button>
+  </div>
+</div>
+
+<!-- Profile modal -->
+<div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
+  <div class="profile-modal" (click)="$event.stopPropagation()">
+    <!-- Profile Header -->
+    <div class="profile-modal-header">
+      <img 
+        *ngIf="userProfilePictureUrl" 
+        [src]="userProfilePictureUrl" 
+        alt="Foto do usuário"
+        title="Seu perfil"
+        class="profile-modal-image"
+      />
+      <svg 
+        *ngIf="!userProfilePictureUrl" 
+        class="profile-modal-icon" 
+        viewBox="0 0 24 24" 
+        fill="currentColor"
+      >
+        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+      </svg>
+      <p class="profile-modal-name">{{ getUserName() }}</p>
+    </div>
+    <ul>
+      <li (click)="openProfile()">Meu Perfil</li>
+      <li (click)="toggleCreateFamilyForm()" class="create-family-option">Criar Família</li>
+
+      <!-- Create Family Form Inside Modal -->
+      <li *ngIf="showCreateFamilyForm" class="create-family-form-modal">
+        <form class="family-form" (ngSubmit)="onCreateFamily()">
+          <input type="text" placeholder="Nome da família" [(ngModel)]="familyNameInput" name="familyName" class="family-input" [disabled]="loading" autofocus />
+          <div class="form-actions">
+            <button type="submit" class="btn-confirm" [disabled]="loading || !familyNameInput.trim()">{{ loading ? '...' : 'OK' }}</button>
+            <button type="button" class="btn-cancel" (click)="closeCreateFamilyForm()" [disabled]="loading">Cancelar</button>
+          </div>
+        </form>
+      </li>
+
+      <li class="danger" (click)="logout()">Sair</li>
+    </ul>
+  </div>
+</div>

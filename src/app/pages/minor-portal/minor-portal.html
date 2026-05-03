@@ -1,23 +1,12 @@
 <div class="minor-portal">
+  <!-- Navbar component -->
+  <app-navbar></app-navbar>
+
   <!-- Header -->
   <div class="portal-header">
     <div class="welcome-section">
       <h1 class="welcome-title">🎮 Bem-vindo, {{ minorName || 'Campeão' }}!</h1>
       <p class="welcome-subtitle">Veja suas tarefas e ganhe tokens</p>
-    </div>
-    <button class="profile-btn" (click)="toggleProfileMenu()" title="Abrir menu de perfil">
-      <svg viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-      </svg>
-    </button>
-  </div>
-
-  <!-- Profile Menu -->
-  <div class="profile-modal-overlay" *ngIf="showProfileMenu" (click)="closeProfileMenu()">
-    <div class="profile-modal" (click)="$event.stopPropagation()">
-      <ul>
-        <li class="danger" (click)="logout()">Sair</li>
-      </ul>
     </div>
   </div>
 

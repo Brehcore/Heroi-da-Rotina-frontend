@@ -7,48 +7,38 @@ import { PLATFORM_ID } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { MemberDTO } from '../../core/services/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
-
-export interface CreateFamilyDTO {
-  familyName: string;
-}
-
-export interface CreateUserDTO {
-  name: string;
-  email: string;
-  password: string;
-  role: 'MONITOR' | 'MINOR';
-  familyId: number;
-}
+import { AvatarSelectorComponent, AvatarSelectionData } from '../../components/avatar-selector/avatar-selector';
+import { Navbar } from '../../shared/navbar/navbar';
 
 @Component({
   selector: 'app-members',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, AvatarSelectorComponent, Navbar],
   templateUrl: './members.html',
   styleUrls: ['./members.scss']
 })
 export class Members implements OnInit {
-  private authService = inject(AuthService);
+  authService = inject(AuthService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
 
   private readonly API_BASE = 'http://localhost:8082';
+  private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
 
   members: MemberDTO[] = [];
   loading = false;
   error: string | null = null;
   familyId: string | null = null;
-  showProfileMenu = false;
-  familyNameInput = '';
-  showCreateFamilyForm = false;
   showCreateUserForm = false;
+  useAvatarSelector = true;
   newUser = {
     name: '',
     email: '',
     password: '',
-    role: 'MINOR' as 'MONITOR' | 'MINOR'
+    role: 'MINOR' as 'MONITOR' | 'MINOR',
+    profilePictureUrl: ''
   };
 
   ngOnInit(): void {
@@ -73,7 +63,13 @@ export class Members implements OnInit {
 
     this.authService.getFamilyMembers(familyId).subscribe({
       next: (members) => {
-        this.members = members || [];
+        console.log('Membros carregados do DB:', members);
+        console.log('Avatars do DB:', members?.map(m => ({ name: m.name, avatarUrl: m.avatarUrl })));
+        this.members = (members || []).map(member => ({
+          ...member,
+          avatarUrl: member.avatarUrl || this.generateMemberAvatar(member.name)
+        }));
+        console.log('Membros após processamento:', this.members);
         this.loading = false;
       },
       error: (err) => {
@@ -84,82 +80,9 @@ export class Members implements OnInit {
     });
   }
 
-  createFamily(familyName: string): void {
-    if (!familyName.trim()) {
-      this.error = 'Nome da família é obrigatório';
-      return;
-    }
-
-    const token = this.authService.getToken();
-    const httpHeaders = token 
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-    const createFamilyDTO: CreateFamilyDTO = { familyName };
-
-    this.loading = true;
-    this.error = null;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.post<{ id: number; familyName: string }>(
-      `${this.API_BASE}/api/families`,
-      createFamilyDTO,
-      options
-    ).subscribe({
-      next: (response) => {
-        console.log('Família criada com sucesso:', response);
-        this.loading = false;
-        this.router.navigate(['/members'], { queryParams: { family: response.id } });
-      },
-      error: (err) => {
-        console.error('Erro ao criar família:', err);
-        this.error = 'Erro ao criar família';
-        this.loading = false;
-      }
-    });
-  }
-
-  onCreateFamily(): void {
-    this.createFamily(this.familyNameInput);
-    this.familyNameInput = '';
-  }
-
-  toggleProfileMenu(): void {
-    this.showProfileMenu = !this.showProfileMenu;
-  }
-
-  closeProfileMenu(): void {
-    this.showProfileMenu = false;
-  }
-
-  openProfile(): void {
-    this.showProfileMenu = false;
-    this.router.navigate(['/profile']);
-  }
-
-  logout(): void {
-    this.showProfileMenu = false;
-    localStorage.removeItem('token');
-    sessionStorage.clear();
-    this.router.navigate(['/login']);
-  }
-
-  goToMinor(member: MemberDTO): void {
-    this.router.navigate(['/minor'], {
-      queryParams: {
-        minorId: member.id,
-        minorName: member.name
-      }
-    });
-  }
-
-  toggleCreateFamilyForm(): void {
-    this.showCreateFamilyForm = !this.showCreateFamilyForm;
-  }
-
-  closeCreateFamilyForm(): void {
-    this.showCreateFamilyForm = false;
-    this.familyNameInput = '';
+  private generateMemberAvatar(memberName: string): string {
+    const seed = encodeURIComponent(memberName || 'member');
+    return `${this.DICEBEAR_BASE}?seed=${seed}`;
   }
 
   toggleCreateUserForm(): void {
@@ -172,8 +95,9 @@ export class Members implements OnInit {
       name: '',
       email: '',
       password: '',
-      role: 'MINOR'
-    };
+      role: 'MINOR',
+      profilePictureUrl: undefined
+    } as any;
   }
 
   createUser(): void {
@@ -192,12 +116,57 @@ export class Members implements OnInit {
       ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
       : undefined;
 
-    const createUserDTO: CreateUserDTO = {
+    const createUserDTO = {
       name: this.newUser.name,
       email: this.newUser.email,
       password: this.newUser.password,
       role: this.newUser.role,
-      familyId: parseInt(this.familyId, 10)
+      familyId: parseInt(this.familyId, 10),
+      profilePictureUrl: this.newUser.profilePictureUrl
+    };
+
+    this.loading = true;
+    this.error = null;
+
+    const options = httpHeaders ? { headers: httpHeaders } : {};
+
+    this.http.post<MemberDTO>(
+      `${this.API_BASE}/api/users`,
+      createUserDTO,
+      options
+    ).subscribe({
+      next: (response) => {
+        console.log('Usuário criado com sucesso:', response);
+        this.loading = false;
+        this.members.push(response);
+        this.closeCreateUserForm();
+      },
+      error: (err) => {
+        console.error('Erro ao criar usuário:', err);
+        this.error = 'Erro ao criar usuário';
+        this.loading = false;
+      }
+    });
+  }
+
+  onAvatarSelected(data: AvatarSelectionData): void {
+    if (!this.familyId) {
+      this.error = 'ID da família não encontrado';
+      return;
+    }
+
+    const token = this.authService.getToken();
+    const httpHeaders = token
+      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
+      : undefined;
+
+    const createUserDTO = {
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      role: data.role,
+      familyId: parseInt(this.familyId, 10),
+      profilePictureUrl: data.profilePictureUrl
     };
 
     this.loading = true;
