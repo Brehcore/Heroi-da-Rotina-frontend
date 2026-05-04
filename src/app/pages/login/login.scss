@@ -42,6 +42,13 @@
 	justify-content: center;
 }
 
+.logo {
+	width: 100px; /* Ajuste este valor para o tamanho ideal da sua logo */
+	height: auto;
+	margin: 0 auto 16px auto; /* Centraliza horizontalmente e dá espaço em baixo */
+	display: block;
+}
+
 .login-right form {
 	width: 100%;
 	max-width: 320px;

@@ -1,16 +1,27 @@
 <div class="profile-page">
-  <div class="profile-card">
-    <h1 class="title">Escolha uma Família</h1>
-
-    <div class="families">
-      <div *ngIf="loading">Carregando famílias...</div>
-      <div *ngIf="!loading && families.length === 0">Nenhuma família encontrada.</div>
-
-      <div class="family" *ngFor="let f of families" (click)="selectFamily(f.id)">
-        <div class="avatar">
-          <img [src]="f.avatarUrl || '/Login.png'" [alt]="f.name" />
+  <app-navbar></app-navbar>
+  
+  <div class="content">
+    <div class="profile-card">
+      <div *ngIf="loading" class="loading">Carregando perfil...</div>
+      <div *ngIf="error" class="error">{{ error }}</div>
+  
+      <div *ngIf="!loading && user" class="profile-content">
+        <div class="avatar-container">
+          <img [src]="user.profilePictureUrl" [alt]="'Foto de ' + user.name" [title]="'Foto de ' + user.name" class="avatar" role="img" />
         </div>
-        <div class="label">{{ f.name }}</div>
+        <h1 class="name">{{ user.name }}</h1>
+        <p class="email">{{ user.email }}</p>
+  
+        <div class="info-group">
+          <span class="label">Papel:</span>
+          <span class="value">{{ user.role }}</span>
+        </div>
+  
+        <div class="info-group" *ngIf="user.familyName">
+          <span class="label">Família:</span>
+          <span class="value">{{ user.familyName }}</span>
+        </div>
       </div>
     </div>
   </div>

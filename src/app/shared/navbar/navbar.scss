@@ -1,15 +1,15 @@
-.page-header{background:#ffe600;padding:10px 24px;width:100%;border-radius:0;position:relative;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;max-width:100vw;overflow-x:hidden}
+.page-header{background:#1E293B;padding:10px 24px;width:100%;border-radius:0;position:relative;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;max-width:100vw;overflow-x:hidden;font-family:'Roboto', Tahoma, Geneva, Verdana, sans-serif;}
 .main-nav ul{display:flex;gap:24px;list-style:none;padding:0;margin:0}
 .main-nav li{font-weight:700}
 .main-nav ul{flex-wrap:wrap}
-.main-nav a{color:inherit;text-decoration:none;cursor:pointer}
+.main-nav a{color:#ffe600;text-decoration:none;cursor:pointer}
 .main-nav a:hover{opacity:.85}
 .main-nav li a.active{text-decoration:underline; text-underline-offset:4px; text-underline-position:under; text-decoration-thickness:2px; text-decoration-color:#ffe600}
 .profile-area{position:static;margin-left:auto}
 .profile-btn{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .profile-btn .profile-picture{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
 .profile-btn:hover{transform:scale(1.05)}
-.profile-placeholder{width:28px;height:28px;color:#333}
+.profile-placeholder{width:28px;height:28px;color:#ffe600}
 .profile-modal-overlay{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:80px 20px 20px;z-index:50;background:rgba(0,0,0,.5)}
 .profile-modal{background:#fff;border-radius:8px;width:220px;overflow:hidden}
 .profile-modal-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;background:#ffe600;border-bottom:1px solid #ffd700}
