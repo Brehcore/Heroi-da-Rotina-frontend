@@ -13,19 +13,25 @@
 .loading-indicator p{color:#fff;font-size:18px;font-weight:600;font-family:Roboto,Arial,sans-serif;margin:0}
 .error-box{background:#ffebee;border-left:4px solid #c62828;border-radius:8px;padding:20px;margin-bottom:24px;color:#c62828;font-weight:600;font-family:Roboto,Arial,sans-serif;font-size:16px}
 .error-box p{margin:0}
-.success-box{background:#d4edda;border-left:4px solid #28a745;border-radius:8px;padding:20px;margin-bottom:24px;color:#155724;font-weight:600;font-family:Roboto,Arial,sans-serif;font-size:16px}
+.success-box{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#d4edda;border-left:4px solid #28a745;border-radius:12px;padding:24px 48px;color:#155724;font-weight:bold;font-family:Roboto,Arial,sans-serif;font-size:18px;box-shadow:0 10px 30px rgba(0,0,0,.2);z-index:9999;animation:popIn .3s ease-out forwards;text-align:center}
 .success-box p{margin:0}
+@keyframes popIn{0%{opacity:0;transform:translate(-50%,-40%) scale(.9)}100%{opacity:1;transform:translate(-50%,-50%) scale(1)}}
 .wallet-card{background:rgba(255,255,255,.95);border-radius:16px;padding:24px;margin-bottom:24px;box-shadow:0 4px 16px rgba(0,0,0,.15)}
 .wallet-header{margin-bottom:20px}
 .wallet-header h2{margin:0;font-size:24px;font-weight:700;color:#333;font-family:Roboto,Arial,sans-serif}
-.wallet-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.wallet-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px}
 .wallet-item{padding:20px;border-radius:12px;display:flex;align-items:center;gap:16px}
 .wallet-item.tokens{background:linear-gradient(135deg,#ffd700 0%,#ffed4e 100%);color:#333}
 .wallet-item.money{background:linear-gradient(135deg,#00d084 0%,#00f0a0 100%);color:#fff}
+.wallet-item.quotation{background:linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%);color:#fff}
 .wallet-icon{font-size:36px}
 .wallet-info{display:flex;flex-direction:column}
 .wallet-label{font-size:12px;font-weight:600;opacity:.8}
 .wallet-value{font-size:28px;font-weight:700}
+.wallet-interest-info{margin-top:16px;padding:16px;background:#f9f9f9;border-radius:12px;border-left:4px solid #667eea}
+.interest-details p{margin:6px 0;color:#555;font-size:14px;font-family:Roboto,Arial,sans-serif}
+.interest-details .active{color:#28a745;font-weight:700}
+.interest-details .inactive{color:#dc3545;font-weight:700}
 .screen-time-section{margin-bottom:32px}
 .screen-time-section h2{margin:0 0 16px;font-size:24px;font-weight:700;color:#fff;font-family:Roboto,Arial,sans-serif}
 .screen-time-card{background:rgba(255,255,255,.95);border-radius:16px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.15)}

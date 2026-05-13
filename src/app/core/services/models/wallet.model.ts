@@ -11,6 +11,18 @@ export interface TransactionDTO {
   date?: string;
 }
 
+export enum InterestFrequency {
+  DAILY = 'DAILY',
+  WEEKLY = 'WEEKLY',
+  MONTHLY = 'MONTHLY'
+}
+
+export interface InterestConfigDTO {
+  rate: number;
+  enabled: boolean;
+  frequency: InterestFrequency;
+}
+
 export interface WalletResponseDTO {
   id: number;
   minorId: number;
@@ -20,4 +32,5 @@ export interface WalletResponseDTO {
   tokenQuotation: number;
   interestRate: number;
   interestEnabled: boolean;
+  interestFrequency: InterestFrequency;
 }

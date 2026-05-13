@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../shared/navbar/navbar';
@@ -23,6 +23,7 @@ export class Tasks implements OnInit {
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly API_BASE = 'http://localhost:8082';
   private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
@@ -30,6 +31,7 @@ export class Tasks implements OnInit {
   tasks: TaskResponseDTO[] = [];
   loading = false;
   error: string | null = null;
+  successMsg: string | null = null;
   minors: any[] = [];
   
   // Modal
@@ -92,21 +94,23 @@ export class Tasks implements OnInit {
       if (!this.familyId) {
         this.error = 'ID da família não encontrado';
         this.loading = false;
+        this.cdr.detectChanges();
         return;
       }
       this.taskService.getTasksToApprove(this.familyId).subscribe({
-        next: (data) => { this.tasks = data || []; this.loading = false; },
-        error: (err) => { console.error('Erro ao carregar tarefas para aprovação:', err); this.error = 'Erro ao carregar tarefas para aprovação.'; this.loading = false; }
+        next: (data) => { this.tasks = data || []; this.loading = false; this.cdr.detectChanges(); },
+        error: (err) => { console.error('Erro ao carregar tarefas para aprovação:', err); this.error = 'Erro ao carregar tarefas para aprovação.'; this.loading = false; this.cdr.detectChanges(); }
       });
     } else {
       if (!this.userId) {
         this.error = 'ID do usuário não encontrado';
         this.loading = false;
+        this.cdr.detectChanges();
         return;
       }
       this.taskService.getMinorTasks(this.userId).subscribe({
-        next: (data) => { this.tasks = data || []; this.loading = false; },
-        error: (err) => { console.error('Erro ao carregar tarefas:', err); this.error = 'Erro ao carregar tarefas.'; this.loading = false; }
+        next: (data) => { this.tasks = data || []; this.loading = false; this.cdr.detectChanges(); },
+        error: (err) => { console.error('Erro ao carregar tarefas:', err); this.error = 'Erro ao carregar tarefas.'; this.loading = false; this.cdr.detectChanges(); }
       });
     }
   }
@@ -124,30 +128,83 @@ export class Tasks implements OnInit {
 
   createTask() {
     this.loading = true;
+    this.error = null;
+    this.successMsg = null;
+
+    console.log('ENVIANDO PARA O JAVA:', this.newTask);
 
     this.taskService.createTask(this.newTask).subscribe({
       next: (task) => {
         this.tasks.push(task);
         this.closeCreateForm();
         this.loading = false;
+        this.successMsg = 'Tarefa criada com sucesso!';
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
       },
-      error: (err) => { console.error('Erro ao criar tarefa:', err); this.error = 'Erro ao criar tarefa.'; this.loading = false; }
+      error: (err) => { console.error('Erro ao criar tarefa:', err); this.error = 'Erro ao criar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
     });
   }
 
   concludeTask(id: number) {
     this.loading = true;
+    this.error = null;
+    this.successMsg = null;
 
     this.taskService.concludeTask(id).subscribe({
-      next: () => this.loadTasks(), error: (err) => { console.error('Erro ao concluir tarefa:', err); this.error = 'Erro ao concluir tarefa.'; this.loading = false; }
+      next: () => {
+        this.successMsg = 'Tarefa concluída com sucesso!';
+        this.loadTasks();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: (err) => { console.error('Erro ao concluir tarefa:', err); this.error = 'Erro ao concluir tarefa.'; this.loading = false; this.cdr.detectChanges(); }
     });
   }
 
   approveTask(id: number) {
     this.loading = true;
+    this.error = null;
+    this.successMsg = null;
 
     this.taskService.approveTask(id).subscribe({
-      next: () => this.loadTasks(), error: (err) => { console.error('Erro ao aprovar tarefa:', err); this.error = 'Erro ao aprovar tarefa.'; this.loading = false; }
+      next: () => {
+        this.successMsg = 'Tarefa aprovada com sucesso!';
+        this.loadTasks();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: (err) => { console.error('Erro ao aprovar tarefa:', err); this.error = 'Erro ao aprovar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
+    });
+  }
+
+  rejectTask(id: number) {
+    const reason = prompt('Qual o motivo da reprovação da tarefa?');
+    
+    // Cancela a ação se o usuário clicar em Cancelar ou deixar em branco
+    if (!reason || reason.trim() === '') return; 
+
+    this.loading = true;
+    this.error = null;
+    this.successMsg = null;
+
+    this.taskService.rejectTask(id, reason).subscribe({
+      next: () => {
+        this.successMsg = 'Tarefa rejeitada com sucesso!';
+        this.loadTasks();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: (err) => { console.error('Erro ao rejeitar tarefa:', err); this.error = 'Erro ao rejeitar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
     });
   }
 }

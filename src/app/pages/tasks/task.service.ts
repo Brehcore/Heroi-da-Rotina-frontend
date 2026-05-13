@@ -49,4 +49,8 @@ export class TaskService {
   concludeTask(id: number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/conclude`, {}, { headers: this.getHeaders(), responseType: 'text' as 'json' });
   }
+
+  rejectTask(id: number, reason: string): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/${id}/reject`, { reason }, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+  }
 }

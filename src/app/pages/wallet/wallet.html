@@ -40,10 +40,25 @@
         </div>
       </div>
       <div class="stat-card">
-        <div class="icon">📈</div>
+        <div class="icon">🔄</div>
         <div class="info">
           <span class="label">Cotação Atual</span>
           <span class="value">1 ⭐ = R$ {{ (wallet?.tokenQuotation || 0).toFixed(2) }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">⚙️</div>
+        <div class="info">
+          <span class="label">Rendimento Automático</span>
+          <span class="value status-active" *ngIf="wallet?.interestEnabled">Ativo ✅</span>
+          <span class="value status-inactive" *ngIf="!wallet?.interestEnabled">Inativo ❌</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">📈</div>
+        <div class="info">
+          <span class="label">Taxa de Juros</span>
+          <span class="value">{{ wallet?.interestRate || 0 }}% <span style="font-size: 14px; font-weight: normal; color: #666;">({{ getFrequencyText(wallet?.interestFrequency) }})</span></span>
         </div>
       </div>
     </div>
@@ -84,10 +99,15 @@
               <input type="checkbox" id="chkInterest" [(ngModel)]="interestEnabled" name="enabled">
               <label for="chkInterest">Ativar rendimento automático</label>
             </div>
-            <div class="form-row" style="margin-top: 12px;">
+            <div class="form-row interest-form-row">
               <span class="currency-symbol">%</span>
-              <input type="number" [(ngModel)]="interestRate" name="rate" step="0.01" placeholder="Taxa (Ex: 0.05)" required [disabled]="!interestEnabled">
-              <button type="submit" class="btn-secondary" [disabled]="loading">Salvar Juros</button>
+              <input type="number" [(ngModel)]="interestRate" name="rate" step="0.01" placeholder="Taxa" required class="small-input">
+              <select [(ngModel)]="interestFrequency" name="frequency" required aria-label="Frequência do rendimento">
+                <option value="DAILY">Diário</option>
+                <option value="WEEKLY">Semanal</option>
+                <option value="MONTHLY">Mensal</option>
+              </select>
+              <button type="submit" class="btn-secondary" [disabled]="loading">Salvar</button>
             </div>
           </form>
         </div>

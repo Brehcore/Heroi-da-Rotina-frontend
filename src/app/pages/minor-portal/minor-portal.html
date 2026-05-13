@@ -34,15 +34,30 @@
           <div class="wallet-icon">⭐</div>
           <div class="wallet-info">
             <span class="wallet-label">Tokens</span>
-            <span class="wallet-value">{{ wallet?.tokensBalance || 0 }}</span>
+            <span class="wallet-value">{{ wallet.tokensBalance || 0 }}</span>
           </div>
         </div>
         <div class="wallet-item money">
           <div class="wallet-icon">💵</div>
           <div class="wallet-info">
             <span class="wallet-label">Dinheiro</span>
-            <span class="wallet-value">R$ {{ (wallet?.moneyBalance || 0).toFixed(2) }}</span>
+            <span class="wallet-value">R$ {{ (wallet.moneyBalance || 0).toFixed(2) }}</span>
           </div>
+        </div>
+        <div class="wallet-item quotation">
+          <div class="wallet-icon">📈</div>
+          <div class="wallet-info">
+            <span class="wallet-label">Cotação Atual</span>
+            <span class="wallet-value">R$ {{ (wallet.tokenQuotation || 0).toFixed(2) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Informações de Rendimento -->
+      <div class="wallet-interest-info" *ngIf="wallet">
+        <div class="interest-details">
+          <p><strong>Rendimento Automático (Cofrinho):</strong> <span [class.active]="wallet.interestEnabled" [class.inactive]="!wallet.interestEnabled">{{ wallet.interestEnabled ? 'Ativo ✅' : 'Inativo ❌' }}</span></p>
+          <p><strong>Taxa de Juros Atual:</strong> {{ wallet.interestRate || 0 }}% ({{ getFrequencyText(wallet.interestFrequency) }})</p>
         </div>
       </div>
     </div>
@@ -52,7 +67,7 @@
       <h2>📺 Tempo de Tela</h2>
       <div class="screen-time-card">
         <p>Informe quantos minutos de tempo de tela você deseja usar agora.</p>
-        <p class="cost-info">Custo: 1 Ficha = {{screenTimeConfig?.minutesPerToken || 0}} minutos</p>
+        <p class="cost-info">Custo: 1 Ficha = {{screenTimeConfig.minutesPerToken || 0}} minutos</p>
         <form (ngSubmit)="requestScreenTime()" class="inline-form">
           <input type="number" [(ngModel)]="requestMinutes" name="reqMinutes" placeholder="Ex: 30" min="1" required [disabled]="requestingTime">
           <button type="submit" class="btn-primary" [disabled]="requestingTime || !requestMinutes">

@@ -11,6 +11,33 @@
   </nav>
 
   <div class="profile-area">
+    <!-- Notificações (Sininho) -->
+    <div class="notification-container" *ngIf="userRole === 'MONITOR'">
+      <button class="notification-btn" (click)="toggleNotifications()" title="Notificações">
+        🔔
+        <span class="badge" *ngIf="pendingScreenTimeRequests.length > 0">{{ pendingScreenTimeRequests.length }}</span>
+      </button>
+      
+      <div class="notification-dropdown" *ngIf="showNotifications" (click)="$event.stopPropagation()">
+        <div class="notification-header">Solicitações de Tela</div>
+        <div class="notification-list">
+          <div class="notification-item" *ngIf="pendingScreenTimeRequests.length === 0">
+            Nenhuma solicitação no momento.
+          </div>
+          <div class="notification-item" *ngFor="let req of pendingScreenTimeRequests">
+            <div class="notif-info">
+              <strong>{{ req.minorName }}</strong> pediu <strong>{{ req.requestedMinutes }} min</strong>
+              <span class="notif-time">{{ getElapsedTime(req) }}</span>
+            </div>
+            <div class="notif-actions">
+              <button class="btn-approve-sm" (click)="approveScreenTime(req.requestId)" [disabled]="isProcessingNotif" title="Aprovar">✓</button>
+              <button class="btn-reject-sm" (click)="rejectScreenTime(req.requestId)" [disabled]="isProcessingNotif" title="Recusar">✗</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <button class="profile-btn" title="Abrir menu de perfil" (click)="toggleProfileMenu()">
       <ng-container *ngIf="userProfilePictureUrl; else noPic">
         <img

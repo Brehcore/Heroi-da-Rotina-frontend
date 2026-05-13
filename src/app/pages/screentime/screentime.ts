@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../shared/navbar/navbar';
@@ -20,6 +20,7 @@ export class ScreenTime implements OnInit {
   private screenTimeService = inject(ScreenTimeService);
   private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly API_BASE = 'http://localhost:8082';
 
@@ -75,8 +76,12 @@ export class ScreenTime implements OnInit {
             }
           }
         }
+        this.cdr.detectChanges();
       },
-      error: (err) => console.error('Erro ao carregar família:', err)
+      error: (err) => { 
+        console.error('Erro ao carregar família:', err);
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -89,12 +94,19 @@ export class ScreenTime implements OnInit {
     this.loading = true;
     this.error = null;
     
+    // Renderização Progressiva: Inicia com limites zerados para o formulário aparecer imediatamente, mesmo se o banco de dados ainda não tiver configurações salvas.
+    this.config = { minutesPerToken: 30, mondayLimit: 0, tuesdayLimit: 0, wednesdayLimit: 0, thursdayLimit: 0, fridayLimit: 0, saturdayLimit: 0, sundayLimit: 0 };
+
     this.screenTimeService.getConfig(this.selectedMinorId).subscribe({
-      next: (data) => { this.config = data; this.loading = false; },
+      next: (data) => { 
+        if (data) this.config = data; 
+        this.loading = false; 
+        this.cdr.detectChanges();
+      },
       error: (err) => { 
         console.error(err); 
-        this.error = 'Erro ao carregar configurações de tempo de tela.'; 
         this.loading = false; 
+        this.cdr.detectChanges();
       }
     });
   }
@@ -105,8 +117,21 @@ export class ScreenTime implements OnInit {
     this.error = null; this.successMsg = null;
     
     this.screenTimeService.updateConfig(this.selectedMinorId, this.config).subscribe({
-      next: (data) => { this.config = data; this.successMsg = 'Configurações salvas!'; this.loading = false; },
-      error: () => { this.error = 'Erro ao salvar configuração (Requer perfil ADMIN/MONITOR).'; this.loading = false; }
+      next: (data) => { 
+        this.config = data; 
+        this.successMsg = 'Configurações salvas!'; 
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+        this.loading = false; 
+      },
+      error: () => { 
+        this.error = 'Erro ao salvar configuração (Requer perfil ADMIN/MONITOR).'; 
+        this.loading = false; 
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -118,10 +143,19 @@ export class ScreenTime implements OnInit {
     this.screenTimeService.approveRequest(this.requestToApproveId, this.userId).subscribe({
       next: () => { 
         this.successMsg = 'Solicitação aprovada e fichas debitadas!'; 
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
         this.requestToApproveId = 0; 
         this.loading = false; 
       },
-      error: () => { this.error = 'Erro ao aprovar solicitação.'; this.loading = false; }
+      error: () => { 
+        this.error = 'Erro ao aprovar solicitação.'; 
+        this.loading = false; 
+        this.cdr.detectChanges();
+      }
     });
   }
 }

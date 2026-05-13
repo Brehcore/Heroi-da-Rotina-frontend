@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -8,15 +8,9 @@ import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../tasks/task.service';
 import { TaskResponseDTO } from '../../core/services/models/task.model';
 import { ScreenTimeService } from '../screentime/screentime.service';
-import { ScreenTimeConfigDTO } from '../../core/services/models/screentime.model';
-
-export interface WalletDTO {
-  id: number;
-  minorId: number;
-  minorName: string;
-  tokensBalance: number;
-  moneyBalance: number;
-}
+import { ScreenTimeConfigDTO, ScreenTimeRequestDTO } from '../../core/services/models/screentime.model';
+import { WalletService } from '../wallet/wallet.service';
+import { WalletResponseDTO, InterestFrequency } from '../../core/services/models/wallet.model';
 
 @Component({
   selector: 'app-minor-portal',
@@ -29,10 +23,12 @@ export class MinorPortal implements OnInit {
   authService = inject(AuthService);
   private taskService = inject(TaskService);
   private screenTimeService = inject(ScreenTimeService);
+  private walletService = inject(WalletService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
+  private cdr = inject(ChangeDetectorRef);
 
   private readonly API_BASE = 'http://localhost:8082';
 
@@ -40,7 +36,10 @@ export class MinorPortal implements OnInit {
   minorName: string | null = null;
   minorProfileUrl: string | null = null;
   userRole: string | null = null;
-  wallet: WalletDTO | null = { id: 0, minorId: 0, minorName: '', tokensBalance: 0, moneyBalance: 0 };
+  wallet: WalletResponseDTO | null = { 
+    id: 0, minorId: 0, minorName: '', tokensBalance: 0, moneyBalance: 0, 
+    tokenQuotation: 0, interestRate: 0, interestEnabled: false, interestFrequency: InterestFrequency.WEEKLY 
+  };
   tasks: TaskResponseDTO[] = [];
   pendingTasks: TaskResponseDTO[] = [];
   completedTasks: TaskResponseDTO[] = [];
@@ -120,26 +119,29 @@ export class MinorPortal implements OnInit {
   fetchWalletData(): void {
     if (!this.minorId) return;
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<WalletDTO>(
-      `${this.API_BASE}/api/wallets/minor/${this.minorId}`,
-      options
-    ).subscribe({
+    this.walletService.getWallet(Number(this.minorId)).subscribe({
       next: (data) => {
         if (data) {
-          this.wallet = data;
-          this.wallet.moneyBalance = Number(this.wallet.moneyBalance) || 0;
-          this.wallet.tokensBalance = Number(this.wallet.tokensBalance) || 0;
+          // Mapeamento seguro para aceitar nomes de campos no plural ou singular vindos do backend
+          const money = (data as any).moneyBalances ?? (data as any).moneyBalance ?? 0;
+          const tokens = (data as any).tokenBalances ?? (data as any).tokensBalance ?? (data as any).tokenBalance ?? 0;
+          const quotation = (data as any).tokenQuotation ?? (data as any).tokenQuotations ?? 0;
+
+          this.wallet = {
+            ...data,
+            moneyBalance: Number(money) || 0,
+            tokensBalance: Number(tokens) || 0,
+            tokenQuotation: Number(quotation) || 0,
+            interestRate: Number(data.interestRate) || 0,
+            interestEnabled: Boolean(data.interestEnabled),
+            interestFrequency: data.interestFrequency || InterestFrequency.WEEKLY
+          };
+          this.cdr.detectChanges();
         }
       },
       error: (err) => {
         console.error('Erro ao buscar carteira:', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -184,13 +186,23 @@ export class MinorPortal implements OnInit {
     this.error = null;
     this.successMsg = null;
 
-    this.screenTimeService.requestScreenTime(Number(this.minorId), this.requestMinutes).subscribe({
+    const requestDTO: ScreenTimeRequestDTO = {
+      minorId: Number(this.minorId),
+      minutes: this.requestMinutes
+    };
+
+    this.screenTimeService.requestScreenTime(requestDTO).subscribe({
       next: () => {
         this.successMsg = 'Tempo de tela solicitado com sucesso!';
         this.requestingTime = false;
-        setTimeout(() => this.successMsg = null, 5000); // Esconde a mensagem após 5 segundos
+        this.cdr.detectChanges(); // Atualiza a tela imediatamente
+        
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges(); // Força a tela a apagar a mensagem após 2 segundos
+        }, 2000);
       },
-      error: () => { this.error = 'Erro ao solicitar tempo de tela. Verifique suas fichas e os limites diários!'; this.requestingTime = false; window.scrollTo(0,0); }
+      error: () => { this.error = 'Erro ao solicitar tempo de tela. Verifique suas fichas e os limites diários!'; this.requestingTime = false; window.scrollTo(0,0); this.cdr.detectChanges(); }
     });
   }
 
@@ -214,13 +226,19 @@ export class MinorPortal implements OnInit {
       next: () => {
         this.successMsg = 'Tarefa concluída! Aguardando aprovação.';
         this.fetchTasks();
-        setTimeout(() => this.successMsg = null, 4000);
         this.loading = false;
+        this.cdr.detectChanges(); // Atualiza a tela imediatamente
+        
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges(); // Força a tela a apagar a mensagem após 2 segundos
+        }, 2000);
       },
       error: (err) => {
         console.error('Erro ao concluir tarefa:', err);
         this.error = 'Erro ao concluir tarefa. Tente novamente.';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -266,5 +284,15 @@ export class MinorPortal implements OnInit {
 
   getUserName(): string {
     return 'Menor';
+  }
+
+  getFrequencyText(freq: string | undefined): string {
+    if (!freq) return 'Semanal';
+    switch (freq.toUpperCase()) {
+      case 'DAILY': return 'Diário';
+      case 'WEEKLY': return 'Semanal';
+      case 'MONTHLY': return 'Mensal';
+      default: return 'Semanal';
+    }
   }
 }

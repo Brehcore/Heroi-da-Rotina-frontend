@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { AuthService } from '../../core/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -20,6 +20,7 @@ export class Home implements OnInit {
 	private route = inject(ActivatedRoute);
 	private platformId = inject(PLATFORM_ID);
 	private taskService = inject(TaskService);
+	private cdr = inject(ChangeDetectorRef);
 
 	private readonly API_BASE = 'http://localhost:8082';
 
@@ -27,6 +28,7 @@ export class Home implements OnInit {
 	loading = false;
 	familyId: string | null = null;
 	error: string | null = null;
+	successMsg: string | null = null;
 
 	ngOnInit(): void {
 		// prioriza query param, depois sessionStorage
@@ -59,11 +61,13 @@ export class Home implements OnInit {
 			next: (data) => {
 				this.pendingTasks = data || [];
 				this.loading = false;
+				this.cdr.detectChanges();
 			},
 			error: (err) => {
 				console.error('Erro ao buscar tarefas pendentes:', err);
 				this.error = 'Não foi possível carregar as tarefas';
 				this.loading = false;
+				this.cdr.detectChanges();
 			}
 		});
 	}
@@ -73,12 +77,22 @@ export class Home implements OnInit {
 
 		this.taskService.approveTask(taskId).subscribe({
 			next: () => {
-				console.log('Tarefa aprovada com sucesso');
-				this.fetchTasksForApproval(); // Recarrega a lista para remover a aprovada
+				this.successMsg = 'Tarefa aprovada com sucesso!';
+				this.loading = false;
+				// Remoção otimista da tarefa na tela para evitar piscar a tela de "Carregando"
+				this.pendingTasks = this.pendingTasks.filter(t => t.id !== taskId);
+				this.cdr.detectChanges();
+
+				setTimeout(() => {
+					this.successMsg = null;
+					this.cdr.detectChanges();
+				}, 2000);
 			},
 			error: (err) => {
 				console.error('Erro ao aprovar tarefa:', err);
+				this.error = 'Erro ao aprovar tarefa. Tente novamente.';
 				this.loading = false;
+				this.cdr.detectChanges();
 			}
 		});
 	}

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { ScreenTimeConfigDTO, ScreenTimeRequest } from '../../core/services/models/screentime.model';
+import { ScreenTimeConfigDTO, ScreenTimeRequest, ScreenTimeRequestDTO, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
 
 @Injectable({
   providedIn: 'root'
@@ -24,12 +24,20 @@ export class ScreenTimeService {
     return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : new HttpHeaders();
   }
 
-  requestScreenTime(minorId: number, minutes: number): Observable<ScreenTimeRequest> {
-    return this.http.post<ScreenTimeRequest>(`${this.apiUrlRequest}/minor/${minorId}?minutes=${minutes}`, {}, { headers: this.getHeaders() });
+  requestScreenTime(requestDTO: ScreenTimeRequestDTO): Observable<ScreenTimeResponseDTO> {
+    return this.http.post<ScreenTimeResponseDTO>(`${this.apiUrlRequest}/time`, requestDTO, { headers: this.getHeaders() });
   }
 
   approveRequest(requestId: number, monitorId: number): Observable<void> {
     return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/approve?monitorId=${monitorId}`, {}, { headers: this.getHeaders() });
+  }
+
+  rejectRequest(requestId: number, monitorId: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/reject?monitorId=${monitorId}`, {}, { headers: this.getHeaders() });
+  }
+
+  getPendingRequests(familyId: number): Observable<ScreenTimeResponseDTO[]> {
+    return this.http.get<ScreenTimeResponseDTO[]>(`${this.apiUrlRequest}/family/${familyId}/pending?t=${new Date().getTime()}`, { headers: this.getHeaders() });
   }
 
   getConfig(minorId: number): Observable<ScreenTimeConfigDTO> {

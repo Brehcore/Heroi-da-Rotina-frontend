@@ -21,3 +21,18 @@ export interface ScreenTimeRequest {
   minutes?: number;
   status?: ScreenStatus;
 }
+
+export interface ScreenTimeResponseDTO {
+  requestId: number;
+  minorId: number;
+  minorName: string;
+  status: ScreenStatus;
+  requestedMinutes: number;
+  remainingBalance: number;
+  requestTime?: Date; // Propriedade local do frontend para controle de tempo
+}
+
+export interface ScreenTimeRequestDTO {
+  minorId: number;
+  minutes: number;
+}

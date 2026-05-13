@@ -7,6 +7,10 @@
       <button (click)="error = null" class="close-btn">&times;</button>
     </div>
 
+    <div *ngIf="successMsg" class="success-banner">
+      <span>{{ successMsg }}</span>
+    </div>
+
     <div class="tasks-section">
       <div class="tasks-header">
         <h2>Tarefas</h2>
@@ -62,6 +66,7 @@
           <div class="task-actions">
             <button *ngIf="userRole === 'MINOR' && task.status === 'PENDENTE'" class="btn-conclude" (click)="concludeTask(task.id)">Concluir</button>
             <button *ngIf="userRole === 'MONITOR' && task.status === 'CONCLUIDA'" class="btn-approve" (click)="approveTask(task.id)">Aprovar</button>
+            <button *ngIf="userRole === 'MONITOR' && task.status === 'CONCLUIDA'" class="btn-reject" (click)="rejectTask(task.id)">Rejeitar</button>
           </div>
         </div>
       </div>

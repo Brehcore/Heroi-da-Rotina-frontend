@@ -2,6 +2,17 @@
 	<app-navbar></app-navbar>
 
 	<div class="content">
+		<!-- Mensagem de Erro -->
+		<div *ngIf="error" class="error-banner">
+			<span>{{ error }}</span>
+			<button (click)="error = null" class="close-btn">&times;</button>
+		</div>
+		
+		<!-- Mensagem de Sucesso (Pop-up 2s) -->
+		<div *ngIf="successMsg" class="success-banner">
+			<span>{{ successMsg }}</span>
+		</div>
+
 		<div class="subtitle-area">
 			<button class="change-family-btn" (click)="changeFamilyNavigation()">Mudar Família</button>
 			<p class="subtitle">Tarefas aguardando aprovação</p>

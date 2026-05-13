@@ -1,39 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { Navbar } from '../../shared/navbar/navbar';
-
-export interface WalletDTO {
-  id: number;
-  minorId: number;
-  minorName: string;
-  tokensBalance: number;
-  moneyBalance: number;
-}
-
-export interface TaskDTO {
-  id: number;
-  title: string;
-  description: string;
-  rewardTask: number;
-  status: 'PENDING' | 'APPROVED' | 'COMPLETED';
-  minorId: number;
-  minorName: string;
-  creationDate: string;
-  completedDate?: string;
-}
-
-export interface CreateTaskDTO {
-  title: string;
-  description: string;
-  tokenReward: number;
-  minorId: number;
-  monitorCreatorId: number;
-}
+import { WalletResponseDTO } from '../../core/services/models/wallet.model';
+import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.model';
+import { TaskService } from '../tasks/task.service';
+import { WalletService } from '../wallet/wallet.service';
 
 @Component({
   selector: 'app-minor',
@@ -44,20 +19,21 @@ export interface CreateTaskDTO {
 })
 export class Minor implements OnInit {
   authService = inject(AuthService);
-  private http = inject(HttpClient);
+  private taskService = inject(TaskService);
+  private walletService = inject(WalletService);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
-
-  private readonly API_BASE = 'http://localhost:8082';
+  private cdr = inject(ChangeDetectorRef);
 
   minorId: string | null = null;
   minorName: string | null = null;
-  wallet: WalletDTO | null = null;
-  tasks: TaskDTO[] = [];
-  pendingTasks: TaskDTO[] = [];
+  wallet: WalletResponseDTO | null = null;
+  tasks: TaskResponseDTO[] = [];
+  pendingTasks: TaskResponseDTO[] = [];
   loading = false;
   error: string | null = null;
+  successMsg: string | null = null;
 
   // Form states
   showCreateTaskForm = false;
@@ -92,25 +68,17 @@ export class Minor implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<WalletDTO>(
-      `${this.API_BASE}/api/wallets/minor/${this.minorId}`,
-      options
-    ).subscribe({
+    this.walletService.getWallet(Number(this.minorId)).subscribe({
       next: (data) => {
         this.wallet = data;
         this.loading = false;
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erro ao buscar carteira:', err);
         this.error = 'Erro ao carregar carteira do menor';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -118,22 +86,14 @@ export class Minor implements OnInit {
   fetchTasks(): void {
     if (!this.minorId) return;
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<TaskDTO[]>(
-      `${this.API_BASE}/api/tasks/minor/${this.minorId}`,
-      options
-    ).subscribe({
+    this.taskService.getMinorTasks(Number(this.minorId)).subscribe({
       next: (data) => {
         this.tasks = data || [];
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erro ao buscar tarefas:', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -141,22 +101,14 @@ export class Minor implements OnInit {
   fetchPendingTasks(): void {
     if (!this.minorId) return;
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<TaskDTO[]>(
-      `${this.API_BASE}/api/tasks/minor/${this.minorId}/pending`,
-      options
-    ).subscribe({
+    this.taskService.getMinorPendingTasks(Number(this.minorId)).subscribe({
       next: (data) => {
         this.pendingTasks = data || [];
+        this.cdr.detectChanges();
       },
       error: (err) => {
         console.error('Erro ao buscar tarefas pendentes:', err);
+        this.cdr.detectChanges();
       }
     });
   }
@@ -172,71 +124,65 @@ export class Minor implements OnInit {
       return;
     }
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const createTaskDTO: CreateTaskDTO = {
+    const createTaskDTO: TaskCreateDTO = {
       title: this.newTask.title,
       description: this.newTask.description,
       tokenReward: this.newTask.tokenReward,
       minorId: parseInt(this.minorId, 10),
-      monitorCreatorId: 0 // Will be filled by backend
+      monitorCreatorId: Number(sessionStorage.getItem('userId') || localStorage.getItem('userId')) || 0
     };
 
     this.loading = true;
     this.error = null;
+    this.successMsg = null;
 
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.post<TaskDTO>(
-      `${this.API_BASE}/api/tasks`,
-      createTaskDTO,
-      options
-    ).subscribe({
+    this.taskService.createTask(createTaskDTO).subscribe({
       next: (response) => {
         console.log('Tarefa criada com sucesso:', response);
         this.loading = false;
         this.tasks.push(response);
         this.closeCreateTaskForm();
         this.fetchPendingTasks();
+        this.successMsg = 'Tarefa criada com sucesso!';
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
       },
       error: (err) => {
         console.error('Erro ao criar tarefa:', err);
         this.error = 'Erro ao criar tarefa';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
 
   approveTask(taskId: number): void {
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
     this.loading = true;
     this.error = null;
+    this.successMsg = null;
 
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.patch<any>(
-      `${this.API_BASE}/api/tasks/${taskId}/approve`,
-      {},
-      options
-    ).subscribe({
-      next: (response) => {
+    this.taskService.approveTask(taskId).subscribe({
+      next: () => {
         console.log('Tarefa aprovada com sucesso');
         this.loading = false;
         this.fetchTasks();
         this.fetchPendingTasks();
         this.fetchWalletData();
+        this.successMsg = 'Tarefa aprovada com sucesso!';
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
       },
       error: (err) => {
         console.error('Erro ao aprovar tarefa:', err);
         this.error = 'Erro ao aprovar tarefa';
         this.loading = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -259,26 +205,40 @@ export class Minor implements OnInit {
   }
 
   getTaskStatusColor(status: string): string {
-    switch (status) {
+    if (!status) return '';
+    switch (status.toUpperCase()) {
       case 'PENDING':
+      case 'PENDENTE':
         return 'pending';
       case 'APPROVED':
+      case 'APROVADA':
         return 'approved';
       case 'COMPLETED':
+      case 'CONCLUIDA':
         return 'completed';
+      case 'REJECTED':
+      case 'REJEITADA':
+        return 'rejected';
       default:
         return '';
     }
   }
 
   getTaskStatusText(status: string): string {
-    switch (status) {
+    if (!status) return 'Desconhecido';
+    switch (status.toUpperCase()) {
       case 'PENDING':
+      case 'PENDENTE':
         return 'Pendente';
       case 'APPROVED':
+      case 'APROVADA':
         return 'Aprovada';
       case 'COMPLETED':
+      case 'CONCLUIDA':
         return 'Concluída';
+      case 'REJECTED':
+      case 'REJEITADA':
+        return 'Rejeitada';
       default:
         return status;
     }

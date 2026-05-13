@@ -23,6 +23,15 @@
   }
 }
 
+.success-banner {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  background: #d4edda; color: #155724; padding: 24px 48px; border-radius: 12px;
+  display: flex; justify-content: center; align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 9999;
+  font-size: 18px; font-weight: bold; animation: popIn 0.3s ease-out forwards;
+}
+@keyframes popIn { 0% { opacity: 0; transform: translate(-50%, -40%) scale(0.9); } 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+
 .tasks-header {
   display: flex;
   justify-content: space-between;
@@ -104,6 +113,7 @@
   .task-actions {
     display: flex;
     justify-content: flex-end;
+    gap: 8px;
 
     button {
       padding: 8px 18px;
@@ -115,6 +125,7 @@
       
       &.btn-conclude { background: #007bff; color: white; }
       &.btn-approve { background: #28a745; color: white; }
+      &.btn-reject { background: #dc3545; color: white; }
       
       &:hover { filter: brightness(90%); }
     }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { WalletResponseDTO, TransactionDTO } from '../../core/services/models/wallet.model';
+import { WalletResponseDTO, TransactionDTO, InterestConfigDTO } from '../../core/services/models/wallet.model';
 
 @Injectable({
   providedIn: 'root'
@@ -29,19 +29,18 @@ export class WalletService {
 
   depositTokens(minorId: number, amount: number, motive: string): Observable<void> {
     const params = new HttpParams().set('amount', amount.toString()).set('motive', motive);
-    return this.http.post<void>(`${this.apiUrl}/minor/${minorId}/deposit-tokens`, {}, { headers: this.getHeaders(), params });
+    return this.http.post<void>(`${this.apiUrl}/minor/${minorId}/deposit-tokens`, {}, { headers: this.getHeaders(), params, responseType: 'text' as 'json' });
   }
 
   updateQuotation(minorId: number, value: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrl}/minor/${minorId}/quotation?value=${value}`, {}, { headers: this.getHeaders() });
+    return this.http.patch<void>(`${this.apiUrl}/minor/${minorId}/quotation?value=${value}`, {}, { headers: this.getHeaders(), responseType: 'text' as 'json' });
   }
 
   convertTokensToMoney(minorId: number): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/minor/${minorId}/convert`, {}, { headers: this.getHeaders() });
+    return this.http.post<void>(`${this.apiUrl}/minor/${minorId}/convert`, {}, { headers: this.getHeaders(), responseType: 'text' as 'json' });
   }
 
-  updateInterestConfig(minorId: number, rate: number, enabled: boolean): Observable<void> {
-    const params = new HttpParams().set('rate', rate.toString()).set('enabled', enabled.toString());
-    return this.http.patch<void>(`${this.apiUrl}/minor/${minorId}/interest-config`, {}, { headers: this.getHeaders(), params });
+  updateInterestConfig(minorId: number, config: InterestConfigDTO): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/minor/${minorId}/interest-config`, config, { headers: this.getHeaders(), responseType: 'text' as 'json' });
   }
 }
