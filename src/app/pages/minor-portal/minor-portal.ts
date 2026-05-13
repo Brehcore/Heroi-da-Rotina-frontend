@@ -5,7 +5,10 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
-import { Navbar } from '../../shared/navbar/navbar';
+import { TaskService } from '../tasks/task.service';
+import { TaskResponseDTO } from '../../core/services/models/task.model';
+import { ScreenTimeService } from '../screentime/screentime.service';
+import { ScreenTimeConfigDTO } from '../../core/services/models/screentime.model';
 
 export interface WalletDTO {
   id: number;
@@ -15,27 +18,17 @@ export interface WalletDTO {
   moneyBalance: number;
 }
 
-export interface TaskDTO {
-  id: number;
-  title: string;
-  description: string;
-  rewardTask: number;
-  status: 'PENDING' | 'APPROVED' | 'COMPLETED';
-  minorId: number;
-  minorName: string;
-  creationDate: string;
-  completedDate?: string;
-}
-
 @Component({
   selector: 'app-minor-portal',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, Navbar],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './minor-portal.html',
   styleUrls: ['./minor-portal.scss']
 })
 export class MinorPortal implements OnInit {
   authService = inject(AuthService);
+  private taskService = inject(TaskService);
+  private screenTimeService = inject(ScreenTimeService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
@@ -45,46 +38,48 @@ export class MinorPortal implements OnInit {
 
   minorId: string | null = null;
   minorName: string | null = null;
+  minorProfileUrl: string | null = null;
   userRole: string | null = null;
-  wallet: WalletDTO | null = null;
-  tasks: TaskDTO[] = [];
-  pendingTasks: TaskDTO[] = [];
-  completedTasks: TaskDTO[] = [];
+  wallet: WalletDTO | null = { id: 0, minorId: 0, minorName: '', tokensBalance: 0, moneyBalance: 0 };
+  tasks: TaskResponseDTO[] = [];
+  pendingTasks: TaskResponseDTO[] = [];
+  completedTasks: TaskResponseDTO[] = [];
+  tasksLoading = true;
   loading = false;
   error: string | null = null;
-  private loadingWallet = false;
-  private loadingTasks = false;
+  successMsg: string | null = null;
+
+  // Screen Time
+  screenTimeConfig: ScreenTimeConfigDTO | null = { minutesPerToken: 0, mondayLimit: 0, tuesdayLimit: 0, wednesdayLimit: 0, thursdayLimit: 0, fridayLimit: 0, saturdayLimit: 0, sundayLimit: 0 };
+  requestMinutes: number = 30;
+  requestingTime = false;
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
 
-    // Ativar loading
-    this.loading = true;
-
-    // Verificar se é realmente um MINOR
+    // Verificar a Role (aceitando variações de idioma e prefixo do Spring)
     this.userRole = this.authService.getUserRole();
-    if (this.userRole !== 'MINOR') {
+    console.log('Acessando Portal do Menor. Role atual:', this.userRole);
+    
+    if (this.userRole === 'MONITOR' || this.userRole === 'ROLE_MONITOR' || !this.userRole) {
       this.router.navigate(['/login']);
       return;
     }
 
-    // Tentar obter minorId dos query params
-    this.minorId = this.route.snapshot.queryParamMap.get('minorId');
-    this.minorName = this.route.snapshot.queryParamMap.get('minorName');
-
-    // Se não tiver nos query params, buscar via endpoint de família
-    if (!this.minorId) {
-      console.log('MinorId não encontrado nos query params, buscando via endpoint de família...');
-      this.fetchFamilyAndExtractMinorData();
-    } else {
-      this.fetchWalletData();
-      this.fetchTasks();
+    // Dispara a interface instantaneamente buscando o ID salvo no login (sem esperar a rede)
+    this.minorId = sessionStorage.getItem('userId') || localStorage.getItem('userId');
+    this.minorName = sessionStorage.getItem('name') || localStorage.getItem('name');
+    
+    if (this.minorId) {
+      this.loadWalletAndTasks();
     }
+
+    this.fetchUserData();
   }
 
-  fetchFamilyAndExtractMinorData(): void {
+  fetchUserData(): void {
     const token = this.authService.getToken();
     const httpHeaders = token
       ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
@@ -92,54 +87,38 @@ export class MinorPortal implements OnInit {
 
     const options = httpHeaders ? { headers: httpHeaders } : {};
 
-    // Buscar famílias do usuário autenticado
-    this.http.get<any[]>(
-      `${this.API_BASE}/api/families/me`,
+    this.http.get<any>(
+      `${this.API_BASE}/api/users/me`,
       options
     ).subscribe({
-      next: (families: any[]) => {
-        if (families && families.length > 0) {
-          const family = families[0];
+      next: (user: any) => {
+        if (user && user.id) {
+          const isFirstLoad = !this.minorId;
+          this.minorId = String(user.id);
+          this.minorName = user.name;
+          this.minorProfileUrl = user.profilePictureUrl;
           
-          // Procurar o menor na lista de membros
-          if (family.members && family.members.length > 0) {
-            const currentUser = family.members.find((m: any) => m.role === 'MINOR');
-            if (currentUser) {
-              this.minorId = String(currentUser.id);
-              this.minorName = currentUser.name;
-              console.log('Menor encontrado:', this.minorId, this.minorName);
-              
-              // Carregar wallet e tarefas em paralelo
-              this.loadWalletAndTasks();
-              return;
-            }
-          }
+          if (isFirstLoad) this.loadWalletAndTasks();
+        } else {
+          this.error = 'Perfil inválido ou não encontrado.';
         }
-        
-        // Se não encontrou, mostrar erro
-        this.error = 'Não foi possível identificar seu perfil de menor';
-        this.loading = false;
       },
       error: (err) => {
-        console.error('Erro ao buscar família:', err);
-        this.error = 'Erro ao carregar dados do menor';
-        this.loading = false;
+        console.error('Erro ao buscar usuário logado:', err);
+        this.error = 'Erro ao carregar os dados do seu perfil';
       }
     });
   }
 
   loadWalletAndTasks(): void {
-    // Carregar wallet e tarefas em paralelo
+    // Carregar wallet, tarefas e limites de tela
     this.fetchWalletData();
     this.fetchTasks();
+    this.fetchScreenTimeConfig();
   }
 
   fetchWalletData(): void {
     if (!this.minorId) return;
-
-    this.loadingWallet = true;
-    this.loading = true;
-    this.error = null;
 
     const token = this.authService.getToken();
     const httpHeaders = token
@@ -153,15 +132,14 @@ export class MinorPortal implements OnInit {
       options
     ).subscribe({
       next: (data) => {
-        this.wallet = data;
-        this.loadingWallet = false;
-        this.updateLoadingState();
+        if (data) {
+          this.wallet = data;
+          this.wallet.moneyBalance = Number(this.wallet.moneyBalance) || 0;
+          this.wallet.tokensBalance = Number(this.wallet.tokensBalance) || 0;
+        }
       },
       error: (err) => {
         console.error('Erro ao buscar carteira:', err);
-        this.error = 'Erro ao carregar carteira';
-        this.loadingWallet = false;
-        this.updateLoadingState();
       }
     });
   }
@@ -169,80 +147,95 @@ export class MinorPortal implements OnInit {
   fetchTasks(): void {
     if (!this.minorId) return;
 
-    this.loadingTasks = true;
-    this.loading = true;
-
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<TaskDTO[]>(
-      `${this.API_BASE}/api/tasks/minor/${this.minorId}`,
-      options
-    ).subscribe({
+    this.tasksLoading = true;
+    this.taskService.getMinorTasks(Number(this.minorId))
+      .subscribe({
       next: (data) => {
-        this.tasks = data || [];
+        // Garante que é um array para evitar crash no .filter()
+        this.tasks = Array.isArray(data) ? data : (data && (data as any).content ? (data as any).content : []);
         this.separateTasks();
-        this.loadingTasks = false;
-        this.updateLoadingState();
+        this.tasksLoading = false;
       },
       error: (err) => {
         console.error('Erro ao buscar tarefas:', err);
-        this.loadingTasks = false;
-        this.updateLoadingState();
+        this.tasksLoading = false;
       }
     });
   }
 
-  private updateLoadingState(): void {
-    this.loading = this.loadingWallet || this.loadingTasks;
+  fetchScreenTimeConfig(): void {
+    if (!this.minorId) return;
+
+    this.screenTimeService.getConfig(Number(this.minorId))
+      .subscribe({
+      next: (data) => {
+        if (data) this.screenTimeConfig = data;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar configurações de tempo de tela:', err);
+      }
+    });
+  }
+
+  requestScreenTime(): void {
+    if (!this.minorId || !this.requestMinutes) return;
+    
+    this.requestingTime = true;
+    this.error = null;
+    this.successMsg = null;
+
+    this.screenTimeService.requestScreenTime(Number(this.minorId), this.requestMinutes).subscribe({
+      next: () => {
+        this.successMsg = 'Tempo de tela solicitado com sucesso!';
+        this.requestingTime = false;
+        setTimeout(() => this.successMsg = null, 5000); // Esconde a mensagem após 5 segundos
+      },
+      error: () => { this.error = 'Erro ao solicitar tempo de tela. Verifique suas fichas e os limites diários!'; this.requestingTime = false; window.scrollTo(0,0); }
+    });
   }
 
   separateTasks(): void {
-    this.pendingTasks = this.tasks.filter(t => t.status === 'PENDING' || t.status === 'APPROVED');
-    this.completedTasks = this.tasks.filter(t => t.status === 'COMPLETED');
+    // Prevenção extra caso o backend não devolva um array
+    if (!this.tasks || !Array.isArray(this.tasks)) {
+      this.pendingTasks = [];
+      this.completedTasks = [];
+      return;
+    }
+    this.pendingTasks = this.tasks.filter(t => t.status === 'PENDING' || t.status === 'PENDENTE' || t.status === 'APPROVED' || t.status === 'APROVADA');
+    this.completedTasks = this.tasks.filter(t => t.status === 'COMPLETED' || t.status === 'CONCLUIDA');
   }
 
   completeTask(taskId: number): void {
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    this.loadingTasks = true;
-    this.loading = true;
     this.error = null;
+    this.loading = true;
 
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.patch<any>(
-      `${this.API_BASE}/api/tasks/${taskId}/conclude`,
-      {},
-      options
-    ).subscribe({
+    this.taskService.concludeTask(taskId)
+      .subscribe({
       next: () => {
-        console.log('Tarefa marcada como concluída');
+        this.successMsg = 'Tarefa concluída! Aguardando aprovação.';
         this.fetchTasks();
+        setTimeout(() => this.successMsg = null, 4000);
+        this.loading = false;
       },
       error: (err) => {
         console.error('Erro ao concluir tarefa:', err);
-        this.error = 'Erro ao concluir tarefa';
-        this.loadingTasks = false;
-        this.updateLoadingState();
+        this.error = 'Erro ao concluir tarefa. Tente novamente.';
+        this.loading = false;
       }
     });
   }
 
   getTaskStatusColor(status: string): string {
-    switch (status) {
+    if (!status) return '#999';
+    switch (status.toUpperCase()) {
       case 'PENDING':
+      case 'PENDENTE':
         return '#ffc107';
       case 'APPROVED':
+      case 'APROVADA':
         return '#4caf50';
       case 'COMPLETED':
+      case 'CONCLUIDA':
         return '#2196f3';
       default:
         return '#999';
@@ -250,16 +243,25 @@ export class MinorPortal implements OnInit {
   }
 
   getTaskStatusText(status: string): string {
-    switch (status) {
+    if (!status) return 'Desconhecido';
+    switch (status.toUpperCase()) {
       case 'PENDING':
+      case 'PENDENTE':
         return 'Pendente';
       case 'APPROVED':
+      case 'APROVADA':
         return 'Aprovado';
       case 'COMPLETED':
+      case 'CONCLUIDA':
         return 'Concluído';
       default:
         return status;
     }
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 
   getUserName(): string {

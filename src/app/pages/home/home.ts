@@ -1,21 +1,11 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { PLATFORM_ID } from '@angular/core';
 import { Navbar } from '../../shared/navbar/navbar';
-
-export interface TaskDTO {
-	id: number;
-	title: string;
-	description: string;
-	rewardTask: number;
-	status: string;
-	minorId: number;
-	minorName: string;
-	creationDate: string;
-}
+import { TaskService } from '../tasks/task.service';
+import { TaskResponseDTO } from '../../core/services/models/task.model';
 
 @Component({
 	selector: 'app-home',
@@ -29,11 +19,11 @@ export class Home implements OnInit {
 	private router = inject(Router);
 	private route = inject(ActivatedRoute);
 	private platformId = inject(PLATFORM_ID);
-	private http = inject(HttpClient);
+	private taskService = inject(TaskService);
 
 	private readonly API_BASE = 'http://localhost:8082';
 
-	pendingTasks: TaskDTO[] = [];
+	pendingTasks: TaskResponseDTO[] = [];
 	loading = false;
 	familyId: string | null = null;
 	error: string | null = null;
@@ -48,7 +38,7 @@ export class Home implements OnInit {
 
 		if (!this.familyId) {
 			// redireciona para seleção de família
-			this.router.navigate(['/profile']);
+			this.router.navigate(['/family-selection']);
 			return;
 		}
 
@@ -64,14 +54,8 @@ export class Home implements OnInit {
 		if (!this.familyId) return;
 
 		this.loading = true;
-		const token = this.authService.getToken();
-		const httpHeaders = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
-		const options = httpHeaders ? { headers: httpHeaders } : {};
 
-		this.http.get<TaskDTO[]>(
-			`${this.API_BASE}/api/tasks/family/${this.familyId}/approve`,
-			options
-		).subscribe({
+		this.taskService.getTasksToApprove(Number(this.familyId)).subscribe({
 			next: (data) => {
 				this.pendingTasks = data || [];
 				this.loading = false;
@@ -85,17 +69,9 @@ export class Home implements OnInit {
 	}
 
 	approveTask(taskId: number): void {
-		const token = this.authService.getToken();
-		const httpHeaders = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
-		const options = httpHeaders ? { headers: httpHeaders } : {};
-
 		this.loading = true;
 
-		this.http.patch<any>(
-			`${this.API_BASE}/api/tasks/${taskId}/approve`,
-			{},
-			options
-		).subscribe({
+		this.taskService.approveTask(taskId).subscribe({
 			next: () => {
 				console.log('Tarefa aprovada com sucesso');
 				this.fetchTasksForApproval(); // Recarrega a lista para remover a aprovada
@@ -108,6 +84,6 @@ export class Home implements OnInit {
 	}
 
 	changeFamilyNavigation() {
-		this.router.navigate(['/profile']);
+		this.router.navigate(['/family-selection']);
 	}
 }

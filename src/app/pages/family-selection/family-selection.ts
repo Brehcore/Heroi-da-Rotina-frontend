@@ -1,13 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
-import { FamilyDTO } from '../../core/services/models/auth.models';
+import { FamilyResponseDTO } from '../../core/services/models/auth.models';
 
-export interface CreateFamilyDTO {
+export interface FamilyCreateDTO {
   familyName: string;
+  profilePictureUrl?: string;
 }
 
 @Component({
@@ -21,26 +22,38 @@ export class FamilySelection implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
   private http = inject(HttpClient);
+  private platformId = inject(PLATFORM_ID);
 
   private readonly API_BASE = 'http://localhost:8082';
-  private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
+  private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/fun-emoji/svg';
 
-  families: FamilyDTO[] = [];
+  families: FamilyResponseDTO[] = [];
   loading = false;
   showCreateFamilyForm = false;
   familyNameInput = '';
 
   ngOnInit(): void {
     console.log('FamilySelection ngOnInit iniciado');
+
+    if (!isPlatformBrowser(this.platformId)) {
+      return; // Impede a execução durante o SSR (Server-Side Rendering)
+    }
+
     this.loading = true;
     this.authService.getMyFamilies().subscribe({
       next: (res) => {
         console.log('Famílias carregadas:', res);
-        console.log('Avatars do DB:', res?.map(f => ({ name: f.name, avatarUrl: f.avatarUrl })));
-        this.families = (res || []).map(family => ({
-          ...family,
-          avatarUrl: family.avatarUrl || this.generateFamilyAvatar(family.name)
-        }));
+        console.log('Avatars do DB:', res?.map(f => ({ familyName: f.familyName, profilePictureUrl: f.profilePictureUrl })));
+        this.families = (res || []).map(family => {
+          let avatar = family.profilePictureUrl;
+          if (!avatar || avatar === 'null' || avatar.trim() === '') {
+            avatar = this.generateFamilyAvatar(family.familyName);
+          }
+          return {
+            ...family,
+            profilePictureUrl: avatar.replace(/ /g, '-') // Previne erro de quebra por espaços vindos do banco
+          };
+        });
         console.log('Famílias após processamento:', this.families);
         this.loading = false;
       },
@@ -51,8 +64,8 @@ export class FamilySelection implements OnInit {
     });
   }
 
-  private generateFamilyAvatar(familyName: string): string {
-    const seed = encodeURIComponent(familyName || 'family');
+  generateFamilyAvatar(familyName: string): string {
+    const seed = encodeURIComponent((familyName || 'family').trim().replace(/\s+/g, '-'));
     return `${this.DICEBEAR_BASE}?seed=${seed}`;
   }
 
@@ -83,14 +96,19 @@ export class FamilySelection implements OnInit {
     const httpHeaders = token
       ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
       : undefined;
-    const createFamilyDTO: CreateFamilyDTO = { familyName: this.familyNameInput };
+
+    const profilePictureUrl = this.generateFamilyAvatar(this.familyNameInput);
+    const familyCreateDTO: FamilyCreateDTO = { 
+      familyName: this.familyNameInput,
+      profilePictureUrl: profilePictureUrl
+    };
 
     this.loading = true;
     const options = httpHeaders ? { headers: httpHeaders } : {};
 
     this.http.post<{ id: number; familyName: string }>(
       `${this.API_BASE}/api/families`,
-      createFamilyDTO,
+      familyCreateDTO,
       options
     ).subscribe({
       next: (response) => {

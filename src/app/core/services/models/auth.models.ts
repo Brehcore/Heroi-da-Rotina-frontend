@@ -10,18 +10,26 @@ export interface LoginResponseDTO {
     role: string;
 }
 
-export interface FamilyDTO {
-    id: string;
-    name: string;
-    avatarUrl?: string;
+export interface FamilyResponseDTO {
+    id: number;
+    familyName: string;
+    members?: UserResponseDTO[];
+    profilePictureUrl?: string;
 }
 
-export interface MemberDTO {
+export interface UserResponseDTO {
     id: number;
     name: string;
     email: string;
-    role: string;
-    familyId: number;
-    familyName: string;
-    avatarUrl?: string;
+    role: 'MONITOR' | 'MINOR' | string;
+    familyId?: number;
+    familyName?: string;
+    profilePictureUrl?: string;
+}
+
+export interface UserRegisterDTO {
+    name: string;
+    email: string;
+    password: string;
+    profilePictureUrl?: string;
 }

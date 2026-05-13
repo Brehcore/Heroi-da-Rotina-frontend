@@ -1,0 +1,70 @@
+<div class="tasks-page">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div *ngIf="error" class="error-banner">
+      <span>{{ error }}</span>
+      <button (click)="error = null" class="close-btn">&times;</button>
+    </div>
+
+    <div class="tasks-section">
+      <div class="tasks-header">
+        <h2>Tarefas</h2>
+        <button *ngIf="userRole === 'MONITOR'" class="btn-add-task" (click)="toggleCreateForm()" [disabled]="loading">
+          + Nova Tarefa
+        </button>
+      </div>
+
+      <!-- Modal de Criação de Tarefa -->
+      <div *ngIf="showCreateForm" class="create-task-modal-overlay" (click)="closeCreateForm()">
+        <div class="create-task-modal" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>Criar Nova Tarefa</h3>
+            <button class="close-btn" (click)="closeCreateForm()" [disabled]="loading">&times;</button>
+          </div>
+
+          <form class="modal-content" (ngSubmit)="createTask()">
+            <label>Título</label>
+            <input type="text" [(ngModel)]="newTask.title" name="title" required placeholder="Ex: Arrumar o quarto" autofocus>
+
+            <label>Descrição</label>
+            <textarea [(ngModel)]="newTask.description" name="description" required placeholder="Detalhes da atividade..."></textarea>
+
+            <label>Recompensa (Fichas/Tokens)</label>
+            <input type="number" [(ngModel)]="newTask.tokenReward" name="tokenReward" required min="1" placeholder="Ex: 10" title="Recompensa em fichas/tokens">
+
+            <label>Menor Responsável</label>
+            <select [(ngModel)]="newTask.minorId" name="minorId" required title="Selecione o menor responsável">
+              
+              <option *ngIf="minors.length === 0" [ngValue]="0" disabled>Nenhum menor encontrado</option>
+              <option *ngFor="let minor of minors" [ngValue]="minor.id">{{ minor.name }}</option>
+            </select>
+
+            <button type="submit" class="btn-submit" [disabled]="loading || !newTask.title.trim()">{{ loading ? 'Salvando...' : 'Salvar' }}</button>
+          </form>
+        </div>
+      </div>
+
+      <div *ngIf="loading && tasks.length === 0" class="loading-state">Carregando tarefas...</div>
+      <div *ngIf="!loading && tasks.length === 0" class="empty-state">Nenhuma tarefa encontrada.</div>
+
+      <div class="tasks-grid" *ngIf="tasks.length > 0">
+        <div class="task-card" *ngFor="let task of tasks">
+          <div class="card-top">
+            <div class="card-title">{{ task.title }}</div>
+            <div class="card-status" [ngClass]="task.status.toLowerCase()">{{ task.status }}</div>
+          </div>
+          <p class="task-desc">{{ task.description }}</p>
+          <div class="task-info">
+            <span class="reward">💰 {{ task.rewardTask }} Fichas</span>
+            <span class="minor">Responsável: {{ task.minorName }}</span>
+          </div>
+          <div class="task-actions">
+            <button *ngIf="userRole === 'MINOR' && task.status === 'PENDENTE'" class="btn-conclude" (click)="concludeTask(task.id)">Concluir</button>
+            <button *ngIf="userRole === 'MONITOR' && task.status === 'CONCLUIDA'" class="btn-approve" (click)="approveTask(task.id)">Aprovar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

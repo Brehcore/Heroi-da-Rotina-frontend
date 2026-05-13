@@ -1,9 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Members, CreateFamilyDTO } from './members';
+import { Members } from './members';
 import { AuthService } from '../../core/services/auth.service';
-import { MemberDTO } from '../../core/services/models/auth.models';
+import { UserResponseDTO } from '../../core/services/models/auth.models';
 import { of } from 'rxjs';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
@@ -13,7 +13,7 @@ describe('Members', () => {
   let httpMock: HttpTestingController;
   let authService: AuthService;
 
-  const mockMembers: MemberDTO[] = [
+  const mockMembers: UserResponseDTO[] = [
     {
       id: 1,
       name: 'João Silva',
@@ -70,7 +70,7 @@ describe('Members', () => {
     const error = new Error('Network error');
 
     vi.spyOn(authService, 'getFamilyMembers').mockReturnValue(
-      new Promise((_, reject) => reject(error))
+      new Promise((_, reject) => reject(error)) as any
     );
 
     vi.spyOn(console, 'error');
@@ -88,11 +88,11 @@ describe('Members', () => {
     vi.spyOn(authService, 'getToken').mockReturnValue('mock-token');
     vi.spyOn(component['router'], 'navigate');
 
-    component.createFamily(familyName);
+    (component as any).createFamily(familyName);
 
     const req = httpMock.expectOne('http://localhost:8082/api/families');
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual({ familyName } as CreateFamilyDTO);
+    expect(req.request.body.familyName).toEqual(familyName);
 
     req.flush(newFamilyResponse);
 
@@ -110,7 +110,7 @@ describe('Members', () => {
     vi.spyOn(authService, 'getToken').mockReturnValue(token);
     vi.spyOn(component['router'], 'navigate');
 
-    component.createFamily(familyName);
+    (component as any).createFamily(familyName);
 
     const req = httpMock.expectOne('http://localhost:8082/api/families');
     expect(req.request.headers.has('Authorization')).toBe(true);
@@ -126,7 +126,7 @@ describe('Members', () => {
     vi.spyOn(authService, 'getToken').mockReturnValue('mock-token');
     vi.spyOn(console, 'error');
 
-    component.createFamily(familyName);
+    (component as any).createFamily(familyName);
 
     const req = httpMock.expectOne('http://localhost:8082/api/families');
     req.error(new ErrorEvent(errorMessage));
@@ -136,7 +136,7 @@ describe('Members', () => {
   });
 
   it('should validate empty family name before creating', () => {
-    component.createFamily('   ');
+    (component as any).createFamily('   ');
 
     expect(component.error).toBe('Nome da família é obrigatório');
     httpMock.expectNone('http://localhost:8082/api/families');

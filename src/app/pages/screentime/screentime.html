@@ -1,0 +1,70 @@
+<div class="screentime-page">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div *ngIf="error" class="error-banner">
+      <span>{{ error }}</span>
+      <button (click)="error = null" class="close-btn">&times;</button>
+    </div>
+    
+    <div *ngIf="successMsg" class="success-banner">
+      <span>{{ successMsg }}</span>
+      <button (click)="successMsg = null" class="close-btn">&times;</button>
+    </div>
+
+    <div class="header">
+      <h2>Tempo de Tela</h2>
+      
+      <div class="minor-selector" *ngIf="userRole === 'MONITOR' && minors.length > 0">
+        <label for="minorSelect">Visualizando para:</label>
+        <select id="minorSelect" [(ngModel)]="selectedMinorId" (change)="onMinorChange()" aria-label="Selecionar menor" title="Selecionar menor">
+          <option *ngFor="let minor of minors" [ngValue]="minor.id">{{ minor.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="cards-container">
+      
+      <!-- Card Configurações (Apenas Monitor visualiza e edita limites) -->
+      <div class="card card-config" *ngIf="config">
+        <h3>Configurações de Limites</h3>
+        
+        <form (ngSubmit)="saveConfig()">
+          <div class="form-group">
+            <label for="minutesPerToken">Minutos por 1 Ficha (Token)</label>
+            <input id="minutesPerToken" type="number" [(ngModel)]="config.minutesPerToken" name="minutesPerToken" [disabled]="userRole !== 'MONITOR'" placeholder="Ex: 30" title="Minutos concedidos por cada ficha">
+          </div>
+          
+          <div class="days-grid">
+            <div class="day-input"><label for="monInput">Segunda</label><input id="monInput" type="number" [(ngModel)]="config.mondayLimit" name="mon" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Segunda" aria-label="Limite Segunda"></div>
+            <div class="day-input"><label for="tueInput">Terça</label><input id="tueInput" type="number" [(ngModel)]="config.tuesdayLimit" name="tue" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Terça" aria-label="Limite Terça"></div>
+            <div class="day-input"><label for="wedInput">Quarta</label><input id="wedInput" type="number" [(ngModel)]="config.wednesdayLimit" name="wed" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Quarta" aria-label="Limite Quarta"></div>
+            <div class="day-input"><label for="thuInput">Quinta</label><input id="thuInput" type="number" [(ngModel)]="config.thursdayLimit" name="thu" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Quinta" aria-label="Limite Quinta"></div>
+            <div class="day-input"><label for="friInput">Sexta</label><input id="friInput" type="number" [(ngModel)]="config.fridayLimit" name="fri" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Sexta" aria-label="Limite Sexta"></div>
+            <div class="day-input"><label for="satInput">Sábado</label><input id="satInput" type="number" [(ngModel)]="config.saturdayLimit" name="sat" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Sábado" aria-label="Limite Sábado"></div>
+            <div class="day-input"><label for="sunInput">Domingo</label><input id="sunInput" type="number" [(ngModel)]="config.sundayLimit" name="sun" [disabled]="userRole !== 'MONITOR'" placeholder="Minutos" title="Limite de minutos para Domingo" aria-label="Limite Domingo"></div>
+          </div>
+
+          <button type="submit" class="btn-primary" *ngIf="userRole === 'MONITOR'" [disabled]="loading">Salvar Configurações</button>
+        </form>
+      </div>
+
+      <!-- Aprovar Tempo (Monitor) -->
+      <div class="card" *ngIf="userRole === 'MONITOR'">
+        <h3>Aprovar Solicitações Pendentes</h3>
+        <p>Selecione a solicitação do menor que deseja aprovar (Isso descontará as fichas dele).</p>
+        <form (ngSubmit)="approveTime()" class="inline-form">
+          <select [(ngModel)]="requestToApproveId" name="reqId" required aria-label="Selecione a solicitação">
+            <option [ngValue]="0" disabled>Selecione uma solicitação</option>
+            <option *ngFor="let req of pendingRequests" [ngValue]="req.id">Solicitação #{{ req.id }} - {{ req.minutes }} min</option>
+          </select>
+          <button type="submit" class="btn-approve" [disabled]="loading || !requestToApproveId">Aprovar Solicitação</button>
+        </form>
+      </div>
+
+    </div>
+
+    <div *ngIf="loading" class="loading-state">Processando...</div>
+    
+  </div>
+</div>

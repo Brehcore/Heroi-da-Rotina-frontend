@@ -1,0 +1,115 @@
+<div class="wallet-page">
+  <app-navbar></app-navbar>
+
+  <div class="content">
+    <div *ngIf="error" class="error-banner">
+      <span>{{ error }}</span>
+      <button (click)="error = null" class="close-btn">&times;</button>
+    </div>
+    
+    <div *ngIf="successMsg" class="success-banner">
+      <span>{{ successMsg }}</span>
+      <button (click)="successMsg = null" class="close-btn">&times;</button>
+    </div>
+
+    <div class="header">
+      <h2>Controle Financeiro</h2>
+      
+      <div class="minor-selector" *ngIf="userRole === 'MONITOR' && minors.length > 0">
+        <label for="minorSelect">Visualizando carteira de:</label>
+        <select id="minorSelect" [(ngModel)]="selectedMinorId" (change)="onMinorChange()">
+          <option *ngFor="let minor of minors" [ngValue]="minor.id">{{ minor.name }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Dashboards (Saldo) -->
+    <div class="dashboard-grid">
+      <div class="stat-card">
+        <div class="icon">⭐</div>
+        <div class="info">
+          <span class="label">Saldo em Fichas</span>
+          <span class="value">{{ wallet?.tokensBalance || 0 }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">💵</div>
+        <div class="info">
+          <span class="label">Cofrinho (Dinheiro)</span>
+          <span class="value">R$ {{ (wallet?.moneyBalance || 0).toFixed(2) }}</span>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="icon">📈</div>
+        <div class="info">
+          <span class="label">Cotação Atual</span>
+          <span class="value">1 ⭐ = R$ {{ (wallet?.tokenQuotation || 0).toFixed(2) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="cards-container" *ngIf="userRole === 'MONITOR'">
+      
+      <!-- Depositar Fichas (Monitor) -->
+      <div class="card">
+        <h3>Adicionar Fichas Extra</h3>
+        <p>Deposite fichas como recompensa ou bônus especial.</p>
+        <form (ngSubmit)="depositTokens()" class="form-row">
+          <input type="number" [(ngModel)]="depositAmount" name="amount" placeholder="Quantidade" required min="1" class="small-input">
+          <input type="text" [(ngModel)]="depositMotive" name="motive" placeholder="Motivo (Ex: Bônus de aniversário)" required>
+          <button type="submit" class="btn-primary" [disabled]="loading || !depositAmount || !depositMotive">Depositar</button>
+        </form>
+      </div>
+
+      <!-- Configurações Financeiras -->
+      <div class="settings-grid">
+        
+        <!-- Alterar Cotação -->
+        <div class="card">
+          <h3>Cotação da Ficha</h3>
+          <p>Defina o valor em Reais (R$) de 1 Ficha.</p>
+          <form (ngSubmit)="updateQuotation()" class="form-row">
+            <span class="currency-symbol">R$</span>
+            <input id="quotationInput" type="number" [(ngModel)]="newQuotation" name="quotation" step="0.01" required placeholder="Ex: 0.50" aria-label="Cotação da ficha">
+            <button type="submit" class="btn-secondary" [disabled]="loading || newQuotation < 0">Atualizar</button>
+          </form>
+        </div>
+
+        <!-- Configurar Juros (Cofrinho) -->
+        <div class="card">
+          <h3>Rendimento (Juros)</h3>
+          <p>Ative os juros para recompensar o Menor por poupar dinheiro.</p>
+          <form (ngSubmit)="updateInterest()">
+            <div class="form-group-checkbox">
+              <input type="checkbox" id="chkInterest" [(ngModel)]="interestEnabled" name="enabled">
+              <label for="chkInterest">Ativar rendimento automático</label>
+            </div>
+            <div class="form-row" style="margin-top: 12px;">
+              <span class="currency-symbol">%</span>
+              <input type="number" [(ngModel)]="interestRate" name="rate" step="0.01" placeholder="Taxa (Ex: 0.05)" required [disabled]="!interestEnabled">
+              <button type="submit" class="btn-secondary" [disabled]="loading">Salvar Juros</button>
+            </div>
+          </form>
+        </div>
+
+      </div>
+
+      <!-- Ações Destrutivas / Conversão -->
+      <div class="card conversion-card">
+        <div class="conversion-info">
+          <h3>Converter Todas as Fichas</h3>
+          <p>Transforma o saldo atual de <strong>{{wallet?.tokensBalance || 0}} fichas</strong> do menor em dinheiro no cofrinho usando a cotação de R$ {{ (wallet?.tokenQuotation || 0).toFixed(2) }}.</p>
+        </div>
+        <button class="btn-convert" (click)="convertTokens()" [disabled]="loading || (wallet?.tokensBalance || 0) <= 0">
+          Efetuar Conversão
+        </button>
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && wallet?.id === 0 && selectedMinorId">
+      Nenhuma carteira encontrada para o menor selecionado.
+    </div>
+
+  </div>
+</div>

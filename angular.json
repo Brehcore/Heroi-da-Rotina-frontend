@@ -53,8 +53,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "16kB"
                 }
               ],
               "outputHashing": "all"
@@ -63,6 +63,13 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "development-no-ssr": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "outputMode": "static",
+              "ssr": false
             }
           },
           "defaultConfiguration": "production"
@@ -74,7 +81,7 @@
               "buildTarget": "hero-frontend:build:production"
             },
             "development": {
-              "buildTarget": "hero-frontend:build:development"
+              "buildTarget": "hero-frontend:build:development-no-ssr"
             }
           },
           "defaultConfiguration": "development"

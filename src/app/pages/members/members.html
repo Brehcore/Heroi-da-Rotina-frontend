@@ -72,14 +72,14 @@
           <div class="avatar-wrap">
             <div class="avatar-circle">
               <img 
-                *ngIf="member.avatarUrl" 
-                [src]="member.avatarUrl" 
+                *ngIf="member.profilePictureUrl" 
+                [src]="member.profilePictureUrl" 
                 [alt]="member.name" 
                 title="{{ member.name }}"
                 class="avatar-image"
               />
               <svg 
-                *ngIf="!member.avatarUrl" 
+                *ngIf="!member.profilePictureUrl" 
                 class="avatar-icon" 
                 viewBox="0 0 24 24" 
                 fill="currentColor"

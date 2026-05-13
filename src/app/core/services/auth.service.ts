@@ -1,8 +1,8 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { isPlatformBrowser } from "@angular/common";
 import { inject, Injectable, PLATFORM_ID } from "@angular/core";
 import {Observable, tap } from 'rxjs';
-import { UserLoginDTO, LoginResponseDTO, FamilyDTO, MemberDTO } from "./models/auth.models";
+import { UserLoginDTO, LoginResponseDTO, FamilyResponseDTO, UserResponseDTO, UserRegisterDTO } from "./models/auth.models";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -17,47 +17,59 @@ export class AuthService {
             tap(response => {
                 if (response.token && isPlatformBrowser(this.platformId)) {
                     localStorage.setItem('token', response.token);
+                    localStorage.setItem('userId', String(response.id));
+                    localStorage.setItem('role', response.role);
+                    localStorage.setItem('name', response.name);
                     this.userRole = response.role;
                 }
             })
         );
     }
 
+    register(data: UserRegisterDTO): Observable<UserResponseDTO> {
+        const url = `${this.API_BASE}/api/users/register`;
+        return this.http.post<UserResponseDTO>(url, data);
+    }
+
     getToken(): string | null {
         if (isPlatformBrowser(this.platformId)) {
-            return localStorage.getItem('token');
+            return sessionStorage.getItem('token') || localStorage.getItem('token');
         }
         return null;
     }
 
     getUserRole(): string | null {
-        return this.userRole;
+        if (this.userRole) return this.userRole;
+        if (isPlatformBrowser(this.platformId)) {
+            return sessionStorage.getItem('role') || localStorage.getItem('role');
+        }
+        return null;
     }
 
-    getMyFamilies(): Observable<FamilyDTO[]> {
+    getMyFamilies(): Observable<FamilyResponseDTO[]> {
         const token = this.getToken();
         const url = `${this.API_BASE}/api/families/me`;
         if (token) {
-            const headers = { Authorization: `Bearer ${token}` } as Record<string, string>;
-            return this.http.get<FamilyDTO[]>(url, { headers });
+            const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+            return this.http.get<FamilyResponseDTO[]>(url, { headers });
         }
-        return this.http.get<FamilyDTO[]>(url);
+        return this.http.get<FamilyResponseDTO[]>(url);
     }
 
-    getFamilyMembers(familyId: string | number): Observable<MemberDTO[]> {
+    getFamilyMembers(familyId: string | number): Observable<UserResponseDTO[]> {
         const id = String(familyId);
         const url = `${this.API_BASE}/api/families/family/${id}`;
         const token = this.getToken();
         if (token) {
-            const headers = { Authorization: `Bearer ${token}` } as Record<string, string>;
-            return this.http.get<MemberDTO[]>(url, { headers });
+            const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
+            return this.http.get<UserResponseDTO[]>(url, { headers });
         }
-        return this.http.get<MemberDTO[]>(url);
+        return this.http.get<UserResponseDTO[]>(url);
     }
 
 isAuthenticated(): boolean {
     if (isPlatformBrowser(this.platformId)) {
-        return !!localStorage.getItem('token');
+        return !!(sessionStorage.getItem('token') || localStorage.getItem('token'));
         }
     return false;
 }
@@ -65,6 +77,13 @@ isAuthenticated(): boolean {
 logout() {
     if (isPlatformBrowser(this.platformId)) {
         localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('userId');
+        localStorage.removeItem('name');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('role');
+        sessionStorage.removeItem('userId');
+        sessionStorage.removeItem('name');
         }
     }
 }

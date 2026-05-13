@@ -9,6 +9,12 @@
                     <img src="/Logo-transp.png" alt="Logo Herói da Rotina" class="logo" />
                 <h1 class="title">Herói da Rotina</h1>
 
+                @if (error) {
+                <div class="error-message">
+                    {{ error }}
+                </div>
+                }
+
                 <label>E-mail</label>
                 <div class="field">
                     <input type="email" formControlName="email" placeholder="Informe seu e-mail" required />
@@ -19,7 +25,9 @@
                     <input type="password" formControlName="password" placeholder="Informe sua senha" required />
                 </div>
 
-                <button type="submit" class="btn" [disabled]="loginForm.invalid">Entrar</button>
+                <button type="submit" class="btn" [disabled]="loginForm.invalid || loading">
+                    {{ loading ? 'Entrando...' : 'Entrar' }}
+                </button>
 
                 <div class="alt-links">
                     <span>ou</span>

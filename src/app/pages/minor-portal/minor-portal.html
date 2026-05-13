@@ -1,29 +1,31 @@
 <div class="minor-portal">
-  <!-- Navbar component -->
-  <app-navbar></app-navbar>
 
   <!-- Header -->
   <div class="portal-header">
-    <div class="welcome-section">
-      <h1 class="welcome-title">🎮 Bem-vindo, {{ minorName || 'Campeão' }}!</h1>
-      <p class="welcome-subtitle">Veja suas tarefas e ganhe tokens</p>
+    <div class="profile-section">
+      <img [src]="minorProfileUrl || 'https://api.dicebear.com/8.x/bottts/svg?seed=Campeao'" alt="Avatar do Menor" class="avatar">
+      <div class="welcome-text">
+        <h1 class="welcome-title">Olá, {{ minorName || 'Campeão' }}!</h1>
+        <p class="welcome-subtitle">Veja suas tarefas e ganhe tokens</p>
+      </div>
     </div>
+    <button class="btn-logout" (click)="logout()">Sair</button>
   </div>
 
   <div class="portal-content">
-    <!-- Loading Indicator -->
-    <div class="loading-indicator" *ngIf="loading">
-      <div class="spinner">⏳</div>
-      <p>Carregando seus dados...</p>
-    </div>
 
     <!-- Error Message -->
-    <div class="error-box" *ngIf="error && !loading">
+    <div class="error-box" *ngIf="error">
       <p>❌ {{ error }}</p>
     </div>
 
+    <!-- Success Message -->
+    <div class="success-box" *ngIf="successMsg">
+      <p>✅ {{ successMsg }}</p>
+    </div>
+
     <!-- Carteira/Wallet Section -->
-    <div class="wallet-card" *ngIf="wallet && !loading">
+    <div class="wallet-card" *ngIf="wallet">
       <div class="wallet-header">
         <h2>💰 Minha Carteira</h2>
       </div>
@@ -32,16 +34,31 @@
           <div class="wallet-icon">⭐</div>
           <div class="wallet-info">
             <span class="wallet-label">Tokens</span>
-            <span class="wallet-value">{{ wallet.tokensBalance }}</span>
+            <span class="wallet-value">{{ wallet?.tokensBalance || 0 }}</span>
           </div>
         </div>
         <div class="wallet-item money">
           <div class="wallet-icon">💵</div>
           <div class="wallet-info">
             <span class="wallet-label">Dinheiro</span>
-            <span class="wallet-value">R$ {{ wallet.moneyBalance.toFixed(2) }}</span>
+            <span class="wallet-value">R$ {{ (wallet?.moneyBalance || 0).toFixed(2) }}</span>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Solicitar Tempo de Tela -->
+    <div class="screen-time-section" *ngIf="screenTimeConfig">
+      <h2>📺 Tempo de Tela</h2>
+      <div class="screen-time-card">
+        <p>Informe quantos minutos de tempo de tela você deseja usar agora.</p>
+        <p class="cost-info">Custo: 1 Ficha = {{screenTimeConfig?.minutesPerToken || 0}} minutos</p>
+        <form (ngSubmit)="requestScreenTime()" class="inline-form">
+          <input type="number" [(ngModel)]="requestMinutes" name="reqMinutes" placeholder="Ex: 30" min="1" required [disabled]="requestingTime">
+          <button type="submit" class="btn-primary" [disabled]="requestingTime || !requestMinutes">
+            {{ requestingTime ? 'Solicitando...' : 'Solicitar' }}
+          </button>
+        </form>
       </div>
     </div>
 
@@ -88,7 +105,7 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="pendingTasks.length === 0 && completedTasks.length === 0 && !loading">
+    <div class="empty-state" *ngIf="pendingTasks.length === 0 && completedTasks.length === 0 && !tasksLoading">
       <p>📭 Nenhuma tarefa no momento</p>
       <p class="empty-subtitle">⏳ Aguarde por novas tarefas</p>
     </div>

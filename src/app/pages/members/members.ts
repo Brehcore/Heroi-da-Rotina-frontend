@@ -5,7 +5,7 @@ import { RouterModule } from '@angular/router';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
-import { MemberDTO } from '../../core/services/models/auth.models';
+import { UserResponseDTO } from '../../core/services/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
 import { AvatarSelectorComponent, AvatarSelectionData } from '../../components/avatar-selector/avatar-selector';
 import { Navbar } from '../../shared/navbar/navbar';
@@ -27,7 +27,7 @@ export class Members implements OnInit {
   private readonly API_BASE = 'http://localhost:8082';
   private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
 
-  members: MemberDTO[] = [];
+  members: UserResponseDTO[] = [];
   loading = false;
   error: string | null = null;
   familyId: string | null = null;
@@ -64,10 +64,10 @@ export class Members implements OnInit {
     this.authService.getFamilyMembers(familyId).subscribe({
       next: (members) => {
         console.log('Membros carregados do DB:', members);
-        console.log('Avatars do DB:', members?.map(m => ({ name: m.name, avatarUrl: m.avatarUrl })));
+        console.log('Avatars do DB:', members?.map(m => ({ name: m.name, profilePictureUrl: m.profilePictureUrl })));
         this.members = (members || []).map(member => ({
           ...member,
-          avatarUrl: member.avatarUrl || this.generateMemberAvatar(member.name)
+          profilePictureUrl: member.profilePictureUrl || this.generateMemberAvatar(member.name)
         }));
         console.log('Membros após processamento:', this.members);
         this.loading = false;
@@ -130,7 +130,7 @@ export class Members implements OnInit {
 
     const options = httpHeaders ? { headers: httpHeaders } : {};
 
-    this.http.post<MemberDTO>(
+    this.http.post<UserResponseDTO>(
       `${this.API_BASE}/api/users`,
       createUserDTO,
       options
@@ -174,7 +174,7 @@ export class Members implements OnInit {
 
     const options = httpHeaders ? { headers: httpHeaders } : {};
 
-    this.http.post<MemberDTO>(
+    this.http.post<UserResponseDTO>(
       `${this.API_BASE}/api/users`,
       createUserDTO,
       options

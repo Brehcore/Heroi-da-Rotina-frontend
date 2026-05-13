@@ -3,7 +3,9 @@
     <ul>
       <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">Início</a></li>
       <li><a routerLink="/members" routerLinkActive="active">Membros</a></li>
-      <li>Configurações</li>
+      <li><a routerLink="/tasks" routerLinkActive="active">Tarefas</a></li>
+      <li><a routerLink="/screentime" routerLinkActive="active">Tempo de Tela</a></li>
+      <li><a routerLink="/wallet" routerLinkActive="active">Carteira</a><li>
       <li>Ajuda</li>
     </ul>
   </nav>
@@ -51,6 +53,7 @@
     </div>
     <ul>
       <li (click)="openProfile()">Meu Perfil</li>
+      <li routerLink="/family-selection" (click)="closeProfileMenu()">Selecionar família</li>
       <li (click)="toggleCreateFamilyForm()" class="create-family-option">Criar Família</li>
 
       <!-- Create Family Form Inside Modal -->

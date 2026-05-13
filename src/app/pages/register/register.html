@@ -1,0 +1,46 @@
+<div class="register-page">
+    <div class="register-card">
+        <div class="register-left">
+            <img src="/Login.png" alt="Ilustração família" />
+        </div>
+
+        <div class="register-right">
+            <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+                <img src="/Logo-transp.png" alt="Logo Herói da Rotina" class="logo" />
+                <h1 class="title">Criar Conta</h1>
+
+                <div *ngIf="error" style="color: red; margin-bottom: 15px; font-weight: bold;">
+                    {{ error }}
+                </div>
+
+                <label>Nome</label>
+                <div class="field">
+                    <input type="text" formControlName="name" placeholder="Informe seu nome" required />
+                </div>
+
+                <label>E-mail</label>
+                <div class="field">
+                    <input type="email" formControlName="email" placeholder="Informe seu e-mail" required />
+                </div>
+
+                <label>Confirmar E-mail</label>
+                <div class="field">
+                    <input type="email" formControlName="confirmEmail" placeholder="Confirme seu e-mail" required />
+                </div>
+
+                <label>Senha</label>
+                <div class="field">
+                    <input type="password" formControlName="password" placeholder="Crie uma senha" required />
+                </div>
+
+                <button type="submit" class="btn" [disabled]="registerForm.invalid || loading">
+                    {{ loading ? 'Criando...' : 'Cadastrar' }}
+                </button>
+
+                <div class="alt-links">
+                    <a class="create-account" routerLink="/login">Voltar para o Login</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
