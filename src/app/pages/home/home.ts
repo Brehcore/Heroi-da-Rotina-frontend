@@ -22,8 +22,6 @@ export class Home implements OnInit {
 	private taskService = inject(TaskService);
 	private cdr = inject(ChangeDetectorRef);
 
-	private readonly API_BASE = 'http://localhost:8082';
-
 	pendingTasks: TaskResponseDTO[] = [];
 	loading = false;
 	familyId: string | null = null;

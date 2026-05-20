@@ -5,7 +5,6 @@ import { Navbar } from '../../shared/navbar/navbar';
 import { AuthService } from '../../core/services/auth.service';
 import { WalletService } from './wallet.service';
 import { WalletResponseDTO, InterestFrequency, InterestConfigDTO } from '../../core/services/models/wallet.model';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-wallet',
@@ -17,11 +16,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class Wallet implements OnInit {
   authService = inject(AuthService);
   private walletService = inject(WalletService);
-  private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
-
-  private readonly API_BASE = 'http://localhost:8082';
 
   userRole: string = 'MONITOR';
   familyId: number = 0;
@@ -59,13 +55,7 @@ export class Wallet implements OnInit {
   }
 
   loadMinors() {
-    let token = this.authService.getToken();
-    if (!token && typeof window !== 'undefined' && window.sessionStorage) {
-      token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    }
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-
-    this.http.get<any[]>(`${this.API_BASE}/api/families/me`, options).subscribe({
+    this.authService.getMyFamilies().subscribe({
       next: (families) => {
         if (families && families.length > 0) {
           const family = families.find((f: any) => f.id === this.familyId) || families[0];

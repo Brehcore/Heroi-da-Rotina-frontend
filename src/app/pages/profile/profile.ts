@@ -1,20 +1,9 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { AuthService } from '../../core/services/auth.service';
 import { Navbar } from '../../shared/navbar/navbar';
+import { ProfileService, UserResponseDTO } from './profile.service';
 
-
-export interface UserResponseDTO {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-  familyId: number;
-  familyName: string;
-  profilePictureUrl: string;
-}
 
 
 @Component({
@@ -26,9 +15,7 @@ export interface UserResponseDTO {
 })
 export class Profile implements OnInit {
   private router = inject(Router);
-  private authService = inject(AuthService);
-  private http = inject(HttpClient);
-  private readonly API_BASE = 'http://localhost:8082';
+  private profileService = inject(ProfileService);
 
 
   user: UserResponseDTO | null = null;
@@ -38,14 +25,7 @@ export class Profile implements OnInit {
   ngOnInit(): void {
     this.loading = true;
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-      const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<UserResponseDTO>(`${this.API_BASE}/api/users/me`, options).subscribe({
+    this.profileService.getUserProfile().subscribe({
       next: (res) => {
         this.user = res;
         this.loading = false;

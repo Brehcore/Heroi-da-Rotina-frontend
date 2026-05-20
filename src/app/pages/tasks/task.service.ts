@@ -3,12 +3,13 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.model';
 import { AuthService } from '../../core/services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = 'http://localhost:8082/api/tasks';
+  private apiUrl = `${environment.apiUrl}/api/tasks`;
 
   constructor(
     private http: HttpClient,

@@ -2,7 +2,6 @@ import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../tasks/task.service';
@@ -11,6 +10,7 @@ import { ScreenTimeService } from '../screentime/screentime.service';
 import { ScreenTimeConfigDTO, ScreenTimeRequestDTO } from '../../core/services/models/screentime.model';
 import { WalletService } from '../wallet/wallet.service';
 import { WalletResponseDTO, InterestFrequency } from '../../core/services/models/wallet.model';
+import { ProfileService } from '../profile/profile.service';
 
 @Component({
   selector: 'app-minor-portal',
@@ -24,13 +24,11 @@ export class MinorPortal implements OnInit {
   private taskService = inject(TaskService);
   private screenTimeService = inject(ScreenTimeService);
   private walletService = inject(WalletService);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
-
-  private readonly API_BASE = 'http://localhost:8082';
+  private profileService = inject(ProfileService);
 
   minorId: string | null = null;
   minorName: string | null = null;
@@ -79,18 +77,8 @@ export class MinorPortal implements OnInit {
   }
 
   fetchUserData(): void {
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<any>(
-      `${this.API_BASE}/api/users/me`,
-      options
-    ).subscribe({
-      next: (user: any) => {
+    this.profileService.getUserProfile().subscribe({
+      next: (user) => {
         if (user && user.id) {
           const isFirstLoad = !this.minorId;
           this.minorId = String(user.id);

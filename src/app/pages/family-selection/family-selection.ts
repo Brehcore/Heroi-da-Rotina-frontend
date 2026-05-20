@@ -2,14 +2,9 @@ import { Component, inject, OnInit, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { FamilyResponseDTO } from '../../core/services/models/auth.models';
-
-export interface FamilyCreateDTO {
-  familyName: string;
-  profilePictureUrl?: string;
-}
+import { FamilySelectionService, FamilyCreateDTO } from './family-selection.service';
 
 @Component({
   selector: 'app-family-selection',
@@ -21,10 +16,9 @@ export interface FamilyCreateDTO {
 export class FamilySelection implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
-  private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
+  private familySelectionService = inject(FamilySelectionService);
 
-  private readonly API_BASE = 'http://localhost:8082';
   private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/fun-emoji/svg';
 
   families: FamilyResponseDTO[] = [];
@@ -92,11 +86,6 @@ export class FamilySelection implements OnInit {
       return;
     }
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
     const profilePictureUrl = this.generateFamilyAvatar(this.familyNameInput);
     const familyCreateDTO: FamilyCreateDTO = { 
       familyName: this.familyNameInput,
@@ -104,13 +93,7 @@ export class FamilySelection implements OnInit {
     };
 
     this.loading = true;
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.post<{ id: number; familyName: string }>(
-      `${this.API_BASE}/api/families`,
-      familyCreateDTO,
-      options
-    ).subscribe({
+    this.familySelectionService.createFamily(familyCreateDTO).subscribe({
       next: (response) => {
         console.log('Família criada com sucesso:', response);
         this.loading = false;

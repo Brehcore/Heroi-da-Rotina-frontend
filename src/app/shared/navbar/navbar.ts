@@ -2,14 +2,10 @@ import { Component, inject, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { AuthService } from '../../core/services/auth.service';
 import { ScreenTimeService } from '../../pages/screentime/screentime.service';
 import { ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
-
-export interface CreateFamilyDTO {
-  familyName: string;
-}
+import { FamilySelectionService } from '../../pages/family-selection/family-selection.service';
 
 @Component({
   selector: 'app-navbar',
@@ -21,11 +17,9 @@ export interface CreateFamilyDTO {
 export class Navbar implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private screenTimeService = inject(ScreenTimeService);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
-
-  private readonly API_BASE = 'http://localhost:8082';
+  private familySelectionService = inject(FamilySelectionService);
 
   showProfileMenu = false;
   showCreateFamilyForm = false;
@@ -93,20 +87,9 @@ export class Navbar implements OnInit, OnDestroy {
       return;
     }
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
-    const createFamilyDTO: CreateFamilyDTO = { familyName: this.familyNameInput };
     this.loading = true;
-    const options = httpHeaders ? { headers: httpHeaders } : {};
 
-    this.http.post<{ id: number; familyName: string }>(
-      `${this.API_BASE}/api/families`,
-      createFamilyDTO,
-      options
-    ).subscribe({
+    this.familySelectionService.createFamily({ familyName: this.familyNameInput }).subscribe({
       next: (response) => {
         console.log('Família criada com sucesso:', response);
         this.loading = false;

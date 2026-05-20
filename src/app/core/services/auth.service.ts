@@ -3,13 +3,14 @@ import { isPlatformBrowser } from "@angular/common";
 import { inject, Injectable, PLATFORM_ID } from "@angular/core";
 import {Observable, tap } from 'rxjs';
 import { UserLoginDTO, LoginResponseDTO, FamilyResponseDTO, UserResponseDTO, UserRegisterDTO } from "./models/auth.models";
+import { environment } from "../../../../src/environments/environment";
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
     private http = inject(HttpClient);
     private platformId = inject(PLATFORM_ID);
-    private readonly API = 'http://localhost:8082/auth/login';
-    private readonly API_BASE = 'http://localhost:8082';
+    private readonly API_BASE = environment.apiUrl;
+    private readonly API = `${this.API_BASE}/auth/login`;
     private userRole: string | null = null;
 
     login(data: UserLoginDTO): Observable<LoginResponseDTO> {

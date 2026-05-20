@@ -5,7 +5,6 @@ import { Navbar } from '../../shared/navbar/navbar';
 import { AuthService } from '../../core/services/auth.service';
 import { ScreenTimeService } from './screentime.service';
 import { ScreenTimeConfigDTO, ScreenTimeRequest } from '../../core/services/models/screentime.model';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 @Component({
   selector: 'app-screentime',
@@ -18,11 +17,8 @@ export class ScreenTime implements OnInit {
   
   authService = inject(AuthService);
   private screenTimeService = inject(ScreenTimeService);
-  private http = inject(HttpClient);
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
-
-  private readonly API_BASE = 'http://localhost:8082';
 
   userRole: string = 'MONITOR';
   userId: number = 0;
@@ -57,14 +53,7 @@ export class ScreenTime implements OnInit {
   }
 
   loadMinors() {
-    let token = this.authService.getToken();
-    if (!token && typeof window !== 'undefined' && window.sessionStorage) {
-      token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    }
-    
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-
-    this.http.get<any[]>(`${this.API_BASE}/api/families/me`, options).subscribe({
+    this.authService.getMyFamilies().subscribe({
       next: (families) => {
         if (families && families.length > 0) {
           const family = families.find((f: any) => f.id === this.familyId) || families[0];

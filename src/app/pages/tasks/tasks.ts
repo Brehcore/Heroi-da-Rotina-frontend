@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../shared/navbar/navbar';
 import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.model';
 import { AuthService } from '../../core/services/auth.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from './task.service';
 
@@ -19,13 +18,11 @@ export class Tasks implements OnInit {
 
   authService = inject(AuthService);
   private taskService = inject(TaskService);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
 
-  private readonly API_BASE = 'http://localhost:8082';
   private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
   
   tasks: TaskResponseDTO[] = [];
@@ -65,15 +62,7 @@ export class Tasks implements OnInit {
   }
 
   loadMinors() {
-    let token = this.authService.getToken();
-    if (!token && typeof window !== 'undefined' && window.sessionStorage) {
-      token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    }
-
-    const httpHeaders = token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : undefined;
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.get<any[]>(`${this.API_BASE}/api/families/me`, options).subscribe({
+    this.authService.getMyFamilies().subscribe({
       next: (families) => {
         if (families && families.length > 0) {
           const family = families.find((f: any) => f.id === this.familyId) || families[0];

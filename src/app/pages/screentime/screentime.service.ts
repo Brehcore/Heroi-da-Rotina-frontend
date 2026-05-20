@@ -3,13 +3,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { ScreenTimeConfigDTO, ScreenTimeRequest, ScreenTimeRequestDTO, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScreenTimeService {
-  private apiUrlRequest = 'http://localhost:8082/api/screentime/request';
-  private apiUrlConfig = 'http://localhost:8082/api/screentime/config';
+
+  private apiUrlRequest = `${environment.apiUrl}/api/screentime/request`;
+  private apiUrlConfig = `${environment.apiUrl}/api/screentime/config`;
 
   constructor(
     private http: HttpClient,

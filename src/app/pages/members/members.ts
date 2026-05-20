@@ -2,13 +2,13 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { PLATFORM_ID } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { UserResponseDTO } from '../../core/services/models/auth.models';
 import { AuthService } from '../../core/services/auth.service';
 import { AvatarSelectorComponent, AvatarSelectionData } from '../../components/avatar-selector/avatar-selector';
 import { Navbar } from '../../shared/navbar/navbar';
+import { MembersService } from './members.service';
 
 @Component({
   selector: 'app-members',
@@ -19,12 +19,11 @@ import { Navbar } from '../../shared/navbar/navbar';
 })
 export class Members implements OnInit {
   authService = inject(AuthService);
-  private http = inject(HttpClient);
   private router = inject(Router);
   private route = inject(ActivatedRoute);
   private platformId = inject(PLATFORM_ID);
+  private membersService = inject(MembersService);
 
-  private readonly API_BASE = 'http://localhost:8082';
   private readonly DICEBEAR_BASE = 'https://api.dicebear.com/8.x/avataaars/svg';
 
   members: UserResponseDTO[] = [];
@@ -111,11 +110,6 @@ export class Members implements OnInit {
       return;
     }
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
     const createUserDTO = {
       name: this.newUser.name,
       email: this.newUser.email,
@@ -128,13 +122,7 @@ export class Members implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.post<UserResponseDTO>(
-      `${this.API_BASE}/api/users`,
-      createUserDTO,
-      options
-    ).subscribe({
+    this.membersService.createUser(createUserDTO).subscribe({
       next: (response) => {
         console.log('Usuário criado com sucesso:', response);
         this.loading = false;
@@ -155,11 +143,6 @@ export class Members implements OnInit {
       return;
     }
 
-    const token = this.authService.getToken();
-    const httpHeaders = token
-      ? new HttpHeaders({ 'Authorization': `Bearer ${token}` })
-      : undefined;
-
     const createUserDTO = {
       name: data.name,
       email: data.email,
@@ -172,13 +155,7 @@ export class Members implements OnInit {
     this.loading = true;
     this.error = null;
 
-    const options = httpHeaders ? { headers: httpHeaders } : {};
-
-    this.http.post<UserResponseDTO>(
-      `${this.API_BASE}/api/users`,
-      createUserDTO,
-      options
-    ).subscribe({
+    this.membersService.createUser(createUserDTO).subscribe({
       next: (response) => {
         console.log('Usuário criado com sucesso:', response);
         this.loading = false;
