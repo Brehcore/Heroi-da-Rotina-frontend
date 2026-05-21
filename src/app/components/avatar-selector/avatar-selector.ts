@@ -34,10 +34,10 @@ export class AvatarSelectorComponent implements OnInit {
   isLoading = false;
 
   readonly avatarStyles: AvatarStyle[] = [
-    { label: '🤖 Robôs', value: 'bottts' },
-    { label: '😊 Emojis Divertidos', value: 'fun-emoji' },
-    { label: '🗡️ Aventureiros', value: 'adventurer' },
-    { label: '✨ Minimalista', value: 'notionists' }
+    { label: '🤖', value: 'bottts' },
+    { label: '😊', value: 'fun-emoji' },
+    { label: '🗡️', value: 'adventurer' },
+    { label: '✨', value: 'notionists' }
   ];
 
   private readonly DICEBEAR_API = 'https://api.dicebear.com/8.x';

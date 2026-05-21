@@ -58,7 +58,7 @@
         <div class="icon">📈</div>
         <div class="info">
           <span class="label">Taxa de Juros</span>
-          <span class="value">{{ wallet?.interestRate || 0 }}% <span style="font-size: 14px; font-weight: normal; color: #666;">({{ getFrequencyText(wallet?.interestFrequency) }})</span></span>
+          <span class="value">{{ wallet?.interestRate || 0 }}% <span class="frequency-text">({{ getFrequencyText(wallet?.interestFrequency) }})</span></span>
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
         <p>Deposite fichas como recompensa ou bônus especial.</p>
         <form (ngSubmit)="depositTokens()" class="form-row">
           <input type="number" [(ngModel)]="depositAmount" name="amount" placeholder="Quantidade" required min="1" class="small-input">
-          <input type="text" [(ngModel)]="depositMotive" name="motive" placeholder="Motivo (Ex: Bônus de aniversário)" required>
+          <input type="text" [(ngModel)]="depositMotive" name="motive" placeholder="Motivo (Ex: Bônus)" required>
           <button type="submit" class="btn-primary" [disabled]="loading || !depositAmount || !depositMotive">Depositar</button>
         </form>
       </div>

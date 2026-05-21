@@ -1,50 +1,180 @@
-.members-page{min-height:100vh;background:#fff;font-family:'Roboto', Tahoma, Geneva, Verdana, sans-serif}
-.content{padding:28px 40px}
-.error-banner{background:#ffebee;border-left:4px solid #c62828;padding:12px 16px;border-radius:4px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;color:#c62828;font-weight:500}
-.error-banner .close-btn{background:0;border:0;font-size:24px;cursor:pointer;color:#c62828;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
-.members-section .members-header{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:24px}h2{margin:0;font-size:18px;color:#333}
-.btn-add-member{padding:8px 16px;background:#ffe600;border:0;border-radius:6px;font-weight:700;cursor:pointer}
-.btn-add-member:hover:not(:disabled){background:#ffde00}
-.btn-add-member:disabled{opacity:.6;cursor:not-allowed}
-@media (max-width:600px){
-    .members-section 
-    .members-header{flex-direction:column;align-items:stretch}
-    .btn-add-member{width:100%}}
-    .create-user-modal-overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:20px;z-index:60;background:rgba(0,0,0,.5)}
-    .create-user-modal{background:#fff;border-radius:12px;width:100%;max-width:450px;max-height:95vh;overflow-y:auto}
-    .modal-header{display:flex;justify-content:space-between;align-items:center;gap:16px;background:#ffe600;padding:16px;border-bottom:1px solid #ffd700}
-    .modal-content{padding:24px}
-    .modal-header h3{margin:0;font-size:16px;color:#333;font-weight:700}
-    .modal-header .close-btn{background:0;border:0;font-size:24px;cursor:pointer;color:#333;padding:0;width:24px;height:24px;display:flex;align-items:center;justify-content:center}
-    .user-form{padding:24px;display:flex;flex-direction:column;gap:16px}
-    .form-group{display:flex;flex-direction:column;gap:6px}
-    .form-group label{font-size:13px;font-weight:600;color:#555}
-    .form-input{padding:10px 12px;border:1px solid #ddd;border-radius:6px;font-size:14px}
-    .form-input:focus{outline:0;border-color:#ffe600}
-    .form-input:disabled{background:#f5f5f5;cursor:not-allowed;color:#999}
-    .form-actions{display:flex;gap:8px;margin-top:8px}
-    .form-actions button{flex:1;padding:10px 16px;border:0;border-radius:6px;font-size:14px;font-weight:600;cursor:pointer}
-    .form-actions button:disabled{opacity:.6;cursor:not-allowed}
-    .btn-confirm{background:#ffe600;color:#333}
-    .btn-confirm:hover:not(:disabled){background:#ffde00}
-    .btn-cancel{background:#f0f0f0;color:#666}
-    .loading-state,.empty-state{text-align:center;padding:40px;color:#666;font-size:16px}
-    .empty-state{background:#f9f9f9;border-radius:8px;border:2px dashed #ddd}
-    .members-grid{display:flex;gap:28px;flex-wrap:wrap}
-    .member-card{width:280px;background:#f0f0f0;border-radius:16px;overflow:hidden}
-    .card-top{background:#ffe600;padding:16px 12px;text-align:center}
-    .card-title{font-weight:700;font-size:16px;margin-bottom:4px;color:#333}
-    .card-role{font-size:12px;color:#555;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px}
-    .role-icon{width:16px;height:16px;display:inline-block}
-    .avatar-wrap{padding:20px 0;background:#f0f0f0}
-    .avatar-circle{width:140px;height:140px;margin:0 auto;border-radius:50%;overflow:hidden;background:#383636;display:flex;align-items:center;justify-content:center;border:3px solid #ffe600;color:#ccc}
-    .avatar-circle img{width:100%;height:100%;object-fit:cover;display:block}
-    .avatar-image{width:100%;height:100%;object-fit:cover;display:block}
-    .avatar-icon{width:70px;height:70px;color:#ccc}
-    .card-info{padding:16px 12px;background:#fff}
-    .info-item{display:flex;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:12px}
-    .info-item .label{font-weight:600;color:#666;min-width:50px}
-    .info-item .value{color:#333;text-align:right;word-break:break-word;flex:1}
-    @media (max-width:700px){
-        .members-grid{justify-content:center}
-        .content{padding:16px 20px}}
+.members-page { min-height: 100vh; background: #fff; font-family: 'Roboto', Tahoma, Geneva, Verdana, sans-serif; }
+
+.content {
+  padding: 16px 20px 100px 20px; /* Mobile first: Respiro inferior para a navbar no celular */
+  box-sizing: border-box;
+  @media (min-width: 700px) { padding: 28px 40px; }
+}
+
+.error-banner { background: #ffebee; border-left: 4px solid #c62828; padding: 12px 16px; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; color: #c62828; font-weight: 500; }
+.error-banner .close-btn { background: 0; border: 0; font-size: 24px; cursor: pointer; color: #c62828; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+
+.members-section .members-header {
+  display: flex;
+  flex-direction: column; /* Mobile first */
+  align-items: stretch;
+  gap: 16px;
+  margin-bottom: 24px;
+  @media (min-width: 600px) {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0;
+  }
+}
+
+h2 { margin: 0; font-size: 18px; color: #333; }
+
+.btn-add-member {
+  width: 100%; /* Mobile first */
+  padding: 12px 16px; /* Maior área de toque */
+  background: #ffe600; border: 0; border-radius: 6px; font-weight: 700; cursor: pointer; box-sizing: border-box;
+  @media (min-width: 600px) {
+    width: auto;
+    padding: 8px 16px;
+  }
+}
+.btn-add-member:hover:not(:disabled) { background: #ffde00; }
+.btn-add-member:disabled { opacity: .6; cursor: not-allowed; }
+
+/* MODAL */
+.create-user-modal-overlay { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; z-index: 105; background: rgba(0,0,0,.5); box-sizing: border-box; }
+
+.create-user-modal {
+  background: #fff; border-radius: 12px; width: 100%; max-width: 450px;
+  max-height: calc(100vh - 32px); /* Fallback para navegadores antigos */
+  max-height: calc(100dvh - 32px); /* A solução real: Adapta à tela subtraindo barras móveis dinâmicas */
+  display: flex; flex-direction: column; overflow: hidden; /* Oculta as barras externas */
+  overscroll-behavior: contain; /* Impede o scroll de passar para a tela de fundo */
+  box-sizing: border-box;
+}
+
+.modal-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; background: #ffe600; padding: 16px; border-bottom: 1px solid #ffd700; flex-shrink: 0; }
+.modal-header h3 { margin: 0; font-size: 16px; color: #333; font-weight: 700; }
+.modal-header .close-btn { background: 0; border: 0; font-size: 24px; cursor: pointer; color: #333; padding: 0; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; }
+
+.modal-content { 
+  padding: 16px; /* Padding reduzido no mobile */
+  overflow-y: auto; /* O scroll agora acontece na área principal do modal */
+  flex: 1; /* Ocupa o restante do modal ativando o scroll */
+  min-height: 0; /* Essencial: força o flexbox no mobile a permitir o corte/scroll */
+  box-sizing: border-box; /* Essencial para incluir o padding no tamanho e não vazar a div */
+  
+  @media (min-width: 600px) {
+    padding: 24px;
+  }
+  
+  /* Hack essencial para WebKit (Safari/Chrome mobile): 
+     Força um espaço físico no final do scroll, contornando o bug de padding ignorado */
+  &::after {
+    content: "";
+    display: block;
+    height: 100px; /* Aumentado para garantir que o botão suba com folga */
+  }
+}
+
+.user-form {
+  display: flex; flex-direction: column; gap: 12px; /* Gaps mais apertados no mobile */
+  @media (min-width: 600px) { gap: 16px; }
+}
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 600; color: #555; }
+.form-input { 
+  padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; 
+  @media (min-width: 600px) { padding: 12px; }
+}
+.form-input:focus { outline: 0; border-color: #ffe600; }
+.form-input:disabled { background: #f5f5f5; cursor: not-allowed; color: #999; }
+
+.form-actions {
+  display: flex;
+  flex-direction: row; /* Mobile first: sempre lado a lado no celular */
+  gap: 8px;
+  margin-top: 8px;
+  flex-shrink: 0; /* Impede o botão de ser encolhido e cortado */
+}
+.form-actions button {
+  flex: 1; /* Divide o espaço igualmente entre Cancelar e Salvar */
+  width: auto; padding: 12px 8px; border: 0; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; box-sizing: border-box; text-align: center;
+  @media (min-width: 600px) {
+    padding: 10px 16px;
+  }
+}
+.form-actions button:disabled { opacity: .6; cursor: not-allowed; }
+.btn-confirm { background: #ffe600; color: #333; }
+.btn-confirm:hover:not(:disabled) { background: #ffde00; }
+.btn-cancel { background: #f0f0f0; color: #666; }
+
+.loading-state, .empty-state { text-align: center; padding: 40px; color: #666; font-size: 16px; }
+.empty-state { background: #f9f9f9; border-radius: 8px; border: 2px dashed #ddd; }
+
+.members-grid {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center; /* Mobile first: centralizado */
+  @media (min-width: 700px) {
+    gap: 28px;
+    justify-content: flex-start;
+  }
+}
+
+.member-card { width: 100%; max-width: 280px; background: #f0f0f0; border-radius: 16px; overflow: hidden; box-sizing: border-box; }
+.card-top { background: #ffe600; padding: 16px 12px; text-align: center; }
+.card-title { font-weight: 700; font-size: 16px; margin-bottom: 4px; color: #333; }
+.card-role { font-size: 12px; color: #555; font-weight: 500; display: flex; align-items: center; justify-content: center; gap: 6px; }
+.role-icon { width: 16px; height: 16px; display: inline-block; }
+.avatar-wrap { padding: 20px 0; background: #f0f0f0; }
+.avatar-circle { width: 140px; height: 140px; margin: 0 auto; border-radius: 50%; overflow: hidden; background: #383636; display: flex; align-items: center; justify-content: center; border: 3px solid #ffe600; color: #ccc; }
+.avatar-circle img, .avatar-image { width: 100%; height: 100%; object-fit: cover; display: block; }
+.avatar-icon { width: 70px; height: 70px; color: #ccc; }
+.card-info { padding: 16px 12px; background: #fff; }
+.info-item { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 8px; font-size: 12px; }
+.info-item .label { font-weight: 600; color: #666; min-width: 50px; }
+.info-item .value { color: #333; text-align: right; word-break: break-word; flex: 1; }
+
+/* --- Ajustes para o componente filho app-avatar-selector (Mobile First) --- */
+::ng-deep .avatar-styles-grid {
+  display: flex !important; /* Força a sobrescrever o CSS interno do componente */
+  flex-direction: row !important;
+  flex-wrap: nowrap !important; /* Proíbe terminantemente que os botões quebrem linha */
+  justify-content: space-between !important;
+  gap: 8px;
+  
+  @media (min-width: 600px) {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+}
+
+::ng-deep .style-option {
+  flex: 1;
+  min-width: 0; /* Essencial: permite que o botão encolha o suficiente para não vazar a tela */
+  padding: 8px 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+  .style-label {
+    font-size: 24px; /* Aumentamos o emoji já que agora ele está sozinho */
+    line-height: 1;
+  }
+}
+
+/* --- Ajustes do Botão Salvar do app-avatar-selector --- */
+::ng-deep .avatar-form .form-actions {
+  margin-top: 16px;
+  padding-bottom: 40px; /* Aumentado o respiro para empurrar os botões mais para cima */
+  flex-shrink: 0;
+}
+
+::ng-deep .avatar-form .btn-primary {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  box-sizing: border-box;
+}

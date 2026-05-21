@@ -1,17 +1,21 @@
-.page-header{background:#1E293B;padding:10px 24px;width:100%;border-radius:0;position:relative;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;max-width:100vw;z-index:100;font-family:'Roboto', Tahoma, Geneva, Verdana, sans-serif;}
-.main-nav ul{display:flex;gap:24px;list-style:none;padding:0;margin:0}
+.page-header{background:#1E293B;padding:10px 16px;width:100%;border-radius:0;position:relative;display:flex;align-items:center;justify-content:space-between;box-sizing:border-box;max-width:100vw;z-index:100;font-family:'Roboto', Tahoma, Geneva, Verdana, sans-serif;}
+.main-nav ul{display:flex;gap:20px;list-style:none;padding:0;margin:0;align-items:center;flex-wrap:nowrap;overflow-x:auto;}
 .main-nav li{font-weight:700}
-.main-nav ul{flex-wrap:wrap}
-.main-nav a{color:#ffe600;text-decoration:none;cursor:pointer}
+.main-nav a{color:#ffe600;text-decoration:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;outline:none;-webkit-tap-highlight-color:transparent;}
+.nav-icon {
+  display: block;
+  box-sizing: border-box;
+}
+.nav-text{font-size:10px;font-weight:500;line-height:1;}
 .main-nav a:hover{opacity:.85}
-.main-nav li a.active{text-decoration:underline; text-underline-offset:4px; text-underline-position:under; text-decoration-thickness:2px; text-decoration-color:#ffe600}
+.main-nav li a.active .nav-text{border-bottom:2px solid #ffe600;padding-bottom:2px;}
 .profile-area{position:static;margin-left:auto}
-.profile-btn{width:44px;height:44px;border-radius:50%;border:0;padding:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.profile-btn{width:36px;height:36px;border-radius:50%;border:0;padding:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .profile-btn .profile-picture{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
 .profile-btn:hover{transform:scale(1.05)}
 .profile-placeholder{width:28px;height:28px;color:#ffe600}
 .profile-modal-overlay{position:fixed;inset:0;display:flex;align-items:flex-start;justify-content:flex-end;padding:80px 20px 20px;z-index:50;background:rgba(0,0,0,.5)}
-.profile-modal{background:#fff;border-radius:8px;width:220px;overflow:hidden}
+.profile-modal{background:#fff;border-radius:8px;width:220px;max-width:calc(100vw - 40px);overflow:hidden}
 .profile-modal-header{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px 12px;background:#ffe600;border-bottom:1px solid #ffd700}
 .profile-modal-image{width:60px;height:60px;border-radius:50%;object-fit:cover;display:block;border:2px solid #fff}
 .profile-modal-icon{width:40px;height:40px;color:#666}
@@ -36,7 +40,7 @@
 .profile-area {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 }
 
 .notification-container {
@@ -71,8 +75,9 @@
 .notification-dropdown {
   position: absolute;
   top: 50px;
-  right: -10px;
+  right: -55px; /* Empurra para a direita evitando vazamento na esquerda */
   width: 320px;
+  max-width: calc(100vw - 32px); /* Limita o tamanho à tela do celular com respiro nas bordas */
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
@@ -140,6 +145,17 @@
       }
     }
   }
+}
+
+/* Configurações aplicadas apenas no Desktop */
+@media (min-width: 900px) {
+  .page-header { padding: 10px 24px; }
+  .main-nav ul { gap: 32px; }
+  .main-nav a { flex-direction: row; gap: 8px; }
+  .nav-text { font-size: 14px; font-weight: 700; }
+  .profile-area { gap: 16px; }
+  .profile-btn { width: 44px; height: 44px; }
+  .notification-dropdown { right: -10px; }
 }
 
 @keyframes slideDown {

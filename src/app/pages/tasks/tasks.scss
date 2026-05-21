@@ -1,8 +1,11 @@
 .tasks-page {
+  min-height: 100vh;
   .content {
-    padding: 24px;
+    padding: 24px 24px 100px 24px; /* Mobile first: Respiro inferior para a navbar no celular */
     max-width: 1200px;
     margin: 0 auto;
+    box-sizing: border-box;
+    @media (min-width: 900px) { padding-bottom: 24px; }
   }
 }
 
@@ -34,21 +37,29 @@
 
 .tasks-header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 16px;
   margin-bottom: 24px;
+
+  @media (min-width: 600px) { flex-direction: row; justify-content: space-between; align-items: center; gap: 0; }
 
   h2 { margin: 0; }
 
   .btn-add-task {
+    width: 100%;
     background: #ffe600;
     border: none;
-    padding: 10px 20px;
+    padding: 14px 20px;
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
     transition: background 0.2s;
+    box-sizing: border-box;
+    text-align: center;
     
+    @media (min-width: 600px) { width: auto; padding: 10px 20px; }
+
     &:hover { background: #ffde00; }
     &:disabled { opacity: 0.6; cursor: not-allowed; }
   }
@@ -56,8 +67,9 @@
 
 .tasks-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  @media (min-width: 600px) { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
 }
 
 .task-card {
@@ -67,6 +79,7 @@
   box-shadow: 0 4px 12px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
 
   .card-top {
     display: flex;
@@ -112,17 +125,23 @@
 
   .task-actions {
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
     gap: 8px;
 
+    @media (min-width: 600px) { flex-direction: row; justify-content: flex-end; }
+
     button {
-      padding: 8px 18px;
+      width: 100%;
+      padding: 12px 18px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
       font-weight: bold;
       transition: filter 0.2s;
+      box-sizing: border-box;
       
+      @media (min-width: 600px) { width: auto; padding: 8px 18px; }
+
       &.btn-conclude { background: #007bff; color: white; }
       &.btn-approve { background: #28a745; color: white; }
       &.btn-reject { background: #dc3545; color: white; }
@@ -136,20 +155,26 @@
   position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(0,0,0,0.5);
   display: flex; justify-content: center; align-items: center; z-index: 1000;
+  padding: 16px; box-sizing: border-box;
 }
 
 .create-task-modal {
-  background: white; padding: 24px; border-radius: 12px; width: 100%; max-width: 400px;
+  background: white; border-radius: 12px; width: 100%; max-width: 400px;
+  max-height: calc(100dvh - 32px);
+  display: flex; flex-direction: column; overflow: hidden; box-sizing: border-box; overscroll-behavior: contain;
 
-  .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #eee; flex-shrink: 0;
     h3 { margin: 0; }
     .close-btn { border: none; background: transparent; font-size: 20px; cursor: pointer; }
   }
-  .modal-content { display: flex; flex-direction: column;
+  .modal-content { 
+    display: flex; flex-direction: column; padding: 20px; overflow-y: auto; flex: 1; min-height: 0; box-sizing: border-box;
+    &::after { content: ""; display: block; height: 40px; } /* Hack anti-corte Mobile */
+
     label { margin-bottom: 6px; font-size: 12px; color: #555; }
-    input, textarea, select { margin-bottom: 16px; padding: 10px; border-radius: 6px; border: 1px solid #ddd; font-family: inherit; background: #fff; }
+    input, textarea, select { width: 100%; box-sizing: border-box; margin-bottom: 16px; padding: 12px; border-radius: 6px; border: 1px solid #ddd; font-family: inherit; background: #fff; }
     textarea { resize: vertical; min-height: 80px; }
     select { cursor: pointer; outline: none; }
-    .btn-submit { background: #ffe600; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+    .btn-submit { width: 100%; box-sizing: border-box; background: #ffe600; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 8px; flex-shrink: 0; }
   }
 }
