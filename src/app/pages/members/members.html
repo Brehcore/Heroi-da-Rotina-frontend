@@ -26,8 +26,17 @@
           </div>
 
           <div class="modal-content">
+            <!-- Seleção de Cargo/Role -->
+            <div class="form-group" style="margin-bottom: 20px;">
+              <label for="role">Perfil do Usuário</label>
+              <select class="form-input" id="role" name="role" [(ngModel)]="newUser.role">
+                <option value="MINOR">Menor (Criança/Adolescente)</option>
+                <option value="MONITOR">Monitor (Pai/Responsável)</option>
+              </select>
+            </div>
+
             <app-avatar-selector 
-              [initialRole]="'MINOR'"
+              [initialRole]="newUser.role"
               (avatarSelected)="onAvatarSelected($event)">
             </app-avatar-selector>
           </div>

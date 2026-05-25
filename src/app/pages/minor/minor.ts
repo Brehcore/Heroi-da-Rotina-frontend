@@ -9,6 +9,7 @@ import { WalletResponseDTO } from '../../core/services/models/wallet.model';
 import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.model';
 import { TaskService } from '../tasks/task.service';
 import { WalletService } from '../wallet/wallet.service';
+import { extractErrorMessage } from '../tasks/error-handler.util';
 
 @Component({
   selector: 'app-minor',
@@ -180,7 +181,8 @@ export class Minor implements OnInit {
       },
       error: (err) => {
         console.error('Erro ao aprovar tarefa:', err);
-        this.error = 'Erro ao aprovar tarefa';
+        
+        this.error = extractErrorMessage(err, 'Erro ao aprovar tarefa. Tente novamente.');
         this.loading = false;
         this.cdr.detectChanges();
       }

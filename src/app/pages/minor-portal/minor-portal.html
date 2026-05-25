@@ -1,5 +1,10 @@
 <div class="minor-portal">
 
+  <!-- Pull to Refresh Indicator -->
+  <div *ngIf="isRefreshing" class="refresh-indicator">
+    🔄 Atualizando seus dados...
+  </div>
+
   <!-- Header -->
   <div class="portal-header">
     <div class="profile-section">
@@ -66,11 +71,11 @@
     <div class="screen-time-section" *ngIf="screenTimeConfig">
       <h2>📺 Tempo de Tela</h2>
       <div class="screen-time-card">
-        <p>Informe quantos minutos de tempo de tela você deseja usar agora.</p>
+        <p>Informe quantas fichas você deseja trocar por tempo de tela.</p>
         <p class="cost-info">Custo: 1 Ficha = {{screenTimeConfig.minutesPerToken || 0}} minutos</p>
         <form (ngSubmit)="requestScreenTime()" class="inline-form">
-          <input type="number" [(ngModel)]="requestMinutes" name="reqMinutes" placeholder="Ex: 30" min="1" required [disabled]="requestingTime">
-          <button type="submit" class="btn-primary" [disabled]="requestingTime || !requestMinutes">
+          <input type="number" [(ngModel)]="requestTokens" name="reqTokens" placeholder="Ex: 1" min="1" required [disabled]="requestingTime">
+          <button type="submit" class="btn-primary" [disabled]="requestingTime || !requestTokens">
             {{ requestingTime ? 'Solicitando...' : 'Solicitar' }}
           </button>
         </form>

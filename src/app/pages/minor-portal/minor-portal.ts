@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
@@ -7,7 +7,7 @@ import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../tasks/task.service';
 import { TaskResponseDTO } from '../../core/services/models/task.model';
 import { ScreenTimeService } from '../screentime/screentime.service';
-import { ScreenTimeConfigDTO, ScreenTimeRequestDTO } from '../../core/services/models/screentime.model';
+import { ScreenTimeConfigDTO } from '../../core/services/models/screentime.model';
 import { WalletService } from '../wallet/wallet.service';
 import { WalletResponseDTO, InterestFrequency } from '../../core/services/models/wallet.model';
 import { ProfileService } from '../profile/profile.service';
@@ -45,10 +45,15 @@ export class MinorPortal implements OnInit {
   loading = false;
   error: string | null = null;
   successMsg: string | null = null;
+  
+  // Pull-to-refresh (Arrastar para atualizar)
+  touchStartY = 0;
+  touchEndY = 0;
+  isRefreshing = false;
 
   // Screen Time
   screenTimeConfig: ScreenTimeConfigDTO | null = { minutesPerToken: 0, mondayLimit: 0, tuesdayLimit: 0, wednesdayLimit: 0, thursdayLimit: 0, fridayLimit: 0, saturdayLimit: 0, sundayLimit: 0 };
-  requestMinutes: number = 30;
+  requestTokens: number = 1;
   requestingTime = false;
 
   ngOnInit(): void {
@@ -95,6 +100,38 @@ export class MinorPortal implements OnInit {
         this.error = 'Erro ao carregar os dados do seu perfil';
       }
     });
+  }
+
+  @HostListener('window:touchstart', ['$event'])
+  onTouchStart(event: TouchEvent) {
+    if (window.scrollY === 0) {
+      this.touchStartY = event.touches[0].clientY;
+    }
+  }
+
+  @HostListener('window:touchmove', ['$event'])
+  onTouchMove(event: TouchEvent) {
+    if (this.touchStartY > 0 && window.scrollY === 0) {
+      this.touchEndY = event.touches[0].clientY;
+    }
+  }
+
+  @HostListener('window:touchend')
+  onTouchEnd() {
+    if (this.touchStartY > 0 && this.touchEndY > this.touchStartY + 100) {
+      this.refreshData();
+    }
+    this.touchStartY = 0;
+    this.touchEndY = 0;
+  }
+
+  refreshData(): void {
+    this.isRefreshing = true;
+    this.loadWalletAndTasks();
+    setTimeout(() => {
+      this.isRefreshing = false;
+      this.cdr.detectChanges();
+    }, 1200); // Tempo mínimo para exibir o feedback de "Atualizando"
   }
 
   loadWalletAndTasks(): void {
@@ -168,18 +205,18 @@ export class MinorPortal implements OnInit {
   }
 
   requestScreenTime(): void {
-    if (!this.minorId || !this.requestMinutes) return;
+    if (!this.minorId || !this.requestTokens) return;
     
     this.requestingTime = true;
     this.error = null;
     this.successMsg = null;
 
-    const requestDTO: ScreenTimeRequestDTO = {
+    const requestDTO = {
       minorId: Number(this.minorId),
-      minutes: this.requestMinutes
+      tokens: this.requestTokens
     };
 
-    this.screenTimeService.requestScreenTime(requestDTO).subscribe({
+    this.screenTimeService.exchangeTokens(requestDTO).subscribe({
       next: () => {
         this.successMsg = 'Tempo de tela solicitado com sucesso!';
         this.requestingTime = false;

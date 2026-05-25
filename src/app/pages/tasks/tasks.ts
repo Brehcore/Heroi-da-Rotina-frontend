@@ -6,6 +6,7 @@ import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.
 import { AuthService } from '../../core/services/auth.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { TaskService } from './task.service';
+import { extractErrorMessage } from './error-handler.util';
 
 @Component({
   selector: 'app-tasks',
@@ -44,6 +45,11 @@ export class Tasks implements OnInit {
   userRole: string = 'MONITOR';
   userId: number = 0;
   familyId: number = 0;
+
+  // Paginação
+  currentPage = 0;
+  pageSize = 10;
+  totalPages = 1;
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -86,9 +92,15 @@ export class Tasks implements OnInit {
         this.cdr.detectChanges();
         return;
       }
-      this.taskService.getTasksToApprove(this.familyId).subscribe({
-        next: (data) => { this.tasks = data || []; this.loading = false; this.cdr.detectChanges(); },
-        error: (err) => { console.error('Erro ao carregar tarefas para aprovação:', err); this.error = 'Erro ao carregar tarefas para aprovação.'; this.loading = false; this.cdr.detectChanges(); }
+      this.taskService.getFamilyTasks(this.familyId, this.currentPage, this.pageSize).subscribe({
+        next: (data: any) => { 
+          this.tasks = Array.isArray(data) ? data : (data?.content || []); 
+          this.totalPages = data?.totalPages || 1;
+          this.currentPage = data?.number || 0;
+          this.loading = false; 
+          this.cdr.detectChanges(); 
+        },
+        error: (err) => { console.error('Erro ao carregar tarefas da família:', err); this.error = 'Erro ao carregar tarefas da família.'; this.loading = false; this.cdr.detectChanges(); }
       });
     } else {
       if (!this.userId) {
@@ -101,6 +113,20 @@ export class Tasks implements OnInit {
         next: (data) => { this.tasks = data || []; this.loading = false; this.cdr.detectChanges(); },
         error: (err) => { console.error('Erro ao carregar tarefas:', err); this.error = 'Erro ao carregar tarefas.'; this.loading = false; this.cdr.detectChanges(); }
       });
+    }
+  }
+
+  nextPage() {
+    if (this.currentPage < this.totalPages - 1) {
+      this.currentPage++;
+      this.loadTasks();
+    }
+  }
+
+  previousPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadTasks();
     }
   }
 
@@ -134,7 +160,12 @@ export class Tasks implements OnInit {
           this.cdr.detectChanges();
         }, 2000);
       },
-      error: (err) => { console.error('Erro ao criar tarefa:', err); this.error = 'Erro ao criar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
+      error: (err) => {
+        console.error('Erro ao criar tarefa:', err);
+        this.error = extractErrorMessage(err, 'Erro ao criar tarefa. Tente novamente.');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -152,7 +183,12 @@ export class Tasks implements OnInit {
           this.cdr.detectChanges();
         }, 2000);
       },
-      error: (err) => { console.error('Erro ao concluir tarefa:', err); this.error = 'Erro ao concluir tarefa.'; this.loading = false; this.cdr.detectChanges(); }
+      error: (err) => {
+        console.error('Erro ao concluir tarefa:', err);
+        this.error = extractErrorMessage(err, 'Erro ao concluir tarefa. Tente novamente.');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -170,7 +206,12 @@ export class Tasks implements OnInit {
           this.cdr.detectChanges();
         }, 2000);
       },
-      error: (err) => { console.error('Erro ao aprovar tarefa:', err); this.error = 'Erro ao aprovar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
+      error: (err) => {
+        console.error('Erro ao aprovar tarefa:', err);
+        this.error = extractErrorMessage(err, 'Erro ao aprovar tarefa. Tente novamente.');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
   }
 
@@ -193,7 +234,32 @@ export class Tasks implements OnInit {
           this.cdr.detectChanges();
         }, 2000);
       },
-      error: (err) => { console.error('Erro ao rejeitar tarefa:', err); this.error = 'Erro ao rejeitar tarefa.'; this.loading = false; this.cdr.detectChanges(); }
+      error: (err) => {
+        console.error('Erro ao rejeitar tarefa:', err);
+        this.error = extractErrorMessage(err, 'Erro ao rejeitar tarefa. Tente novamente.');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
     });
+  }
+
+  getStatusText(status: string): string {
+    if (!status) return 'Desconhecido';
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+      case 'PENDENTE':
+        return 'Pendente';
+      case 'COMPLETED':
+      case 'CONCLUIDA':
+        return 'Completa';
+      case 'APPROVED':
+      case 'APROVADA':
+        return 'Aprovada';
+      case 'REJECTED':
+      case 'REJEITADA':
+        return 'Rejeitada';
+      default:
+        return status;
+    }
   }
 }

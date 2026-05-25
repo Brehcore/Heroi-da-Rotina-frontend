@@ -65,3 +65,15 @@
 .empty-state p{margin:0;font-size:24px;font-weight:700}
 .empty-subtitle{font-size:16px;margin-top:8px;opacity:.9}
 @media(max-width:600px){.portal-header{flex-direction:row;flex-wrap:wrap;gap:16px}.profile-section{width:100%}.avatar{width:48px;height:48px}.wallet-grid{grid-template-columns:1fr}.tasks-container,.completed-container{grid-template-columns:1fr}.welcome-title{font-size:20px}}
+
+.refresh-indicator {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px;
+  background: #fff8b3;
+  color: #b28900;
+  font-weight: bold;
+  border-bottom: 2px solid #ffe600;
+  transition: all 0.3s ease;
+}

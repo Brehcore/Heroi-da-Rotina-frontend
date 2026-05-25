@@ -30,6 +30,10 @@ export class TaskService {
     return this.http.post<TaskResponseDTO>(this.apiUrl, task, { headers: this.getHeaders() });
   }
 
+  getFamilyTasks(familyId: number, page: number = 0, size: number = 10): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/family/${familyId}?page=${page}&size=${size}&t=${new Date().getTime()}`, { headers: this.getHeaders() });
+  }
+
   getTasksToApprove(familyId: number): Observable<TaskResponseDTO[]> {
     return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/family/${familyId}/approve?t=${new Date().getTime()}`, { headers: this.getHeaders() });
   }

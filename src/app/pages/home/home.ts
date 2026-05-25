@@ -6,6 +6,7 @@ import { PLATFORM_ID } from '@angular/core';
 import { Navbar } from '../../shared/navbar/navbar';
 import { TaskService } from '../tasks/task.service';
 import { TaskResponseDTO } from '../../core/services/models/task.model';
+import { extractErrorMessage } from '../tasks/error-handler.util';
 
 @Component({
 	selector: 'app-home',
@@ -88,7 +89,8 @@ export class Home implements OnInit {
 			},
 			error: (err) => {
 				console.error('Erro ao aprovar tarefa:', err);
-				this.error = 'Erro ao aprovar tarefa. Tente novamente.';
+				
+				this.error = extractErrorMessage(err, 'Erro ao aprovar tarefa. Tente novamente.');
 				this.loading = false;
 				this.cdr.detectChanges();
 			}

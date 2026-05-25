@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
-import { ScreenTimeConfigDTO, ScreenTimeRequest, ScreenTimeRequestDTO, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
+import { ScreenTimeConfigDTO, ScreenTimeRequest, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
@@ -26,8 +26,8 @@ export class ScreenTimeService {
     return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : new HttpHeaders();
   }
 
-  requestScreenTime(requestDTO: ScreenTimeRequestDTO): Observable<ScreenTimeResponseDTO> {
-    return this.http.post<ScreenTimeResponseDTO>(`${this.apiUrlRequest}/time`, requestDTO, { headers: this.getHeaders() });
+  exchangeTokens(requestDTO: { minorId: number; tokens: number }): Observable<ScreenTimeResponseDTO> {
+    return this.http.post<ScreenTimeResponseDTO>(`${this.apiUrlRequest}/exchange-tokens`, requestDTO, { headers: this.getHeaders() });
   }
 
   approveRequest(requestId: number, monitorId: number): Observable<void> {
