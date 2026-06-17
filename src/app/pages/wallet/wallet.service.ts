@@ -28,9 +28,22 @@ export class WalletService {
     return this.http.get<WalletResponseDTO>(`${this.apiUrl}/minor/${minorId}?t=${new Date().getTime()}`, { headers: this.getHeaders() });
   }
 
+  getTransactions(minorId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/minor/${minorId}/transactions`, { headers: this.getHeaders() });
+  }
+
   depositTokens(minorId: number, amount: number, motive: string): Observable<void> {
     const params = new HttpParams().set('amount', amount.toString()).set('motive', motive);
     return this.http.post<void>(`${this.apiUrl}/minor/${minorId}/deposit-tokens`, {}, { headers: this.getHeaders(), params, responseType: 'text' as 'json' });
+  }
+
+  deductTokens(minorId: number, amount: number, motive: string): Observable<void> {
+    const payload = { amount, motive };
+    return this.http.post<void>(
+      `${this.apiUrl}/minor/${minorId}/deduct-tokens`, 
+      payload, 
+      { headers: this.getHeaders() }
+    );
   }
 
   updateQuotation(minorId: number, value: number): Observable<void> {

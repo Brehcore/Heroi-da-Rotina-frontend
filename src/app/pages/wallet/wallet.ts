@@ -30,8 +30,8 @@ export class Wallet implements OnInit {
   };
   
   // Variáveis de Formulários
-  depositAmount: number = 0;
-  depositMotive: string = '';
+  transactionAmount: number = 0;
+  transactionMotive: string = '';
   
   newQuotation: number = 0;
   
@@ -125,15 +125,15 @@ export class Wallet implements OnInit {
   }
 
   depositTokens() {
-    if (!this.selectedMinorId || !this.depositAmount || !this.depositMotive) return;
+    if (!this.selectedMinorId || !this.transactionAmount || !this.transactionMotive) return;
     this.loading = true; this.error = null; this.successMsg = null;
 
-    this.walletService.depositTokens(this.selectedMinorId, this.depositAmount, this.depositMotive).subscribe({
+    this.walletService.depositTokens(this.selectedMinorId, this.transactionAmount, this.transactionMotive).subscribe({
       next: () => { 
         this.successMsg = 'Fichas depositadas com sucesso!'; 
         this.cdr.detectChanges();
-        this.depositAmount = 0; 
-        this.depositMotive = ''; 
+        this.transactionAmount = 0; 
+        this.transactionMotive = ''; 
         this.loadWallet(); 
         setTimeout(() => {
           this.successMsg = null;
@@ -142,6 +142,30 @@ export class Wallet implements OnInit {
       },
       error: () => { 
         this.error = 'Erro ao depositar fichas.'; 
+        this.loading = false; 
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  deductTokens() {
+    if (!this.selectedMinorId || !this.transactionAmount || !this.transactionMotive) return;
+    this.loading = true; this.error = null; this.successMsg = null;
+
+    this.walletService.deductTokens(this.selectedMinorId, this.transactionAmount, this.transactionMotive).subscribe({
+      next: () => { 
+        this.successMsg = 'Fichas removidas com sucesso!'; 
+        this.cdr.detectChanges();
+        this.transactionAmount = 0; 
+        this.transactionMotive = ''; 
+        this.loadWallet(); 
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: () => { 
+        this.error = 'Erro ao remover fichas.'; 
         this.loading = false; 
         this.cdr.detectChanges();
       }

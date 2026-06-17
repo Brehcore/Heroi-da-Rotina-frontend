@@ -28,4 +28,11 @@ export class MembersService {
     
     return this.http.post<UserResponseDTO>(`${this.API_BASE}/api/users`, userDTO, options);
   }
+
+  deleteUser(userId: number): Observable<void> {
+    const token = this.authService.getToken();
+    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
+    
+    return this.http.delete<void>(`${this.API_BASE}/api/users/${userId}`, options);
+  }
 }

@@ -65,16 +65,18 @@
 
     <div class="cards-container" *ngIf="userRole === 'MONITOR'">
       
-      <!-- Depositar Fichas (Monitor) -->
+      <!-- Adicionar/Remover Fichas (Monitor) -->
       <div class="card">
-        <h3>Adicionar Fichas Extra</h3>
-        <p>Deposite fichas como recompensa ou bônus especial.</p>
-        <form (ngSubmit)="depositTokens()" class="form-row">
-          <input type="number" [(ngModel)]="depositAmount" name="amount" placeholder="Quantidade" required min="1" class="small-input">
-          <input type="text" [(ngModel)]="depositMotive" name="motive" placeholder="Motivo (Ex: Bônus)" required>
-          <button type="submit" class="btn-primary" [disabled]="loading || !depositAmount || !depositMotive">Depositar</button>
-        </form>
+        <h3>Adicionar ou Remover Fichas</h3>
+        <p>Deposite fichas como recompensa ou remova como penalidade.</p>
+        <div class="form-row">
+          <input type="number" [(ngModel)]="transactionAmount" name="amount" placeholder="Quantidade" required min="1" class="small-input">
+          <input type="text" [(ngModel)]="transactionMotive" name="motive" placeholder="Motivo (Ex: Bônus ou Penalidade)" required>
+          <button type="button" class="btn-primary" (click)="depositTokens()" [disabled]="loading || !transactionAmount || !transactionMotive">Depositar</button>
+          <button type="button" class="btn-danger" (click)="deductTokens()" [disabled]="loading || !transactionAmount || !transactionMotive">Remover</button>
+        </div>
       </div>
+    
 
       <!-- Configurações Financeiras -->
       <div class="settings-grid">

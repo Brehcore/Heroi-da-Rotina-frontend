@@ -58,4 +58,8 @@ export class TaskService {
   rejectTask(id: number, reason: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/reject`, { reason }, { headers: this.getHeaders(), responseType: 'text' as 'json' });
   }
+
+  deleteTask(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+  }
 }

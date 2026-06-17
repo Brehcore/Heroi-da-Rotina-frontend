@@ -169,4 +169,22 @@ export class Members implements OnInit {
       }
     });
   }
+
+  removeMember(member: UserResponseDTO): void {
+    if (confirm(`Tem certeza que deseja remover o membro ${member.name}? Esta ação não pode ser desfeita.`)) {
+      this.loading = true;
+      
+      this.membersService.deleteUser(member.id).subscribe({
+        next: () => {
+          this.members = this.members.filter(m => m.id !== member.id);
+          this.loading = false;
+        },
+        error: (err) => {
+          console.error('Erro ao remover membro', err);
+          this.error = 'Ocorreu um erro ao tentar remover este membro.';
+          this.loading = false;
+        }
+      });
+    }
+  }
 }

@@ -11,6 +11,14 @@ import { TaskService } from '../tasks/task.service';
 import { WalletService } from '../wallet/wallet.service';
 import { extractErrorMessage } from '../tasks/error-handler.util';
 
+export interface TransactionDTO {
+  id: number;
+  type: 'CREDIT' | 'DEBIT';
+  motive: string;
+  formattedValue: string;
+  date: string;
+}
+
 @Component({
   selector: 'app-minor',
   standalone: true,
@@ -32,6 +40,7 @@ export class Minor implements OnInit {
   wallet: WalletResponseDTO | null = null;
   tasks: TaskResponseDTO[] = [];
   pendingTasks: TaskResponseDTO[] = [];
+  transactions: TransactionDTO[] = [];
   loading = false;
   error: string | null = null;
   successMsg: string | null = null;
@@ -43,6 +52,99 @@ export class Minor implements OnInit {
     description: '',
     tokenReward: 0
   };
+
+  // Filtros e Paginação - Tarefas
+  taskSearchTerm: string = '';
+  taskFilterDate: string = '';
+  taskCurrentPage: number = 1;
+  taskItemsPerPage: number = 10;
+  itemsPerPageOptions: number[] = [10, 20, 50, 100];
+
+  get filteredTasks(): TaskResponseDTO[] {
+    let filtered = this.tasks;
+    if (this.taskSearchTerm) {
+      const term = this.taskSearchTerm.toLowerCase();
+      filtered = filtered.filter(t => t.title?.toLowerCase().includes(term));
+    }
+    if (this.taskFilterDate) {
+      filtered = filtered.filter(t => {
+        if (!t.creationDate) return false;
+        return t.creationDate.substring(0, 10) === this.taskFilterDate;
+      });
+    }
+    return filtered;
+  }
+
+  get paginatedTasks(): TaskResponseDTO[] {
+    const start = (this.taskCurrentPage - 1) * this.taskItemsPerPage;
+    return this.filteredTasks.slice(start, start + this.taskItemsPerPage);
+  }
+
+  get totalTaskPages(): number {
+    return Math.ceil(this.filteredTasks.length / this.taskItemsPerPage) || 1;
+  }
+
+  nextTaskPage(): void {
+    if (this.taskCurrentPage < this.totalTaskPages) {
+      this.taskCurrentPage++;
+    }
+  }
+
+  prevTaskPage(): void {
+    if (this.taskCurrentPage > 1) {
+      this.taskCurrentPage--;
+    }
+  }
+
+  onTaskFilterChange(): void {
+    this.taskCurrentPage = 1;
+  }
+
+  // Filtros e Paginação - Transações
+  txSearchTerm: string = '';
+  txFilterDate: string = '';
+  txCurrentPage: number = 1;
+  txItemsPerPage: number = 10;
+
+  get filteredTransactions(): TransactionDTO[] {
+    let filtered = this.transactions;
+    if (this.txSearchTerm) {
+      const term = this.txSearchTerm.toLowerCase();
+      filtered = filtered.filter(t => t.motive?.toLowerCase().includes(term));
+    }
+    if (this.txFilterDate) {
+      filtered = filtered.filter(t => {
+        if (!t.date) return false;
+        return t.date.substring(0, 10) === this.txFilterDate;
+      });
+    }
+    return filtered;
+  }
+
+  get paginatedTransactions(): TransactionDTO[] {
+    const start = (this.txCurrentPage - 1) * this.txItemsPerPage;
+    return this.filteredTransactions.slice(start, start + this.txItemsPerPage);
+  }
+
+  get totalTxPages(): number {
+    return Math.ceil(this.filteredTransactions.length / this.txItemsPerPage) || 1;
+  }
+
+  nextTxPage(): void {
+    if (this.txCurrentPage < this.totalTxPages) {
+      this.txCurrentPage++;
+    }
+  }
+
+  prevTxPage(): void {
+    if (this.txCurrentPage > 1) {
+      this.txCurrentPage--;
+    }
+  }
+
+  onTxFilterChange(): void {
+    this.txCurrentPage = 1;
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.platformId)) {
@@ -61,6 +163,7 @@ export class Minor implements OnInit {
     this.fetchWalletData();
     this.fetchTasks();
     this.fetchPendingTasks();
+    this.fetchTransactions();
   }
 
   fetchWalletData(): void {
@@ -110,6 +213,21 @@ export class Minor implements OnInit {
       error: (err) => {
         console.error('Erro ao buscar tarefas pendentes:', err);
         this.cdr.detectChanges();
+      }
+    });
+  }
+
+  fetchTransactions(): void {
+    if (!this.minorId) return;
+
+    this.walletService.getTransactions(Number(this.minorId)).subscribe({
+      next: (data) => {
+        // O backend retorna as transações dentro da propriedade "content" de acordo com o JSON de exemplo
+        this.transactions = data.content || [];
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao buscar transações:', err);
       }
     });
   }

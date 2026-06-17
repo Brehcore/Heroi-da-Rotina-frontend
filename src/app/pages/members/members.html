@@ -108,6 +108,10 @@
               <span class="value">{{ member.familyName }}</span>
             </div>
           </div>
+          
+          <div class="card-actions">
+            <button class="btn-remove-member" (click)="$event.stopPropagation(); removeMember(member)">Remover</button>
+          </div>
         </div>
       </div>
     </div>

@@ -36,6 +36,47 @@
       </div>
     </section>
 
+    <!-- Transactions Section -->
+    <section class="transactions-section">
+      <h2>💸 Histórico de Transações</h2>
+
+      <!-- Filters and Pagination Controls for Transactions -->
+      <div class="filters-container">
+        <input type="text" [(ngModel)]="txSearchTerm" (input)="onTxFilterChange()" placeholder="Buscar por motivo..." class="form-input search-input">
+        <input type="date" [(ngModel)]="txFilterDate" (change)="onTxFilterChange()" class="form-input date-input" aria-label="Filtrar por data">
+        <select [(ngModel)]="txItemsPerPage" (change)="onTxFilterChange()" class="form-input select-input" aria-label="Itens por página">
+          <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }} por página</option>
+        </select>
+      </div>
+
+      <div *ngIf="paginatedTransactions.length === 0" class="empty-state">
+        Nenhuma transação encontrada
+      </div>
+
+      <div class="transactions-list" *ngIf="paginatedTransactions.length > 0">
+        <div class="transaction-card" *ngFor="let tx of paginatedTransactions" [ngClass]="tx.type === 'CREDIT' ? 'credit' : 'debit'">
+          <div class="tx-icon">
+            <span *ngIf="tx.type === 'CREDIT'" class="arrow-up">▲</span>
+            <span *ngIf="tx.type === 'DEBIT'" class="arrow-down">▼</span>
+          </div>
+          <div class="tx-details">
+            <div class="tx-motive">{{ tx.motive }}</div>
+            <div class="tx-date">{{ tx.date | date: 'dd/MM/yyyy HH:mm' }}</div>
+          </div>
+          <div class="tx-value">
+            {{ tx.type === 'CREDIT' ? '+' : '-' }} {{ tx.formattedValue }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Pagination Buttons -->
+      <div class="pagination-controls" *ngIf="filteredTransactions.length > txItemsPerPage">
+        <button (click)="prevTxPage()" [disabled]="txCurrentPage === 1" class="btn-pagination">Anterior</button>
+        <span>Página {{ txCurrentPage }} de {{ totalTxPages }}</span>
+        <button (click)="nextTxPage()" [disabled]="txCurrentPage === totalTxPages" class="btn-pagination">Próximo</button>
+      </div>
+    </section>
+
     <!-- Tasks Section -->
     <section class="tasks-section">
       <div class="section-header">

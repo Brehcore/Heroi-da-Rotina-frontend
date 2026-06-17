@@ -76,6 +76,7 @@
                 <button *ngIf="userRole === 'MINOR' && (task.status === 'PENDENTE' || task.status === 'PENDING')" class="btn-conclude" (click)="concludeTask(task.id)">Concluir</button>
                 <button *ngIf="userRole === 'MONITOR' && (task.status === 'CONCLUIDA' || task.status === 'COMPLETED')" class="btn-approve" (click)="approveTask(task.id)">Aprovar</button>
                 <button *ngIf="userRole === 'MONITOR' && (task.status === 'CONCLUIDA' || task.status === 'COMPLETED')" class="btn-reject" (click)="rejectTask(task.id)">Rejeitar</button>
+                <button *ngIf="userRole === 'MONITOR'" class="btn-remove" (click)="deleteTask(task.id)" [disabled]="loading">🗑️</button>
               </td>
             </tr>
           </tbody>

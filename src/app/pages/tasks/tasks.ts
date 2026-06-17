@@ -243,6 +243,31 @@ export class Tasks implements OnInit {
     });
   }
 
+  deleteTask(id: number) {
+    if (confirm('Tem certeza que deseja remover esta tarefa? Esta ação não pode ser desfeita.')) {
+      this.loading = true;
+      this.error = null;
+      this.successMsg = null;
+
+      this.taskService.deleteTask(id).subscribe({
+        next: () => {
+          this.successMsg = 'Tarefa removida com sucesso!';
+          this.loadTasks();
+          setTimeout(() => {
+            this.successMsg = null;
+            this.cdr.detectChanges();
+          }, 2000);
+        },
+        error: (err) => {
+          console.error('Erro ao remover tarefa:', err);
+          this.error = extractErrorMessage(err, 'Erro ao remover tarefa. Tente novamente.');
+          this.loading = false;
+          this.cdr.detectChanges();
+        }
+      });
+    }
+  }
+
   getStatusText(status: string): string {
     if (!status) return 'Desconhecido';
     switch (status.toUpperCase()) {
