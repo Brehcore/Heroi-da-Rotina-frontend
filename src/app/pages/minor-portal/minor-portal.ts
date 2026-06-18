@@ -1,8 +1,7 @@
-import { Component, inject, OnInit, ChangeDetectorRef, HostListener } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef, HostListener, PLATFORM_ID } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
-import { PLATFORM_ID } from '@angular/core';
 import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../tasks/task.service';
 import { TaskResponseDTO } from '../../core/services/models/task.model';
@@ -11,6 +10,8 @@ import { ScreenTimeConfigDTO } from '../../core/services/models/screentime.model
 import { WalletService } from '../wallet/wallet.service';
 import { WalletResponseDTO, InterestFrequency } from '../../core/services/models/wallet.model';
 import { ProfileService } from '../profile/profile.service';
+import { NotificationWebSocketService } from '../../core/services/notification-websocket.service';
+import { Subscription } from 'rxjs'; // 1. <-- Import do Subscription adicionado
 
 @Component({
   selector: 'app-minor-portal',
@@ -19,7 +20,7 @@ import { ProfileService } from '../profile/profile.service';
   templateUrl: './minor-portal.html',
   styleUrls: ['./minor-portal.scss']
 })
-export class MinorPortal implements OnInit {
+export class MinorPortal implements OnInit, OnDestroy { // 2. <-- OnDestroy adicionado aqui
   authService = inject(AuthService);
   private taskService = inject(TaskService);
   private screenTimeService = inject(ScreenTimeService);
@@ -29,6 +30,9 @@ export class MinorPortal implements OnInit {
   private platformId = inject(PLATFORM_ID);
   private cdr = inject(ChangeDetectorRef);
   private profileService = inject(ProfileService);
+  private notificationWebSocketService = inject(NotificationWebSocketService);
+  
+  private wsSubscription?: Subscription;
 
   minorId: string | null = null;
   minorName: string | null = null;
@@ -76,9 +80,54 @@ export class MinorPortal implements OnInit {
     
     if (this.minorId) {
       this.loadWalletAndTasks();
+      this.setupWebSocket(); // 3. <-- Gatilho do WebSocket chamado aqui!
     }
 
     this.fetchUserData();
+  }
+
+  // 4. <-- Método ngOnDestroy criado para limpar a conexão quando sair da tela
+  ngOnDestroy(): void {
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
+    }
+    this.notificationWebSocketService.disconnect(); 
+  }
+
+  // 5. <-- Método que escuta as mensagens do servidor
+  setupWebSocket(): void {
+    if (!this.minorId) return;
+
+    // Conecta no canal exclusivo do menor
+    this.notificationWebSocketService.connectForMinor(Number(this.minorId));
+
+    this.wsSubscription = this.notificationWebSocketService.getNotifications().subscribe(notification => {
+      
+      // Toca um sonzinho legal de notificação
+      if (isPlatformBrowser(this.platformId)) {
+        const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
+        audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
+      }
+
+      // Removemos o 'APROVADA' e o 'REJEITADA' porque o seu Enum já garante o formato em inglês
+      if (notification.status === 'APPROVED') {
+        this.successMsg = `Oba! Seu tempo de tela de ${notification.requestedMinutes} min foi APROVADO! 🎉`;
+        this.fetchWalletData(); // <-- Atualiza as fichas na mesma hora!
+        
+      } else if (notification.status === 'REJECTED') {
+        this.error = `Poxa... Seu pedido de ${notification.requestedMinutes} min foi REJEITADO. 😔`;
+      }
+
+      this.cdr.detectChanges(); // Força o Angular a desenhar os balões de mensagem na tela
+
+      // Apaga a mensagem da tela depois de 5 segundos
+      setTimeout(() => {
+        this.successMsg = null;
+        this.error = null;
+        this.cdr.detectChanges();
+      }, 5000);
+      
+    });
   }
 
   fetchUserData(): void {
@@ -90,7 +139,10 @@ export class MinorPortal implements OnInit {
           this.minorName = user.name;
           this.minorProfileUrl = user.profilePictureUrl;
           
-          if (isFirstLoad) this.loadWalletAndTasks();
+          if (isFirstLoad) {
+            this.loadWalletAndTasks();
+            this.setupWebSocket(); // Adicionado aqui também caso o minorId não existisse no SessionStorage
+          }
         } else {
           this.error = 'Perfil inválido ou não encontrado.';
         }
@@ -135,7 +187,6 @@ export class MinorPortal implements OnInit {
   }
 
   loadWalletAndTasks(): void {
-    // Carregar wallet, tarefas e limites de tela
     this.fetchWalletData();
     this.fetchTasks();
     this.fetchScreenTimeConfig();
@@ -147,7 +198,6 @@ export class MinorPortal implements OnInit {
     this.walletService.getWallet(Number(this.minorId)).subscribe({
       next: (data) => {
         if (data) {
-          // Mapeamento seguro para aceitar nomes de campos no plural ou singular vindos do backend
           const money = (data as any).moneyBalances ?? (data as any).moneyBalance ?? 0;
           const tokens = (data as any).tokenBalances ?? (data as any).tokensBalance ?? (data as any).tokenBalance ?? 0;
           const quotation = (data as any).tokenQuotation ?? (data as any).tokenQuotations ?? 0;
@@ -178,7 +228,6 @@ export class MinorPortal implements OnInit {
     this.taskService.getMinorTasks(Number(this.minorId))
       .subscribe({
       next: (data) => {
-        // Garante que é um array para evitar crash no .filter()
         this.tasks = Array.isArray(data) ? data : (data && (data as any).content ? (data as any).content : []);
         this.separateTasks();
         this.tasksLoading = false;
@@ -220,11 +269,11 @@ export class MinorPortal implements OnInit {
       next: () => {
         this.successMsg = 'Tempo de tela solicitado com sucesso!';
         this.requestingTime = false;
-        this.cdr.detectChanges(); // Atualiza a tela imediatamente
+        this.cdr.detectChanges(); 
         
         setTimeout(() => {
           this.successMsg = null;
-          this.cdr.detectChanges(); // Força a tela a apagar a mensagem após 2 segundos
+          this.cdr.detectChanges(); 
         }, 2000);
       },
       error: () => { this.error = 'Erro ao solicitar tempo de tela. Verifique suas fichas e os limites diários!'; this.requestingTime = false; window.scrollTo(0,0); this.cdr.detectChanges(); }
@@ -232,7 +281,6 @@ export class MinorPortal implements OnInit {
   }
 
   separateTasks(): void {
-    // Prevenção extra caso o backend não devolva um array
     if (!this.tasks || !Array.isArray(this.tasks)) {
       this.pendingTasks = [];
       this.completedTasks = [];
@@ -252,11 +300,11 @@ export class MinorPortal implements OnInit {
         this.successMsg = 'Tarefa concluída! Aguardando aprovação.';
         this.fetchTasks();
         this.loading = false;
-        this.cdr.detectChanges(); // Atualiza a tela imediatamente
+        this.cdr.detectChanges(); 
         
         setTimeout(() => {
           this.successMsg = null;
-          this.cdr.detectChanges(); // Força a tela a apagar a mensagem após 2 segundos
+          this.cdr.detectChanges(); 
         }, 2000);
       },
       error: (err) => {

@@ -43,7 +43,7 @@
       <!-- Filters and Pagination Controls for Transactions -->
       <div class="filters-container">
         <input type="text" [(ngModel)]="txSearchTerm" (input)="onTxFilterChange()" placeholder="Buscar por motivo..." class="form-input search-input">
-        <input type="date" [(ngModel)]="txFilterDate" (change)="onTxFilterChange()" class="form-input date-input" aria-label="Filtrar por data">
+        <input [type]="txFilterDate ? 'date' : 'text'" (focus)="$any($event.target).type='date'" (blur)="!txFilterDate ? $any($event.target).type='text' : null" [(ngModel)]="txFilterDate" (change)="onTxFilterChange()" class="form-input date-input" placeholder="Data" aria-label="Filtrar por data">
         <select [(ngModel)]="txItemsPerPage" (change)="onTxFilterChange()" class="form-input select-input" aria-label="Itens por página">
           <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }} por página</option>
         </select>

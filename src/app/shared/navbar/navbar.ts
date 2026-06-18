@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy, PLATFORM_ID } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, PLATFORM_ID, ChangeDetectorRef } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
@@ -6,6 +6,8 @@ import { AuthService } from '../../core/services/auth.service';
 import { ScreenTimeService } from '../../pages/screentime/screentime.service';
 import { ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
 import { FamilySelectionService } from '../../pages/family-selection/family-selection.service';
+import { NotificationWebSocketService } from '../../core/services/notification-websocket.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -20,6 +22,8 @@ export class Navbar implements OnInit, OnDestroy {
   private router = inject(Router);
   private platformId = inject(PLATFORM_ID);
   private familySelectionService = inject(FamilySelectionService);
+  private notificationWebSocketService = inject(NotificationWebSocketService);
+  private cdr = inject(ChangeDetectorRef);
 
   showProfileMenu = false;
   showCreateFamilyForm = false;
@@ -31,22 +35,24 @@ export class Navbar implements OnInit, OnDestroy {
   pendingScreenTimeRequests: ScreenTimeResponseDTO[] = [];
   showNotifications = false;
   isProcessingNotif = false;
-  private pollingInterval: any;
+  private wsSubscription?: Subscription;
 
   ngOnInit(): void {
     // Load user profile picture if needed
     if (isPlatformBrowser(this.platformId)) {
       this.userRole = sessionStorage.getItem('role') || localStorage.getItem('role') || 'MINOR';
       if (this.userRole === 'MONITOR') {
-        this.startNotificationPolling();
+        this.fetchInitialRequests();
+        this.setupWebSocket();
       }
     }
   }
 
   ngOnDestroy(): void {
-    if (this.pollingInterval) {
-      clearInterval(this.pollingInterval);
+    if (this.wsSubscription) {
+      this.wsSubscription.unsubscribe();
     }
+    this.notificationWebSocketService.disconnect();
   }
 
   toggleProfileMenu(): void {
@@ -122,34 +128,41 @@ export class Navbar implements OnInit, OnDestroy {
     if (this.showNotifications) this.showProfileMenu = false;
   }
 
-  startNotificationPolling(): void {
-    this.fetchPendingRequests();
-    this.pollingInterval = setInterval(() => {
-      this.fetchPendingRequests();
-    }, 10000); 
-  }
-
-  fetchPendingRequests(): void {
+  fetchInitialRequests(): void {
     const familyId = Number(sessionStorage.getItem('selectedFamilyId') || localStorage.getItem('selectedFamilyId') || localStorage.getItem('familyId'));
     if (!familyId) return;
 
     this.screenTimeService.getPendingRequests(familyId).subscribe({
       next: (requests) => {
-        const currentCount = this.pendingScreenTimeRequests.length;
-        const newCount = requests.length;
-
-        if (newCount > currentCount && isPlatformBrowser(this.platformId)) {
-          const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
-          audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
-        }
-
         this.pendingScreenTimeRequests = requests.map(req => {
-          const existing = this.pendingScreenTimeRequests.find(r => r.requestId === req.requestId);
           return {
             ...req,
-            requestTime: existing?.requestTime || new Date()
+            requestTime: req.requestTime ? new Date(req.requestTime) : new Date()
           };
         });
+      }
+    });
+  }
+
+  setupWebSocket(): void {
+    const familyIdStr = sessionStorage.getItem('selectedFamilyId') || localStorage.getItem('selectedFamilyId') || localStorage.getItem('familyId');
+    if (!familyIdStr) return;
+
+    const familyId = Number(familyIdStr);
+    this.notificationWebSocketService.connect(familyId);
+
+    this.wsSubscription = this.notificationWebSocketService.getNotifications().subscribe(notification => {
+      if (isPlatformBrowser(this.platformId)) {
+        const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
+        audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
+      }
+
+      notification.requestTime = notification.requestTime ? new Date(notification.requestTime) : new Date();
+      
+      if (!this.pendingScreenTimeRequests.find(r => r.requestId === notification.requestId)) {
+        // Recriamos o array para que o Angular perceba instantaneamente a alteração
+        this.pendingScreenTimeRequests = [notification, ...this.pendingScreenTimeRequests];
+        this.cdr.detectChanges(); // Força a atualização do HTML
       }
     });
   }

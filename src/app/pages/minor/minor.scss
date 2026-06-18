@@ -20,6 +20,17 @@
 .filters-container .select-input {
   width: auto;
 }
+.filters-container .date-input {
+  min-width: 140px;
+  background-color: #fff;
+  color: #333;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
+}
+.filters-container .date-input::-webkit-datetime-edit {
+  color: #333;
+}
 .pagination-controls {
   display: flex;
   justify-content: center;
