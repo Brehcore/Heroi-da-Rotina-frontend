@@ -26,7 +26,8 @@ export interface ScreenTimeResponseDTO {
   requestId: number;
   minorId: number;
   minorName: string;
-  status: ScreenStatus;
+  screenStatus: ScreenStatus;
+  tatus: ScreenStatus;
   requestedMinutes: number;
   remainingBalance: number;
   requestTime?: Date; // Propriedade local do frontend para controle de tempo

@@ -100,7 +100,7 @@
             <button 
               class="btn-complete" 
               (click)="completeTask(task.id)"
-              *ngIf="task.status !== 'COMPLETED'"
+              *ngIf="task.status !== 'COMPLETED' && task.status !== 'CONCLUIDA' && task.status !== 'APPROVED' && task.status !== 'APROVADA'"
               [disabled]="loading"
             >
               ✅ Concluir

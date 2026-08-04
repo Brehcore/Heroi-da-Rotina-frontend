@@ -156,35 +156,39 @@
         </div>
       </div>
 
-      <!-- Pending Tasks -->
+      <!-- Tasks awaiting approval -->
       <div class="tasks-subsection">
-        <h3>Tarefas Pendentes</h3>
+        <h3>Tarefas para Aprovação</h3>
 
-        <div *ngIf="pendingTasks.length === 0" class="empty-state">
-          Nenhuma tarefa pendente
+        <div *ngIf="completedTasks.length === 0" class="empty-state">
+          Nenhuma tarefa para aprovar
         </div>
 
-        <div class="tasks-list" *ngIf="pendingTasks.length > 0">
-          <div class="task-card pending" *ngFor="let task of pendingTasks">
+        <div class="tasks-list" *ngIf="completedTasks.length > 0">
+          <div class="task-card completed" *ngFor="let task of completedTasks">
             <div class="task-header">
               <div class="task-title">{{ task.title }}</div>
-              <div class="task-status pending">Pendente</div>
+              <div class="task-status completed">Aguardando Execução</div>
             </div>
 
             <div class="task-description">{{ task.description }}</div>
 
             <div class="task-footer">
               <div class="task-reward">
-                <span class="reward-label">Recompensa:</span>
-                <span class="reward-value">{{ task.rewardTask }} tokens</span>
+                Recompensa: {{ task.rewardTask }} tokens
               </div>
-              <button
-                class="btn-approve"
-                (click)="approveTask(task.id)"
-                [disabled]="loading"
-              >
-                ✓ Aprovar
-              </button>
+              <div class="task-actions" *ngIf="task.status === 'COMPLETED' || task.status === 'CONCLUIDA'">
+                <button class="btn-reject" (click)="rejectTask(task.id)" [disabled]="loading">
+                  ✗ Rejeitar
+                </button>
+                <button
+                  class="btn-approve"
+                  (click)="approveTask(task.id)"
+                  [disabled]="loading"
+                >
+                  ✓ Aprovar
+                </button>
+              </div>
             </div>
           </div>
         </div>

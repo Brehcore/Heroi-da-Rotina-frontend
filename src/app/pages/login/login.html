@@ -9,9 +9,9 @@
                     <img src="/Logo-transp.png" alt="Logo Herói da Rotina" class="logo" />
                 <h1 class="title">Herói da Rotina</h1>
 
-                @if (error) {
+                @if (loginError) {
                 <div class="error-message">
-                    {{ error }}
+                    {{ loginError }}
                 </div>
                 }
 
@@ -23,6 +23,7 @@
                 <label>Senha</label>
                 <div class="field">
                     <input type="password" formControlName="password" placeholder="Informe sua senha" required />
+                    <a class="forgot-password" (click)="showForgotPasswordModal = true">Esqueci a senha</a>
                 </div>
 
                 <button type="submit" class="btn" [disabled]="loginForm.invalid || loading">
@@ -36,4 +37,65 @@
             </form>
         </div>
     </div>
+</div>
+
+<!-- Modal: Esqueci a Senha -->
+<div *ngIf="showForgotPasswordModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Recuperar Senha</h3>
+      <button (click)="showForgotPasswordModal = false" class="close-btn">&times;</button>
+    </div>
+    <div class="modal-content">
+      <form [formGroup]="forgotPasswordForm" (ngSubmit)="onForgotPasswordSubmit()">
+        <p>Digite seu e-mail para enviarmos um link de recuperação.</p>
+
+        <div *ngIf="forgotPasswordError" class="error-message">{{ forgotPasswordError }}</div>
+        <div *ngIf="forgotPasswordSuccess" class="success-message">{{ forgotPasswordSuccess }}</div>
+
+        <div class="field">
+          <label for="forgot-email">E-mail</label>
+          <input id="forgot-email" type="email" placeholder="seuemail@exemplo.com" formControlName="email">
+        </div>
+
+        <button type="submit" class="btn" [disabled]="forgotPasswordForm.invalid || forgotPasswordLoading">
+          {{ forgotPasswordLoading ? 'Enviando...' : 'Enviar Link' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Resetar a Senha -->
+<div *ngIf="showResetPasswordModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3>Criar Nova Senha</h3>
+      <button (click)="showResetPasswordModal = false" class="close-btn">&times;</button>
+    </div>
+    <div class="modal-content">
+      <form [formGroup]="resetPasswordForm" (ngSubmit)="onResetPasswordSubmit()">
+        <p>Crie uma nova senha para sua conta.</p>
+
+        <div *ngIf="resetPasswordError" class="error-message">{{ resetPasswordError }}</div>
+        <div *ngIf="resetPasswordSuccess" class="success-message">{{ resetPasswordSuccess }}</div>
+
+        <div class="field">
+          <label for="newPassword">Nova Senha</label>
+          <input id="newPassword" type="password" placeholder="Mínimo 6 caracteres" formControlName="newPassword">
+        </div>
+        <div class="field">
+          <label for="confirmPassword">Confirmar Nova Senha</label>
+          <input id="confirmPassword" type="password" placeholder="Repita a nova senha" formControlName="confirmPassword">
+          <div *ngIf="resetPasswordForm.get('confirmPassword')?.hasError('mismatch')" class="error-message small">
+            As senhas não coincidem.
+          </div>
+        </div>
+
+        <button type="submit" class="btn" [disabled]="resetPasswordForm.invalid || resetPasswordLoading">
+          {{ resetPasswordLoading ? 'Salvando...' : 'Salvar Nova Senha' }}
+        </button>
+      </form>
+    </div>
+  </div>
 </div>

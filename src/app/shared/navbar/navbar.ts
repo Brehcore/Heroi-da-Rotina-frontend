@@ -64,9 +64,9 @@ export class Navbar implements OnInit, OnDestroy {
     this.showProfileMenu = false;
   }
 
-  openProfile(): void {
+   openConfigs(): void {
     this.showProfileMenu = false;
-    this.router.navigate(['/profile']);
+    this.router.navigate(['/configs']);
   }
 
   logout(): void {
@@ -152,18 +152,39 @@ export class Navbar implements OnInit, OnDestroy {
     this.notificationWebSocketService.connect(familyId);
 
     this.wsSubscription = this.notificationWebSocketService.getNotifications().subscribe(notification => {
-      if (isPlatformBrowser(this.platformId)) {
-        const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
-        audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
+      
+      // 1. Garante que a data está no formato correto
+      notification.requestTime = notification.requestTime ? new Date(notification.requestTime) : new Date();
+
+      // 2. A MÁGICA DA RESILIÊNCIA: Lê o status do jeito que vier do Java
+      const statusReal = notification.screenStatus || (notification as any).status;
+
+      // 3. O IF PRINCIPAL (Toma a decisão baseada no statusReal)
+      if (statusReal === 'PENDING') {
+        
+        // Toca o som porque é um pedido novo
+        if (isPlatformBrowser(this.platformId)) {
+          const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
+          audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
+        }
+
+        // Verifica se já não existe na lista (evita duplicatas se o websocket piscar)
+        const isDuplicate = this.pendingScreenTimeRequests.some(r => r.requestId === notification.requestId);
+        
+        if (!isDuplicate) {
+          // Faz o push para a lista do sininho
+          this.pendingScreenTimeRequests = [notification, ...this.pendingScreenTimeRequests];
+        }
+
+      } else if (statusReal === 'APPROVED' || statusReal === 'REJECTED') {
+        
+        // Alguém clicou no e-mail ou em outro aparelho: Tira da lista do sininho!
+        this.pendingScreenTimeRequests = this.pendingScreenTimeRequests.filter(r => r.requestId !== notification.requestId);
+        
       }
 
-      notification.requestTime = notification.requestTime ? new Date(notification.requestTime) : new Date();
-      
-      if (!this.pendingScreenTimeRequests.find(r => r.requestId === notification.requestId)) {
-        // Recriamos o array para que o Angular perceba instantaneamente a alteração
-        this.pendingScreenTimeRequests = [notification, ...this.pendingScreenTimeRequests];
-        this.cdr.detectChanges(); // Força a atualização do HTML
-      }
+      // 4. Força a tela a se desenhar de novo (atualiza o número vermelho e a lista HTML)
+      this.cdr.detectChanges(); 
     });
   }
 

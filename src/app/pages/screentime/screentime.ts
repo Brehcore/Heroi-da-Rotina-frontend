@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Navbar } from '../../shared/navbar/navbar';
 import { AuthService } from '../../core/services/auth.service';
 import { ScreenTimeService } from './screentime.service';
-import { ScreenTimeConfigDTO, ScreenTimeRequest } from '../../core/services/models/screentime.model';
+import { ScreenTimeConfigDTO, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
 
 @Component({
   selector: 'app-screentime',
@@ -31,7 +31,7 @@ export class ScreenTime implements OnInit {
   
   // Formulários
   requestToApproveId: number = 0;
-  pendingRequests: ScreenTimeRequest[] = [];
+  pendingRequests: ScreenTimeResponseDTO[] = [];
   
   loading = false;
   error: string | null = null;
@@ -46,6 +46,7 @@ export class ScreenTime implements OnInit {
 
     if (this.userRole === 'MONITOR') {
       this.loadMinors();
+      this.loadPendingRequests();
     } else {
       this.selectedMinorId = this.userId;
       this.loadConfig();
@@ -134,15 +135,32 @@ export class ScreenTime implements OnInit {
         this.successMsg = 'Solicitação aprovada e fichas debitadas!'; 
         this.cdr.detectChanges();
         setTimeout(() => {
-          this.successMsg = null;
-          this.cdr.detectChanges();
+            this.successMsg = null;
+            this.cdr.detectChanges();
         }, 2000);
         this.requestToApproveId = 0; 
+        this.loadPendingRequests(); // Recarrega a lista de solicitações
         this.loading = false; 
       },
       error: () => { 
         this.error = 'Erro ao aprovar solicitação.'; 
         this.loading = false; 
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  loadPendingRequests() {
+    if (this.userRole !== 'MONITOR' || !this.familyId) return;
+
+    this.screenTimeService.getPendingRequests(this.familyId).subscribe({
+      next: (requests) => {
+        this.pendingRequests = requests;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erro ao carregar solicitações pendentes:', err);
+        this.error = 'Não foi possível carregar as solicitações pendentes.';
         this.cdr.detectChanges();
       }
     });

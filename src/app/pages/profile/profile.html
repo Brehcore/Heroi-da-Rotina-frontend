@@ -8,7 +8,7 @@
   
       <div *ngIf="!loading && user" class="profile-content">
         <div class="avatar-container">
-          <img [src]="user.profilePictureUrl" [alt]="'Foto de ' + user.name" [title]="'Foto de ' + user.name" class="avatar" role="img" />
+          <img [src]="user.profilePictureUrl" [alt]="'Foto de ' + user.name" title="Foto de perfil do usuário" class="avatar" />
         </div>
         <h1 class="name">{{ user.name }}</h1>
         <p class="email">{{ user.email }}</p>

@@ -33,3 +33,12 @@ export interface UserRegisterDTO {
     password: string;
     profilePictureUrl?: string;
 }
+
+export interface ForgotPasswordDTO {
+    email: string;
+}
+
+export interface ResetPasswordDTO {
+    token: string;
+    newPassword: string;
+}

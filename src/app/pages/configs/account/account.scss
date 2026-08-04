@@ -1,0 +1,343 @@
+.profile-page {
+  min-height: 100vh;
+  background: #FDFCF0;
+  display: flex;
+  flex-direction: column;
+}
+
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(7, 13, 24, 0.68);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.account-modal__dialog {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 22px;
+  background: #f7f9fc;
+  box-shadow: 0 26px 48px rgba(5, 10, 19, 0.42);
+}
+
+.account-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.12);
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+}
+
+.account-modal__header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.account-modal__close {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 41, 59, 0.15);
+  background: #fff;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.account-modal__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.account-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(7, 13, 24, 0.68);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+}
+
+.account-modal__dialog {
+  width: min(520px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  border-radius: 22px;
+  background: #f7f9fc;
+  box-shadow: 0 26px 48px rgba(5, 10, 19, 0.42);
+}
+
+.account-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(30, 41, 59, 0.12);
+  background: #ffffff;
+  position: sticky;
+  top: 0;
+}
+
+.account-modal__header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #111827;
+}
+
+.account-modal__close {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid rgba(30, 41, 59, 0.15);
+  background: #fff;
+  color: #1e293b;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.account-modal__close svg {
+  width: 18px;
+  height: 18px;
+}
+
+.account-modal__body {
+  padding: 0;
+}
+
+.content {
+  flex: 1; /* Faz a div ocupar todo o espaço restante abaixo da navbar */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.content--modal {
+  min-height: 0;
+}
+
+.profile-card {
+  width: 100%;
+  max-width: 400px;
+  background: #fbfbfb;
+  border-radius: 22px;
+  padding: 40px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  text-align: center;
+}
+
+.loading, .error {
+  font-size: 16px;
+  color: #333;
+  padding: 20px;
+}
+
+.error {
+  color: #d32f2f;
+}
+
+.profile-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-container {
+  margin-bottom: 20px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #e9e9e9;
+  border: 4px solid #ffe600;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+}
+
+.name {
+  font-family: 'Courier New', Courier, monospace;
+  margin: 0 0 8px 0;
+  color: #111;
+  font-size: 24px;
+  letter-spacing: 1px;
+}
+
+.email {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+.info-group {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-top: 1px solid #eee;
+}
+
+.label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.value {
+  color: #222;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+// ==========================================================================
+//  Form Styles (for Change Password, etc.)
+// ==========================================================================
+
+.profile-card {
+  h3 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+    color: #111;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left; // Override the text-align: center from .profile-card
+  }
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #fff;
+  color: #111827;
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: #ffe600; // Highlight color from avatar border
+    box-shadow: 0 0 0 3px rgba(255, 230, 0, 0.4);
+  }
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.btn-cancel, .btn-confirm {
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.btn-cancel {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+
+  &:hover {
+    background-color: #e2e8f0;
+  }
+}
+
+.btn-confirm {
+  background-color: #10b981; // A green color for confirmation
+  color: #fff;
+
+  &:hover {
+    background-color: #059669;
+  }
+
+  &:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+  }
+}
+
+.message {
+  padding: 12px;
+  margin-top: 16px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 14px;
+  text-align: center;
+}
+
+.success-message {
+  color: #155724;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+}
+
+.error-message {
+  color: #721c24;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+
+  // Estilo para mensagens de erro pequenas, abaixo dos inputs
+  &.small {
+    color: #c62828;
+    background: none;
+    border: none;
+    padding: 0;
+    margin-top: 6px;
+    margin-bottom: 0;
+    font-size: 13px;
+    font-weight: 500;
+    text-align: left;
+  }
+}

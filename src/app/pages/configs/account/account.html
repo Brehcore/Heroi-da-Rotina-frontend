@@ -1,0 +1,135 @@
+<div class="profile-page">
+  
+  <!-- Template Exclusivo do Perfil -->
+  <ng-template #profileCard>
+    <div class="profile-card">
+      @if (loading) {
+        <div class="loading">Carregando perfil...</div>
+      }
+      @if (error) {
+        <div class="error">{{ error }}</div>
+      }
+      @if (!loading && user) {
+        <div class="profile-content">
+          <div class="avatar-container">
+            <img [src]="user.profilePictureUrl" [alt]="'Foto de ' + user.name" title="Foto de perfil do usuário" class="avatar" />
+          </div>
+          <h1 class="name">{{ user.name }}</h1>
+          <p class="email">{{ user.email }}</p>
+
+          <div class="info-group">
+            <span class="label">Papel:</span>
+            <span class="value">{{ user.role }}</span>
+          </div>
+
+          @if (user.familyName) {
+            <div class="info-group">
+              <span class="label">Família:</span>
+              <span class="value">{{ user.familyName }}</span>
+            </div>
+          }
+        </div>
+      }
+    </div>
+  </ng-template>
+
+  <!-- Template para Alterar Senha (em breve você constrói o conteúdo aqui) -->
+  <ng-template #passwordCard>
+    <div class="profile-card">
+      <h3>Alterar Senha</h3>
+
+       <form [formGroup]="changePasswordForm" (ngSubmit)="onChangePasswordSubmit()">
+        <div class="form-group">
+          <label for="oldPassword">Senha Antiga</label>
+          <input type="password" id="oldPassword" class="form-input" placeholder="Sua senha atual"
+                   autocomplete="current-password" formControlName="oldPassword">
+          @if (changePasswordForm.get('oldPassword')?.touched && changePasswordForm.get('oldPassword')?.hasError('required')) {
+            <div class="error-message small">A senha antiga é obrigatória.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="newPassword">Nova Senha</label>
+          <input type="password" id="newPassword" class="form-input" placeholder="Sua nova senha"
+                   autocomplete="new-password" formControlName="newPassword">
+          @if (changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.hasError('required')) {
+            <div class="error-message small">A nova senha é obrigatória.</div>
+          }
+          @if (changePasswordForm.get('newPassword')?.touched && changePasswordForm.get('newPassword')?.hasError('minlength')) {
+            <div class="error-message small">A senha deve ter no mínimo 8 caracteres.</div>
+          }
+        </div>
+
+        <div class="form-group">
+          <label for="confirmNewPassword">Confirmar Nova Senha</label>
+          <input type="password" id="confirmNewPassword" class="form-input" placeholder="Confirme sua nova senha"
+                 autocomplete="new-password" formControlName="confirmNewPassword">
+          @if (changePasswordForm.get('confirmNewPassword')?.touched && changePasswordForm.get('confirmNewPassword')?.hasError('required')) {
+            <div class="error-message small">A confirmação da senha é obrigatória.</div>
+          }
+          @if (changePasswordForm.get('confirmNewPassword')?.touched && changePasswordForm.hasError('mismatch')) {
+            <div class="error-message small">As senhas não conferem.</div>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn-cancel" (click)="closeModal()">Cancelar</button>
+          <button type="submit" class="btn-confirm" [disabled]="changePasswordForm.invalid || changePasswordLoading()">
+            @if (changePasswordLoading()) {
+              <span>Salvando...</span>
+            } @else {
+              <span>Salvar Nova Senha</span>
+            }
+          </button>
+        </div>
+
+        @if (changePasswordSuccess()) { <div class="message success-message">{{ changePasswordSuccess() }}</div> }
+        @if (changePasswordError()) { <div class="message error-message">{{ changePasswordError() }}</div> }
+      </form>
+    </div>
+  </ng-template>
+
+  <!-- MODAL PRINCIPAL -->
+  <div class="account-modal" role="presentation" (click)="closeModal()">
+    <section
+      class="account-modal__dialog"
+      role="dialog"
+      aria-modal="true"
+      (click)="$event.stopPropagation()">
+      
+      <header class="account-modal__header">
+        <!-- O título muda dinamicamente -->
+        <h2>
+          @if (activeView() === 'profile') { Perfil do usuário }
+          @if (activeView() === 'password') { Alterar senha }
+          @if (activeView() === 'email') { Alterar e-mail }
+          @if (activeView() === 'delete') { Exclusão da conta }
+        </h2>
+        <button
+          type="button"
+          class="account-modal__close"
+          aria-label="Fechar modal"
+          (click)="closeModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 6 6 18" />
+            <path d="m6 6 12 12" />
+          </svg>
+        </button>
+      </header>
+
+      <div class="account-modal__body">
+        <div class="content content--modal">
+          
+          <!-- Injeta o template correto com base na visualização ativa -->
+          @if (activeView() === 'profile') {
+            <ng-container *ngTemplateOutlet="profileCard"></ng-container>
+          }
+          @if (activeView() === 'password') {
+            <ng-container *ngTemplateOutlet="passwordCard"></ng-container>
+          }
+          
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

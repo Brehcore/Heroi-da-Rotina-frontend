@@ -103,24 +103,30 @@ export class MinorPortal implements OnInit, OnDestroy { // 2. <-- OnDestroy adic
 
     this.wsSubscription = this.notificationWebSocketService.getNotifications().subscribe(notification => {
       
+      // 1. ADICIONE ESTE CONSOLE.LOG PARA VERMOS A VERDADE NUA E CRUA:
+      console.log('🔔 WEBSOCKET CHEGOU NO MENOR:', notification);
+
       // Toca um sonzinho legal de notificação
       if (isPlatformBrowser(this.platformId)) {
         const audio = new Audio('https://assets.mixkit.com/sfx/preview/mixkit-software-interface-back-2575.mp3'); 
         audio.play().catch(e => console.warn("Interação necessária para tocar som", e));
       }
 
-      // Removemos o 'APROVADA' e o 'REJEITADA' porque o seu Enum já garante o formato em inglês
-      if (notification.status === 'APPROVED') {
+      // 2. A MÁGICA DA RESILIÊNCIA: 
+      // Ele vai tentar ler 'screenStatus'. Se vier vazio, ele lê 'status'.
+      const statusReal = notification.screenStatus || (notification as any).status;
+
+      // 3. AGORA USAMOS A VARIÁVEL 'statusReal' NOS IFS:
+      if (statusReal === 'APPROVED') {
         this.successMsg = `Oba! Seu tempo de tela de ${notification.requestedMinutes} min foi APROVADO! 🎉`;
-        this.fetchWalletData(); // <-- Atualiza as fichas na mesma hora!
+        this.fetchWalletData(); 
         
-      } else if (notification.status === 'REJECTED') {
+      } else if (statusReal === 'REJECTED') {
         this.error = `Poxa... Seu pedido de ${notification.requestedMinutes} min foi REJEITADO. 😔`;
       }
 
-      this.cdr.detectChanges(); // Força o Angular a desenhar os balões de mensagem na tela
+      this.cdr.detectChanges(); 
 
-      // Apaga a mensagem da tela depois de 5 segundos
       setTimeout(() => {
         this.successMsg = null;
         this.error = null;

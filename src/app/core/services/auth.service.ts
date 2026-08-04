@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { isPlatformBrowser } from "@angular/common";
 import { inject, Injectable, PLATFORM_ID } from "@angular/core";
-import {Observable, tap } from 'rxjs';
-import { UserLoginDTO, LoginResponseDTO, FamilyResponseDTO, UserResponseDTO, UserRegisterDTO } from "./models/auth.models";
+import { Observable, tap, of } from 'rxjs';
+import { UserLoginDTO, LoginResponseDTO, FamilyResponseDTO, UserResponseDTO, UserRegisterDTO, ForgotPasswordDTO, ResetPasswordDTO } from "./models/auth.models";
 import { environment } from "../../../../src/environments/environment";
 
 @Injectable({ providedIn: 'root' })
@@ -28,8 +28,18 @@ export class AuthService {
     }
 
     register(data: UserRegisterDTO): Observable<UserResponseDTO> {
-        const url = `${this.API_BASE}/api/users/register`;
+        const url = `${this.API_BASE}/auth/register`;
         return this.http.post<UserResponseDTO>(url, data);
+    }
+
+    forgotPassword(data: ForgotPasswordDTO): Observable<void> {
+        const url = `${this.API_BASE}/auth/forgot-password`;
+        return this.http.post<void>(url, data);
+    }
+
+    resetPassword(data: ResetPasswordDTO): Observable<void> {
+        const url = `${this.API_BASE}/auth/reset-password`;
+        return this.http.post<void>(url, data);
     }
 
     getToken(): string | null {
@@ -54,7 +64,7 @@ export class AuthService {
             const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
             return this.http.get<FamilyResponseDTO[]>(url, { headers });
         }
-        return this.http.get<FamilyResponseDTO[]>(url);
+        return of([]); // Retorna um array vazio se não houver token
     }
 
     getFamilyMembers(familyId: string | number): Observable<UserResponseDTO[]> {
@@ -65,7 +75,7 @@ export class AuthService {
             const headers = new HttpHeaders({ 'Authorization': `Bearer ${token}` });
             return this.http.get<UserResponseDTO[]>(url, { headers });
         }
-        return this.http.get<UserResponseDTO[]>(url);
+        return of([]); // Retorna um array vazio se não houver token
     }
 
 isAuthenticated(): boolean {

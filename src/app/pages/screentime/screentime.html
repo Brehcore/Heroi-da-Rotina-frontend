@@ -14,7 +14,6 @@
 
     <div class="header">
       <h2>Tempo de Tela</h2>
-      
       <div class="minor-selector" *ngIf="userRole === 'MONITOR' && minors.length > 0">
         <label for="minorSelect">Visualizando para:</label>
         <select id="minorSelect" [(ngModel)]="selectedMinorId" (change)="onMinorChange()" aria-label="Selecionar menor" title="Selecionar menor">
@@ -52,11 +51,11 @@
       <!-- Aprovar Tempo (Monitor) -->
       <div class="card" *ngIf="userRole === 'MONITOR'">
         <h3>Aprovar Solicitações Pendentes</h3>
-        <p>Selecione a solicitação do menor que deseja aprovar (Isso descontará as fichas dele).</p>
+        <p>Selecione a solicitação do menor que deseja aprovar (Isso descontará das fichas do menor).</p>
         <form (ngSubmit)="approveTime()" class="inline-form">
           <select [(ngModel)]="requestToApproveId" name="reqId" required aria-label="Selecione a solicitação">
             <option [ngValue]="0" disabled>Selecione uma solicitação</option>
-            <option *ngFor="let req of pendingRequests" [ngValue]="req.id">Solicitação #{{ req.id }} - {{ req.minutes }} min</option>
+            <option *ngFor="let req of pendingRequests" [ngValue]="req.requestId">Solicitação #{{ req.requestId }} - {{ req.requestedMinutes }} min ({{req.minorName}})</option>
           </select>
           <button type="submit" class="btn-approve" [disabled]="loading || !requestToApproveId">Aprovar Solicitação</button>
         </form>

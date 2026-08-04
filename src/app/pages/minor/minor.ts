@@ -39,7 +39,7 @@ export class Minor implements OnInit {
   minorName: string | null = null;
   wallet: WalletResponseDTO | null = null;
   tasks: TaskResponseDTO[] = [];
-  pendingTasks: TaskResponseDTO[] = [];
+  completedTasks: TaskResponseDTO[] = []; // Adicionado para tarefas que o menor concluiu e aguardam aprovação
   transactions: TransactionDTO[] = [];
   loading = false;
   error: string | null = null;
@@ -162,7 +162,7 @@ export class Minor implements OnInit {
 
     this.fetchWalletData();
     this.fetchTasks();
-    this.fetchPendingTasks();
+    this.fetchTasksForApproval();
     this.fetchTransactions();
   }
 
@@ -202,16 +202,16 @@ export class Minor implements OnInit {
     });
   }
 
-  fetchPendingTasks(): void {
+  fetchTasksForApproval(): void {
     if (!this.minorId) return;
 
     this.taskService.getMinorPendingTasks(Number(this.minorId)).subscribe({
       next: (data) => {
-        this.pendingTasks = data || [];
+        this.completedTasks = data || [];
         this.cdr.detectChanges();
       },
       error: (err) => {
-        console.error('Erro ao buscar tarefas pendentes:', err);
+        console.error('Erro ao buscar tarefas para aprovação:', err);
         this.cdr.detectChanges();
       }
     });
@@ -260,8 +260,8 @@ export class Minor implements OnInit {
         console.log('Tarefa criada com sucesso:', response);
         this.loading = false;
         this.tasks.push(response);
-        this.closeCreateTaskForm();
-        this.fetchPendingTasks();
+        this.closeCreateTaskForm(); // Fecha o formulário
+        this.fetchTasks(); // Atualiza a lista de "Todas as Tarefas"
         this.successMsg = 'Tarefa criada com sucesso!';
         this.cdr.detectChanges();
         setTimeout(() => {
@@ -288,7 +288,7 @@ export class Minor implements OnInit {
         console.log('Tarefa aprovada com sucesso');
         this.loading = false;
         this.fetchTasks();
-        this.fetchPendingTasks();
+        this.fetchTasksForApproval();
         this.fetchWalletData();
         this.successMsg = 'Tarefa aprovada com sucesso!';
         this.cdr.detectChanges();
@@ -301,6 +301,38 @@ export class Minor implements OnInit {
         console.error('Erro ao aprovar tarefa:', err);
         
         this.error = extractErrorMessage(err, 'Erro ao aprovar tarefa. Tente novamente.');
+        this.loading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  rejectTask(taskId: number): void {
+    const reason = prompt('Qual o motivo da reprovação da tarefa?');
+
+    // Cancela a ação se o usuário clicar em Cancelar ou deixar em branco
+    if (!reason || reason.trim() === '') {
+      return;
+    }
+
+    this.loading = true;
+    this.error = null;
+    this.successMsg = null;
+
+    this.taskService.rejectTask(taskId, reason).subscribe({
+      next: () => {
+        this.loading = false;
+        this.fetchTasks();
+        this.fetchTasksForApproval();
+        this.successMsg = 'Tarefa rejeitada com sucesso!';
+        this.cdr.detectChanges();
+        setTimeout(() => {
+          this.successMsg = null;
+          this.cdr.detectChanges();
+        }, 2000);
+      },
+      error: (err) => {
+        this.error = extractErrorMessage(err, 'Erro ao rejeitar tarefa. Tente novamente.');
         this.loading = false;
         this.cdr.detectChanges();
       }

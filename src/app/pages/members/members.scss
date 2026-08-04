@@ -3,6 +3,8 @@
 .content {
   padding: 16px 20px 100px 20px; /* Mobile first: Respiro inferior para a navbar no celular */
   box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 1440px;
   @media (min-width: 700px) { padding: 28px 40px; }
 }
 
@@ -45,7 +47,7 @@ h2 { margin: 0; font-size: 18px; color: #333; }
   max-height: calc(100vh - 32px); /* Fallback para navegadores antigos */
   max-height: calc(100dvh - 32px); /* A solução real: Adapta à tela subtraindo barras móveis dinâmicas */
   display: flex; flex-direction: column; overflow: hidden; /* Oculta as barras externas */
-  overscroll-behavior: contain; /* Impede o scroll de passar para a tela de fundo */
+  -webkit-overflow-scrolling: touch; /* Melhora o scroll no iOS antigo sem usar overscroll-behavior */
   box-sizing: border-box;
 }
 
