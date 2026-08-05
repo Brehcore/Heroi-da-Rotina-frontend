@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 // Variáveis de Cor da Marca
 $bg-light: #FDFCF0; //Off-White
 $bg-sidebar: #1E293B; //Azul Profundo
@@ -69,7 +71,7 @@ $green-active: #16A34A;
       color: #D1D5DB;
 
       &:hover, &.active {
-        background-color: lighten($bg-sidebar, 5%);
+        background-color: color.adjust($bg-sidebar, $lightness: 5%);
         color: #fff;
         
         .svg-icon { color: $yellow-accent; }

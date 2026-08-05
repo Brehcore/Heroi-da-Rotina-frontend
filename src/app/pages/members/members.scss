@@ -47,7 +47,6 @@ h2 { margin: 0; font-size: 18px; color: #333; }
   max-height: calc(100vh - 32px); /* Fallback para navegadores antigos */
   max-height: calc(100dvh - 32px); /* A solução real: Adapta à tela subtraindo barras móveis dinâmicas */
   display: flex; flex-direction: column; overflow: hidden; /* Oculta as barras externas */
-  -webkit-overflow-scrolling: touch; /* Melhora o scroll no iOS antigo sem usar overscroll-behavior */
   box-sizing: border-box;
 }
 
@@ -81,6 +80,7 @@ h2 { margin: 0; font-size: 18px; color: #333; }
 }
 
 .form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group--spaced { margin-bottom: 20px; }
 .form-group label { font-size: 13px; font-weight: 600; color: #555; }
 .form-input { 
   padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; width: 100%; box-sizing: border-box; 

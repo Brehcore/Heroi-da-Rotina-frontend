@@ -33,11 +33,12 @@
   align-items: center;
   flex-wrap: nowrap;
   overflow-x: auto;
+  -ms-overflow-style: none;
   
   /* Esconde a barra de rolagem visualmente, mas mantém a funcionalidade de deslizar o dedo */
-  scrollbar-width: none; 
   &::-webkit-scrollbar {
-    display: none;
+    width: 0;
+    height: 0;
   }
 }
 
@@ -143,16 +144,23 @@
   border: 2px solid #1E293B;
 }
 
+.notification-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1040;
+  // background-color: rgba(0,0,0,0.1); // Descomente para depurar o posicionamento
+}
+
 .notification-dropdown {
   position: absolute;
-  top: 50px;
-  right: -55px; /* Empurra para a direita evitando vazamento na esquerda */
+  top: 65px; /* Distância do topo da página */
+  right: 20px; /* Distância da direita da página */
   width: 320px;
   max-width: calc(100vw - 32px); /* Limita o tamanho à tela do celular com respiro nas bordas */
   background: white;
   border-radius: 12px;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-  z-index: 1000;
+  z-index: 1050; /* Garante que o dropdown fique acima do overlay */
   overflow: hidden;
   animation: slideDown 0.2s ease-out;
 
@@ -226,7 +234,7 @@
   .nav-text { font-size: 14px; font-weight: 700; }
   .profile-area { gap: 16px; }
   .profile-btn { width: 44px; height: 44px; }
-  .notification-dropdown { right: -10px; }
+  .notification-dropdown { right: 24px; }
 }
 
 @keyframes slideDown {
