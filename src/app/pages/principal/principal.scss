@@ -1,0 +1,782 @@
+$yellow-primary: #ffe600;
+$yellow-badge: #ca8a04;
+$blue-secondary: #1E293B;
+$bg-offwhite: #FDFCF0;
+$text-muted: #64748B;
+$card-border: #E2E8F0;
+
+:host {
+  display: block;
+  background-color: $bg-offwhite;
+  font-family: 'Roboto', sans-serif;
+  color: $blue-secondary;
+}
+
+.landing-page {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+.section-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  box-sizing: border-box;
+}
+
+// ==========================================
+// 1. HERO SECTION (Base Mobile)
+// ==========================================
+.hero-section {
+  padding: 2.5rem 0 3.5rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+
+  .hero-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1.25rem;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 2.5rem;
+  }
+
+  .hero-text {
+    width: 100%;
+    max-width: 540px;
+
+    h1 {
+      font-size: 2.2rem;
+      line-height: 1.15;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      margin: 0 0 1rem;
+
+      .highlight-yellow {
+        color: #eab308;
+      }
+    }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: $text-muted;
+      line-height: 1.5;
+      margin: 0 0 1.75rem;
+    }
+
+    .hero-cta {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+
+      .btn-saiba-mais {
+        background-color: #ffffff;
+        border: 1.5px solid #CBD5E1;
+        padding: 0.75rem 1.6rem;
+        font-weight: 700;
+        color: $blue-secondary;
+        border-radius: 8px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
+
+        span {
+          font-size: 1.2rem;
+          line-height: 1;
+        }
+
+        &:hover {
+          background-color: #F8FAFC;
+          border-color: $blue-secondary;
+        }
+      }
+    }
+  }
+
+  .hero-visual {
+    position: relative;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .family-illustration {
+      width: 100%;
+      height: auto;
+      max-height: 420px;
+      object-fit: contain;
+      z-index: 1;
+      display: block;
+    }
+
+    // No mobile pequeno, os badges são ocultados para manter o foco limpo na ilustração
+    .badge {
+      display: none;
+    }
+  }
+}
+
+// ==========================================
+// SEÇÕES COMUNS & CARDS (Base Mobile)
+// ==========================================
+.section {
+  padding: 3rem 0;
+  text-align: center;
+
+  h2 {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0 0 0.5rem;
+    letter-spacing: -0.5px;
+  }
+
+  .section-sub {
+    color: $text-muted;
+    font-size: 0.92rem;
+    margin: 0 0 2rem;
+  }
+}
+
+// 2. Como Funciona (Mobile)
+.flow-section {
+  .steps-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+
+    .step-card {
+      background: #ffffff;
+      padding: 2rem 1.25rem 1.5rem;
+      border-radius: 14px;
+      border: 1px solid $card-border;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .step-num {
+        position: absolute;
+        top: -16px;
+        background: $yellow-primary;
+        color: $blue-secondary;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      .step-card-visual {
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1rem;
+
+        img {
+          max-height: 60px;
+          max-width: 80px;
+          object-fit: contain;
+        }
+      }
+
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin: 0 0 0.5rem;
+      }
+
+      p {
+        font-size: 0.85rem;
+        color: $text-muted;
+        line-height: 1.45;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// 3. Para Quem (Mobile)
+.roles-section {
+  .roles-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: left;
+
+    .role-card {
+      background: #ffffff;
+      padding: 1.75rem;
+      border-radius: 16px;
+      border: 1px solid $card-border;
+      display: flex;
+      flex-direction: column-reverse; // No mobile a ilustração fica no topo ou adaptada
+      align-items: center;
+      gap: 1.25rem;
+
+      .role-content {
+        width: 100%;
+
+        .role-header {
+          margin-bottom: 1rem;
+
+          h3 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin: 0 0 0.2rem;
+          }
+
+          p {
+            font-size: 0.85rem;
+            color: $text-muted;
+            margin: 0;
+          }
+        }
+
+        .role-list {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 0.65rem;
+
+          li {
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.55rem;
+            color: #334155;
+
+            .check {
+              font-weight: bold;
+              font-size: 0.85rem;
+
+              &.check-yellow { color: #eab308; }
+              &.check-blue { color: #0284c7; }
+            }
+          }
+        }
+      }
+
+      .role-avatar-wrapper {
+        .role-avatar {
+          width: 110px;
+          height: auto;
+          object-fit: contain;
+        }
+      }
+
+      &.role-monitor .role-header h3 { color: #ca8a04; }
+      &.role-menor .role-header h3 { color: #0284c7; }
+    }
+  }
+}
+
+// 4. Recursos (Mobile)
+.features-section {
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: left;
+
+    .feature-card {
+      background: #ffffff;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid $card-border;
+
+      .feature-icon-wrapper {
+        margin-bottom: 0.75rem;
+        height: 34px;
+        display: flex;
+        align-items: center;
+
+        img {
+          max-height: 30px;
+          max-width: 30px;
+          object-fit: contain;
+        }
+      }
+
+      strong {
+        display: block;
+        font-size: 0.92rem;
+        font-weight: 700;
+        margin-bottom: 0.35rem;
+      }
+
+      p {
+        font-size: 0.8rem;
+        color: $text-muted;
+        line-height: 1.4;
+        margin: 0;
+      }
+    }
+  }
+}
+
+// 5. Sobre o Projeto (Mobile)
+.action-section {
+  background-color: #ffffff;
+  border-top: 1px solid #F1F5F9;
+
+  .action-timeline {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+
+    .timeline-step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      .step-num {
+        background: $yellow-primary;
+        color: $blue-secondary;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+      }
+
+      strong {
+        font-size: 0.9rem;
+        margin-bottom: 0.25rem;
+      }
+
+      small {
+        font-size: 0.75rem;
+        color: $text-muted;
+        line-height: 1.35;
+      }
+    }
+  }
+
+  .system-screens-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    text-align: left;
+
+    .ui-mock-card {
+      background: #FAFAFA;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 1rem;
+      font-size: 0.78rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+
+      .ui-mock-header {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 0.82rem;
+        border-bottom: 1px solid #EDF2F7;
+        padding-bottom: 0.4rem;
+
+        .close-x {
+          color: $text-muted;
+          font-size: 1rem;
+          line-height: 1;
+        }
+      }
+
+      .ui-tabs-fake {
+        display: flex;
+        gap: 0.5rem;
+        font-size: 0.75rem;
+        border-bottom: 1px solid #E2E8F0;
+        padding-bottom: 0.3rem;
+
+        span {
+          color: $text-muted;
+          padding: 0.2rem 0.4rem;
+
+          &.tab-active {
+            color: $blue-secondary;
+            font-weight: 700;
+            border-bottom: 2px solid $yellow-primary;
+          }
+        }
+      }
+
+      .ui-mock-body {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+
+        label {
+          font-size: 0.7rem;
+          color: $text-muted;
+        }
+
+        h4 {
+          margin: 0;
+          font-size: 0.85rem;
+          font-weight: 700;
+        }
+
+        .input-fake, .textarea-fake {
+          background: #fff;
+          border: 1px solid #E2E8F0;
+          padding: 0.4rem 0.6rem;
+          border-radius: 6px;
+          color: #334155;
+        }
+
+        .textarea-fake {
+          min-height: 40px;
+          font-size: 0.72rem;
+        }
+
+        .row-fake {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+
+          &.detail-row {
+            margin: 0.3rem 0;
+          }
+        }
+
+        .select-fake {
+          background: #fff;
+          border: 1px solid #E2E8F0;
+          padding: 0.4rem 0.7rem;
+          border-radius: 4px;
+        }
+
+        .btn-fake-action {
+          background: $yellow-primary;
+          border: none;
+          padding: 0.45rem;
+          border-radius: 6px;
+          font-weight: 700;
+          font-size: 0.75rem;
+          margin-top: 0.5rem;
+          cursor: default;
+        }
+
+        .task-item-fake {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background: #fff;
+          padding: 0.5rem;
+          border-radius: 6px;
+          border: 1px solid #E2E8F0;
+
+          strong {
+            display: block;
+            font-size: 0.75rem;
+          }
+
+          small {
+            font-size: 0.68rem;
+            color: $text-muted;
+          }
+
+          .checkbox-fake {
+            width: 14px;
+            height: 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.65rem;
+
+            &.checked {
+              background: #22C55E;
+              border-color: #22C55E;
+              color: #fff;
+            }
+          }
+        }
+
+        .status-block {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin: 0.3rem 0;
+
+          .tag-pendente {
+            background: #FEF3C7;
+            color: #D97706;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.68rem;
+            font-weight: 600;
+          }
+        }
+
+        .status-note {
+          font-size: 0.7rem;
+          color: $text-muted;
+          margin: 0;
+        }
+
+        .btn-group-decision {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 0.4rem;
+
+          .btn-decide {
+            text-align: center;
+            padding: 0.3rem;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+
+            &.approve {
+              background: #DCFCE7;
+              color: #16A34A;
+            }
+
+            &.reject {
+              background: #FEE2E2;
+              color: #DC2626;
+            }
+          }
+        }
+
+        .wallet-balance-box {
+          background: #FEF9C3;
+          padding: 0.75rem;
+          border-radius: 8px;
+          text-align: center;
+          margin-bottom: 0.5rem;
+
+          small {
+            color: #854D0E;
+            font-size: 0.7rem;
+          }
+
+          .stars-val {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: $blue-secondary;
+            margin-top: 0.2rem;
+          }
+        }
+
+        .wallet-action-row {
+          background: #fff;
+          border: 1px solid #E2E8F0;
+          padding: 0.4rem 0.6rem;
+          border-radius: 6px;
+          font-size: 0.72rem;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+        }
+      }
+    }
+  }
+}
+
+// ==========================================
+// BREAKPOINTS PROGRESSIVOS (TABLET & DESKTOP)
+// ==========================================
+
+// Tablet Intermediário (>= 600px)
+@media (min-width: 600px) {
+  .flow-section .steps-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .features-section .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .action-section {
+    .action-timeline {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .system-screens-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+}
+
+// Tablet Paisagem / Notebook Pequeno (>= 860px)
+@media (min-width: 860px) {
+  .section {
+    padding: 4rem 0;
+  }
+
+  .roles-section .roles-grid {
+    grid-template-columns: 1fr 1fr;
+
+    .role-card {
+      flex-direction: row;
+      justify-content: space-between;
+
+      &.role-menor {
+        flex-direction: row;
+      }
+    }
+  }
+
+  .features-section .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+// Desktop Completo (>= 1024px)
+@media (min-width: 1024px) {
+  .section-container {
+    max-width: 1240px;
+    padding: 0 1.5rem;
+  }
+
+  // Ativação do Hero Layout em Grid e exibição dos Badges
+  .hero-section {
+    padding: 3rem 0;
+    display: flex;
+    align-items: center;
+    min-height: calc(100vh - 70px);
+
+    .hero-container {
+      max-width: 1300px;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 42% 58%;
+      align-items: center;
+      text-align: left;
+      gap: 1rem;
+    }
+
+    .hero-text {
+      margin-right: auto;
+
+      h1 {
+        font-size: clamp(2.4rem, 3.5vw, 3.5rem);
+        margin-bottom: 1rem;
+      }
+
+      .subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 2rem;
+      }
+
+      .hero-cta {
+        justify-content: flex-start;
+      }
+    }
+
+    .hero-visual {
+      max-width: 720px;
+
+      .family-illustration {
+        max-height: 600px;
+      }
+
+      // Reativação dos Badges com as medidas refinadas
+      .badge {
+        display: flex;
+        position: absolute;
+        background: #ffffff;
+        padding: 0.6rem 0.85rem;
+        border-radius: 12px;
+        align-items: center;
+        gap: 0.6rem;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        z-index: 3;
+        white-space: normal;
+        width: max-content;
+        max-width: 150px;
+
+        .badge-img {
+          width: 32px;
+          height: 32px;
+          object-fit: contain;
+          flex-shrink: 0;
+        }
+
+        .badge-text {
+          display: flex;
+          flex-direction: column;
+
+          strong {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: $blue-secondary;
+            line-height: 1.2;
+            margin-bottom: 0.15rem;
+          }
+
+          small {
+            font-size: 0.65rem;
+            color: $text-muted;
+            line-height: 1.3;
+          }
+        }
+
+        &.badge-missoes {
+          top: 15%;
+          left: 4%;
+        }
+
+        &.badge-fichas {
+          top: 55%;
+          left: 2%;
+        }
+
+        &.badge-tela {
+          top: 10%;
+          right: 2%;
+        }
+
+        &.badge-cofrinho {
+          bottom: 15%;
+          right: 3%;
+        }
+      }
+    }
+  }
+
+  // Grids em 4 e 5 colunas no Desktop
+  .flow-section .steps-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .features-section .features-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .action-section {
+    .action-timeline {
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .system-screens-grid {
+      grid-template-columns: repeat(5, 1fr);
+    }
+  }
+}

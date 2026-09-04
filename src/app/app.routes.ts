@@ -9,41 +9,41 @@ import { Wallet } from './pages/wallet/wallet';
 import { ScreenTime } from './pages/screentime/screentime';
 import { Login } from './pages/login/login';
 import { MinorPortal } from './pages/minor-portal/minor-portal';
-
-// Importe o componente principal de configurações
+import { Principal } from './pages/principal/principal';
 import { Configs } from './pages/configs/configs'; 
-// Importe o account
 import { Account } from './pages/configs/account/account';
 
 export const routes: Routes = [
-    { path: 'login', component: Login },
-    { path: 'redefinir-senha', component: Login },
-    { path: 'register', component: Register },
-    { path: 'home', component: Home },
-    { path: 'members', component: Members },
-    { path: 'tasks', component: Tasks },
-    { path: 'wallet', component: Wallet },
-    { path: 'screentime', component: ScreenTime },
-    { path: 'family-selection', component: FamilySelection },
-    { path: 'minor', component: Minor },
-    { path: 'minor-portal', component: MinorPortal },
-    
-    // Rota pai de configurações
-    { 
-        path: 'configs', 
-        component: Configs,
-        // Rotas filhas que serão renderizadas no <router-outlet> do configs.html
-        children: [
-            { path: 'account/profile', component: Account },
-            { path: 'account/password', component: Account },
-            { path: 'account/email', component: Account },
-            { path: 'account/delete', component: Account },
-            
-            // Futuramente, será adicionadas as rotas para Segurança, Notificações, etc. aqui
-            // Exemplo: { path: 'security/2fa', component: SecurityComponent }
-        ]
-    },
+  // Rota raiz carregando a landing page
+  { path: '', component: Principal, pathMatch: 'full' },
 
-    { path: '', redirectTo: '/login', pathMatch: 'full' },
-    { path: '**', redirectTo: '/login' }
+  // Rotas públicas de autenticação
+  { path: 'login', component: Login },
+  { path: 'redefinir-senha', component: Login },
+  { path: 'register', component: Register },
+
+  // Rotas internas / autenticadas
+  { path: 'home', component: Home },
+  { path: 'members', component: Members },
+  { path: 'tasks', component: Tasks },
+  { path: 'wallet', component: Wallet },
+  { path: 'screentime', component: ScreenTime },
+  { path: 'family-selection', component: FamilySelection },
+  { path: 'minor', component: Minor },
+  { path: 'minor-portal', component: MinorPortal },
+
+  // Configurações
+  { 
+    path: 'configs', 
+    component: Configs,
+    children: [
+      { path: 'account/profile', component: Account },
+      { path: 'account/password', component: Account },
+      { path: 'account/email', component: Account },
+      { path: 'account/delete', component: Account },
+    ]
+  },
+
+  // Fallback para rotas inexistentes redirecionar para a landing page
+  { path: '**', redirectTo: '' }
 ];

@@ -1,0 +1,32 @@
+<header class="navbar">
+  <div class="nav-container">
+    <a (click)="scrollToTop()" routerLink="/" class="brand" title="Voltar ao início">
+      <img src="/Logo-transp.png" alt="Logo Herói da Rotina" class="logo" />
+      <span class="brand-title">Herói da Rotina</span>
+    </a>
+
+    <nav class="nav-links">
+      <a (click)="navigateToSection('como-funciona')">Como funciona</a>
+      <a (click)="navigateToSection('para-quem')">Para quem</a>
+      <a (click)="navigateToSection('recursos')">Recursos</a>
+      <a (click)="navigateToSection('sobre-o-projeto')">Sobre o projeto</a>
+    </nav>
+
+    <div class="nav-actions">
+      <a routerLink="/login" class="btn-entrar">Entrar</a>
+    </div>
+  </div>
+</header>
+
+<!-- Botão Flutuante: Subir para o topo -->
+@if (showBackToTop) {
+  <button 
+    type="button" 
+    class="btn-back-to-top" 
+    (click)="scrollToTop()" 
+    title="Voltar ao topo"
+    aria-label="Voltar ao topo"
+  >
+    &#8593;
+  </button>
+}

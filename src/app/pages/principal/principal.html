@@ -1,0 +1,359 @@
+<app-public-navbar></app-public-navbar>
+
+<main class="landing-page">
+  <!-- 1. Hero Section (Entrou no site) -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <div class="hero-text">
+        <h1>
+          Transformando <span class="highlight-yellow">tarefas</span> diárias em uma grande aventura!
+        </h1>
+        <p class="subtitle">
+          Uma plataforma de gamificação familiar para ensinar responsabilidade, organização e educação financeira de forma divertida e inteligente.
+        </p>
+
+        <div class="hero-cta">
+          <button class="btn-saiba-mais" (click)="scrollTo('como-funciona')">
+            Saiba mais <span>&rsaquo;</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <!-- Floating Badges -->
+        <div class="badge badge-missoes">
+          <img src="/prancheta.png" alt="Missões" class="badge-img" />
+          <div class="badge-text">
+            <strong>Missões</strong>
+            <small>Tarefas que viram conquistas.</small>
+          </div>
+        </div>
+
+        <div class="badge badge-fichas">
+          <img src="/token.png" alt="Fichas" class="badge-img" />
+          <div class="badge-text">
+            <strong>Fichas</strong>
+            <small>Responsabilidade tem recompensa.</small>
+          </div>
+        </div>
+
+        <div class="badge badge-tela">
+          <img src="/tela.png" alt="Tempo de tela" class="badge-img" />
+          <div class="badge-text">
+            <strong>Tempo de tela</strong>
+            <small>Controle com autonomia e limites diários.</small>
+          </div>
+        </div>
+
+        <div class="badge badge-cofrinho">
+          <img src="/cofrinho.png" alt="Cofrinho" class="badge-img" />
+          <div class="badge-text">
+            <strong>Cofrinho</strong>
+            <small>Aprenda a administrar e veja seu saldo crescer.</small>
+          </div>
+        </div>
+
+        <!-- Imagem Principal da Família -->
+        <img src="/Login.png" alt="Família Herói da Rotina" class="family-illustration" />
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. Como funciona -->
+  <section id="como-funciona" class="section flow-section">
+    <div class="section-container">
+      <h2>Como funciona?</h2>
+      <p class="section-sub">Um ciclo simples que ensina grandes lições.</p>
+
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <div class="step-card-visual">
+            <img src="/familia.png" alt="Crie sua família" />
+          </div>
+          <h3>Crie sua família</h3>
+          <p>Adicione os membros e defina os papéis de Monitor e Menor.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <div class="step-card-visual">
+            <img src="/prancheta2.png" alt="Configure as regras" />
+          </div>
+          <h3>Configure as regras</h3>
+          <p>Defina tarefas, fichas, recompensas, limites e outras regras da casa.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <div class="step-card-visual">
+            <img src="/trofeu.png" alt="Complete missões" />
+          </div>
+          <h3>Complete missões</h3>
+          <p>O menor realiza tarefas e solicita tempo de tela com as fichas conquistadas.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">4</div>
+          <div class="step-card-visual">
+            <img src="/grafico.png" alt="Evolua juntos" />
+          </div>
+          <h3>Evolua juntos</h3>
+          <p>Acompanhe conquistas, saldo, cofrinho e celebre cada avanço.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Para quem -->
+  <section id="para-quem" class="section roles-section">
+    <div class="section-container">
+      <h2>Dois papéis, duas experiências</h2>
+      <p class="section-sub">O Herói da Rotina foi criado para atender as necessidades de toda a família.</p>
+
+      <div class="roles-grid">
+        <!-- Card Monitor -->
+        <div class="role-card role-monitor">
+          <div class="role-avatar-wrapper">
+            <img src="/monitor.png" alt="Avatar Monitor" class="role-avatar" />
+          </div>
+          <div class="role-content">
+            <div class="role-header">
+              <h3>Monitor</h3>
+              <p>Gerencia a rotina e ensina.</p>
+            </div>
+            <ul class="role-list">
+              <li><span class="check check-yellow">&#10004;</span> Criar e gerenciar tarefas</li>
+              <li><span class="check check-yellow">&#10004;</span> Aprovar ou rejeitar solicitações</li>
+              <li><span class="check check-yellow">&#10004;</span> Gerenciar fichas e cofrinho</li>
+              <li><span class="check check-yellow">&#10004;</span> Configurar limites e regras</li>
+              <li><span class="check check-yellow">&#10004;</span> Acompanhar relatórios e histórico</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card Menor -->
+        <div class="role-card role-menor">
+          <div class="role-content">
+            <div class="role-header">
+              <h3>Menor</h3>
+              <p>Conquista, aprende e cresce.</p>
+            </div>
+            <ul class="role-list">
+              <li><span class="check check-blue">&#10004;</span> Visualizar e concluir tarefas</li>
+              <li><span class="check check-blue">&#10004;</span> Solicitar tempo de tela</li>
+              <li><span class="check check-blue">&#10004;</span> Acompanhar saldo de fichas</li>
+              <li><span class="check check-blue">&#10004;</span> Gerenciar cofrinho</li>
+              <li><span class="check check-blue">&#10004;</span> Ver conquistas e progresso</li>
+            </ul>
+          </div>
+          <div class="role-avatar-wrapper">
+            <img src="/menor.png" alt="Avatar Menor" class="role-avatar" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. Recursos -->
+  <section id="recursos" class="section features-section">
+    <div class="section-container">
+      <h2>Recursos que fazem a diferença</h2>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <img src="/gamificacao.png" alt="Gamificação" />
+          </div>
+          <strong>Gamificação</strong>
+          <p>Transforme obrigações em desafios divertidos.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <img src="/auditoria.png" alt="Auditoria" />
+          </div>
+          <strong>Auditoria</strong>
+          <p>Aprovação concorrente entre monitores.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <img src="/limites-inteligentes.png" alt="Limites inteligentes" />
+          </div>
+          <strong>Limites inteligentes</strong>
+          <p>Controle de tempo de tela por dia da semana.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <img src="/educacao-financeira.png" alt="Educação financeira" />
+          </div>
+          <strong>Educação financeira</strong>
+          <p>Cofrinho com juros e histórico de transações.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <img src="/regras-flexiveis.png" alt="Regras flexíveis" />
+          </div>
+          <strong>Regras flexíveis</strong>
+          <p>Configurações 100% editáveis por família.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. Sobre o projeto (O sistema em ação) -->
+  <section id="sobre-o-projeto" class="section action-section">
+    <div class="section-container">
+      <h2>O sistema em ação</h2>
+      <p class="section-sub">Veja como a jornada acontece na prática.</p>
+
+      <!-- Stepper timeline horizontal -->
+      <div class="action-timeline">
+        <div class="timeline-step">
+          <div class="step-num">1</div>
+          <strong>Crie uma tarefa</strong>
+          <small>Monitores criam missões e definem recompensas.</small>
+        </div>
+        <div class="timeline-step">
+          <div class="step-num">2</div>
+          <strong>Complete a missão</strong>
+          <small>O menor conclui a tarefa com um clique.</small>
+        </div>
+        <div class="timeline-step">
+          <div class="step-num">3</div>
+          <strong>Aguarde aprovação</strong>
+          <small>A tarefa fica pendente até a aprovação dos monitores.</small>
+        </div>
+        <div class="timeline-step">
+          <div class="step-num">4</div>
+          <strong>Receba ou perca fichas</strong>
+          <small>Aprovação concede fichas, rejeição aplica penalidades.</small>
+        </div>
+        <div class="timeline-step">
+          <div class="step-num">5</div>
+          <strong>Use suas conquistas</strong>
+          <small>Solicite tempo de tela ou guarde no cofrinho.</small>
+        </div>
+      </div>
+
+      <!-- Preview Screens da Jornada -->
+      <div class="system-screens-grid">
+        <!-- Mock 1: Nova Tarefa -->
+        <div class="ui-mock-card">
+          <div class="ui-mock-header">
+            <span>Nova tarefa</span>
+            <span class="close-x">&times;</span>
+          </div>
+          <div class="ui-mock-body">
+            <label>Título</label>
+            <div class="input-fake">Arrumar o quarto</div>
+            <label>Descrição</label>
+            <div class="textarea-fake">Deixar tudo organizado e limpo.</div>
+            <label>Recompensa (Fichas/Tokens)</label>
+            <div class="input-fake">10</div>
+            <label>Menor Responsável</label>
+            <div class="select-fake">Lucas Vasconcelos &#9662;</div>
+            <button class="btn-fake-action">Salvar</button>
+          </div>
+        </div>
+
+        <!-- Mock 2: Minhas Tarefas -->
+        <div class="ui-mock-card">
+          <div class="ui-mock-header">
+            <span>Minhas tarefas</span>
+          </div>
+          <div class="ui-tabs-fake">
+            <span class="tab-active">Pendentes</span>
+            <span>Concluídas</span>
+          </div>
+          <div class="ui-mock-body">
+            <div class="task-item-fake checked">
+              <div>
+                <strong>Arrumar o quarto</strong>
+                <small>2 fichas</small>
+              </div>
+              <span class="checkbox-fake checked">&#10003;</span>
+            </div>
+            <div class="task-item-fake">
+              <div>
+                <strong>Leitura diária</strong>
+                <small>1 ficha</small>
+              </div>
+              <span class="checkbox-fake"></span>
+            </div>
+            <div class="task-item-fake">
+              <div>
+                <strong>Lavar a louça</strong>
+                <small>2 fichas</small>
+              </div>
+              <span class="checkbox-fake"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mock 3: Tarefa Detalhe -->
+        <div class="ui-mock-card">
+          <div class="ui-mock-header">
+            <span>Tarefa</span>
+          </div>
+          <div class="ui-mock-body">
+            <h4>Arrumar o quarto</h4>
+            <div class="row-fake detail-row">
+              <span>Recompensa</span>
+              <strong>2 fichas</strong>
+            </div>
+            <div class="status-block">
+              <span>Status</span>
+              <span class="tag-pendente">Pendente</span>
+            </div>
+            <p class="status-note">Aguardando aprovação dos monitores.</p>
+          </div>
+        </div>
+
+        <!-- Mock 4: Aprovação -->
+        <div class="ui-mock-card">
+          <div class="ui-mock-header">
+            <span>Aprovação</span>
+            <span class="close-x">&times;</span>
+          </div>
+          <div class="ui-mock-body">
+            <h4>Arrumar o quarto</h4>
+            <label>Decisão</label>
+            <div class="btn-group-decision">
+              <span class="btn-decide approve">Aprovar</span>
+              <span class="btn-decide reject">Rejeitar</span>
+            </div>
+            <label>Observação (opcional)</label>
+            <div class="textarea-fake">Muito bem! Continue assim!</div>
+            <button class="btn-fake-action">Confirmar</button>
+          </div>
+        </div>
+
+        <!-- Mock 5: Carteira -->
+        <div class="ui-mock-card">
+          <div class="ui-mock-header">
+            <span>Minha carteira</span>
+            <span>&#8644;</span>
+          </div>
+          <div class="ui-mock-body">
+            <div class="wallet-balance-box">
+              <small>Saldo de fichas</small>
+              <div class="stars-val">&#11088; 18</div>
+            </div>
+            <div class="wallet-action-row">
+              <span>&#128187;</span> Solicitar tempo de tela
+            </div>
+            <div class="wallet-action-row">
+              <span>&#128055;</span> Ver cofrinho
+            </div>
+            <div class="wallet-action-row">
+              <span>&#128221;</span> Histórico
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>

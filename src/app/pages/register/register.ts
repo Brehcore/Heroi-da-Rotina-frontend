@@ -4,6 +4,7 @@ import { ReactiveFormsModule, FormBuilder, Validators, AbstractControl, Validati
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { UserRegisterDTO } from '../../core/services/models/auth.models';
+import { PublicNavbar } from '../../shared/public-navbar/public-navbar';
 
 export const emailMatchValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const email = control.get('email');
@@ -14,7 +15,7 @@ export const emailMatchValidator: ValidatorFn = (control: AbstractControl): Vali
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, PublicNavbar],
   templateUrl: './register.html',
   styleUrls: ['./register.scss']
 })
@@ -23,6 +24,10 @@ export class Register {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  hidePassword = true;
+  loading = false;
+  error: string | null = null;
+
   registerForm = this.fb.group({
     name: ['', [Validators.required, Validators.minLength(3)]],
     email: ['', [Validators.required, Validators.email]],
@@ -30,10 +35,11 @@ export class Register {
     password: ['', [Validators.required, Validators.minLength(6)]]
   }, { validators: emailMatchValidator });
 
-  loading = false;
-  error: string | null = null;
+  togglePasswordVisibility(): void {
+    this.hidePassword = !this.hidePassword;
+  }
 
-  onSubmit() {
+  onSubmit(): void {
     if (this.registerForm.hasError('emailMismatch')) {
       this.error = 'Os e-mails informados não conferem.';
       return;
@@ -42,7 +48,7 @@ export class Register {
     if (this.registerForm.valid) {
       this.loading = true;
       this.error = null;
-      
+
       const { name, email, password } = this.registerForm.value;
       const registerData: UserRegisterDTO = { name, email, password } as UserRegisterDTO;
 

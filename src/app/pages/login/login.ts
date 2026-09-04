@@ -1,15 +1,15 @@
-import { Component, OnInit } from '@angular/core';
-import { inject } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { AuthService } from '../../core/services/auth.service';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { UserLoginDTO, ForgotPasswordDTO, ResetPasswordDTO } from '../../core/services/models/auth.models';
 import { CommonModule } from '@angular/common';
+import { PublicNavbar } from '../../shared/public-navbar/public-navbar';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterModule, CommonModule],
+  imports: [ReactiveFormsModule, RouterModule, CommonModule, PublicNavbar],
   templateUrl: './login.html',
   styleUrls: ['./login.scss'],
 })
@@ -17,6 +17,10 @@ export class Login implements OnInit {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
+
+  // Alternador do input de senha (olhinho)
+  hidePassword = true;
 
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -24,7 +28,7 @@ export class Login implements OnInit {
   });
 
   loading = false;
-  error: string | null = null; // Propriedade 'error' que estava faltando
+  error: string | null = null;
   loginError: string | null = null;
 
   // Controle do Modal de "Esqueci a Senha"
@@ -47,8 +51,6 @@ export class Login implements OnInit {
   resetPasswordError: string | null = null;
   resetPasswordSuccess: string | null = null;
 
-  private route = inject(ActivatedRoute); // Injeção do ActivatedRoute que estava faltando
-
   ngOnInit(): void {
     this.route.queryParamMap.subscribe(params => {
       const token = params.get('token');
@@ -59,34 +61,41 @@ export class Login implements OnInit {
     });
   }
 
+  togglePasswordVisibility(): void {
+    this.hidePassword = !this.hidePassword;
+  }
+
   private passwordMatchValidator(form: any) {
     const password = form.get('newPassword');
     const confirmPassword = form.get('confirmPassword');
-    if (password.value !== confirmPassword.value) {
-      confirmPassword.setErrors({ mismatch: true });
-    } else {
-      confirmPassword.setErrors(null);
+    if (password && confirmPassword) {
+      if (password.value !== confirmPassword.value) {
+        confirmPassword.setErrors({ mismatch: true });
+      } else {
+        confirmPassword.setErrors(null);
+      }
     }
     return null;
   }
-  onSubmit() {
+
+  onSubmit(): void {
     if (this.loginForm.valid) {
       this.loading = true;
       this.loginError = null;
 
-      this.authService.login( this.loginForm.value as UserLoginDTO ).subscribe({
+      this.authService.login(this.loginForm.value as UserLoginDTO).subscribe({
         next: () => {
           this.loading = false;
           const role = this.authService.getUserRole();
-          
+
           console.log('Login bem-sucedido! Role retornada pelo backend:', role);
-          
+
           if (role === 'MONITOR' || role === 'ROLE_MONITOR') {
             this.router.navigate(['/family-selection']);
           } else if (role === 'MINOR' || role === 'MENOR' || role === 'ROLE_MINOR') {
             this.router.navigate(['/minor-portal']);
           } else {
-            this.router.navigate(['/minor-portal']); // Tenta ir pro portal do menor como fallback
+            this.router.navigate(['/minor-portal']);
           }
         },
         error: (err) => {
@@ -98,7 +107,7 @@ export class Login implements OnInit {
     }
   }
 
-  onForgotPasswordSubmit() {
+  onForgotPasswordSubmit(): void {
     if (this.forgotPasswordForm.valid) {
       this.forgotPasswordLoading = true;
       this.forgotPasswordError = null;
@@ -119,7 +128,7 @@ export class Login implements OnInit {
     }
   }
 
-  onResetPasswordSubmit() {
+  onResetPasswordSubmit(): void {
     if (this.resetPasswordForm.valid && this.resetPasswordToken) {
       this.resetPasswordLoading = true;
       this.resetPasswordError = null;
