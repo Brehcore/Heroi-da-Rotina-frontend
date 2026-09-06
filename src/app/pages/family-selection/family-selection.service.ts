@@ -1,8 +1,9 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
+import { FamilyResponseDTO } from '../../core/services/models/auth.models';
 
 export interface FamilyCreateDTO {
   familyName: string;
@@ -17,10 +18,11 @@ export class FamilySelectionService {
   private authService = inject(AuthService);
   private readonly API_BASE = environment.apiUrl;
 
+  getMyFamilies(): Observable<FamilyResponseDTO[]> {
+    return this.http.get<FamilyResponseDTO[]>(`${this.API_BASE}/api/families/me`);
+  }
+
   createFamily(familyDTO: FamilyCreateDTO): Observable<{ id: number; familyName: string }> {
-    const token = this.authService.getToken();
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-    
-    return this.http.post<{ id: number; familyName: string }>(`${this.API_BASE}/api/families`, familyDTO, options);
+    return this.http.post<{ id: number; familyName: string }>(`${this.API_BASE}/api/families`, familyDTO);
   }
 }

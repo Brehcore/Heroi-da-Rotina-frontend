@@ -1,0 +1,125 @@
+<section class="dashboard-container">
+  <!-- Loading State -->
+  <div *ngIf="isLoading()" class="loading-state">
+    <div class="spinner"></div>
+    <p>Carregando seu QG de herói...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="errorMessage()" class="error-banner">
+    <p>{{ errorMessage() }}</p>
+    <button (click)="fetchDashboard()" class="btn-retry">Tentar novamente</button>
+  </div>
+
+  <ng-container *ngIf="!isLoading() && dashboard() as data">
+    <!-- Header / Gamificação do Herói -->
+    <header class="hero-card" *ngIf="data.gamification as game">
+      <div class="hero-badge">
+        <span class="level-tag">NÍVEL</span>
+        <span class="level-number">{{ game.currentLevel ?? 1 }}</span>
+      </div>
+
+      <div class="hero-info">
+        <div class="xp-header">
+          <span class="rank-title">Explorador de Missões</span>
+          <span class="xp-values">{{ game.currentXp ?? 0 }} / {{ game.targetXp ?? 100 }} XP</span>
+        </div>
+
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill xp-fill" [style.width.%]="xpPercentage()"></div>
+        </div>
+
+        <p class="motivational-phrase">{{ game.motivationalMessage }}</p>
+      </div>
+    </header>
+
+    <!-- Cards Principais (Carteira & Tempo de Tela) -->
+    <div class="metrics-grid">
+      <!-- Card da Carteira -->
+      <article class="metric-card wallet-card" *ngIf="data.wallet as wallet">
+        <div class="card-header">
+          <span class="card-icon">🪙</span>
+          <h3>Suas Recompensas</h3>
+        </div>
+        <div class="wallet-balances">
+          <div class="balance-item tokens">
+            <span class="label">Fichas Ativas</span>
+            <strong class="value">{{ wallet.tokenBalances ?? 0 }}</strong>
+          </div>
+          <div class="balance-item vault">
+            <span class="label">Saldo no Cofre</span>
+            <strong class="value">{{ (wallet.moneyBalances ?? 0) | currency:'BRL':'symbol':'1.2-2' }}</strong>
+          </div>
+        </div>
+        <div class="wallet-footer" *ngIf="wallet.interestEnabled">
+          <small>✨ Rendendo {{ wallet.interestRate }}% no cofre</small>
+        </div>
+      </article>
+
+      <!-- Card do Tempo de Tela -->
+      <article class="metric-card screentime-card" *ngIf="data.screenTime as screen">
+        <div class="card-header">
+          <span class="card-icon">⏱️</span>
+          <h3>Tempo de Tela Hoje</h3>
+        </div>
+
+        <div class="screentime-overview">
+          <div class="time-stat">
+            <span class="label">Disponível</span>
+            <strong class="value remaining">{{ formatMinutes(screen.remainingMinutesToday) }}</strong>
+          </div>
+          <div class="time-stat">
+            <span class="label">Total Permitido</span>
+            <span class="value limit">{{ formatMinutes(screen.dailyLimitMinutes) }}</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill screentime-fill" [style.width.%]="screenTimePercentage()"></div>
+        </div>
+
+        <div class="screentime-footer">
+          <small>🪙 1 Ficha vale {{ screen.tokenToMinutesRatio ?? 30 }} minutos</small>
+        </div>
+      </article>
+    </div>
+
+    <!-- Lista de Missões de Hoje -->
+    <section class="tasks-section">
+      <div class="section-title-row">
+        <h2>🎯 Missões do Dia</h2>
+        <a routerLink="/minor/tasks" class="see-all-link">Ver todas</a>
+      </div>
+
+      <div class="tasks-list" *ngIf="data.todayTasks && data.todayTasks.length > 0; else noTasks">
+        <div *ngFor="let task of data.todayTasks" class="task-card" [class.task-done]="task.status === 'APPROVED'">
+          <div class="task-details">
+            <h4>{{ task.title }}</h4>
+            <p *ngIf="task.description">{{ task.description }}</p>
+          </div>
+
+          <div class="task-aside">
+            <span class="token-tag" *ngIf="(task.tokenReward ?? 0) > 0">
+              🪙 +{{ task.tokenReward }}
+            </span>
+            <span class="status-badge" [attr.data-status]="task.status">
+              {{ task.status === 'APPROVED' ? 'Aprovada' : (task.status === 'COMPLETED' ? 'Em análise' : 'Pendente') }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <ng-template #noTasks>
+        <div class="empty-tasks">
+          <p>Nenhuma missão pendente para hoje! Aproveite para descansar ou ler um livro. 🌟</p>
+        </div>
+      </ng-template>
+    </section>
+
+    <!-- Lembrete do Dia -->
+    <div class="reminder-banner" *ngIf="data.dailyReminder">
+      <span class="reminder-icon">💡</span>
+      <p>{{ data.dailyReminder }}</p>
+    </div>
+  </ng-container>
+</section>

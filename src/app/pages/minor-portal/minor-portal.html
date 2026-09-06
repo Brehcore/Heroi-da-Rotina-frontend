@@ -1,133 +1,38 @@
-<div class="minor-portal">
+<div class="minor-portal-wrapper">
+  <!-- 1. Header do Menor -->
+  <app-minor-header
+    [minorName]="minorName || 'Campeão'"
+    [minorProfileUrl]="minorProfileUrl"
+    (logoutEvent)="logout()"
+  ></app-minor-header>
 
-  <!-- Pull to Refresh Indicator -->
-  <div *ngIf="isRefreshing" class="refresh-indicator">
-    🔄 Atualizando seus dados...
-  </div>
-
-  <!-- Header -->
-  <div class="portal-header">
-    <div class="profile-section">
-      <img [src]="minorProfileUrl || 'https://api.dicebear.com/8.x/bottts/svg?seed=Campeao'" alt="Avatar do Menor" class="avatar">
-      <div class="welcome-text">
-        <h1 class="welcome-title">Olá, {{ minorName || 'Campeão' }}!</h1>
-        <p class="welcome-subtitle">Veja suas tarefas e ganhe tokens</p>
-      </div>
+  <!-- Pull to Refresh Feedback -->
+  @if (isRefreshing) {
+    <div class="refresh-indicator">
+      🔄 Atualizando seus dados...
     </div>
-    <button class="btn-logout" (click)="logout()">Sair</button>
-  </div>
+  }
 
-  <div class="portal-content">
+  <!-- Mensagens Globais de WebSocket / Ações -->
+  @if (successMsg) {
+    <div class="floating-alert success">{{ successMsg }}</div>
+  }
+  @if (error) {
+    <div class="floating-alert error">{{ error }}</div>
+  }
 
-    <!-- Error Message -->
-    <div class="error-box" *ngIf="error">
-      <p>❌ {{ error }}</p>
-    </div>
+  <!-- 2. Corpo do Portal: Sidebar + Área Central Dinâmica -->
+  <div class="portal-body">
+    <app-minor-sidebar
+      [level]="dashboardData?.profile?.level || 1"
+      [currentXp]="dashboardData?.profile?.currentXp || 0"
+      [targetXp]="dashboardData?.profile?.targetXp || 100"
+      [dailyQuote]="dashboardData?.dailyQuote!"
+    ></app-minor-sidebar>
 
-    <!-- Success Message -->
-    <div class="success-box" *ngIf="successMsg">
-      <p>✅ {{ successMsg }}</p>
-    </div>
-
-    <!-- Carteira/Wallet Section -->
-    <div class="wallet-card" *ngIf="wallet">
-      <div class="wallet-header">
-        <h2>💰 Minha Carteira</h2>
-      </div>
-      <div class="wallet-grid">
-        <div class="wallet-item tokens">
-          <div class="wallet-icon">⭐</div>
-          <div class="wallet-info">
-            <span class="wallet-label">Tokens</span>
-            <span class="wallet-value">{{ wallet.tokensBalance || 0 }}</span>
-          </div>
-        </div>
-        <div class="wallet-item money">
-          <div class="wallet-icon">💵</div>
-          <div class="wallet-info">
-            <span class="wallet-label">Dinheiro</span>
-            <span class="wallet-value">R$ {{ (wallet.moneyBalance || 0).toFixed(2) }}</span>
-          </div>
-        </div>
-        <div class="wallet-item quotation">
-          <div class="wallet-icon">📈</div>
-          <div class="wallet-info">
-            <span class="wallet-label">Cotação Atual</span>
-            <span class="wallet-value">R$ {{ (wallet.tokenQuotation || 0).toFixed(2) }}</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Informações de Rendimento -->
-      <div class="wallet-interest-info" *ngIf="wallet">
-        <div class="interest-details">
-          <p><strong>Rendimento Automático (Cofrinho):</strong> <span [class.active]="wallet.interestEnabled" [class.inactive]="!wallet.interestEnabled">{{ wallet.interestEnabled ? 'Ativo ✅' : 'Inativo ❌' }}</span></p>
-          <p><strong>Taxa de Juros Atual:</strong> {{ wallet.interestRate || 0 }}% ({{ getFrequencyText(wallet.interestFrequency) }})</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Solicitar Tempo de Tela -->
-    <div class="screen-time-section" *ngIf="screenTimeConfig">
-      <h2>📺 Tempo de Tela</h2>
-      <div class="screen-time-card">
-        <p>Informe quantas fichas você deseja trocar por tempo de tela.</p>
-        <p class="cost-info">Custo: 1 Ficha = {{screenTimeConfig.minutesPerToken || 0}} minutos</p>
-        <form (ngSubmit)="requestScreenTime()" class="inline-form">
-          <input type="number" [(ngModel)]="requestTokens" name="reqTokens" placeholder="Ex: 1" min="1" required [disabled]="requestingTime">
-          <button type="submit" class="btn-primary" [disabled]="requestingTime || !requestTokens">
-            {{ requestingTime ? 'Solicitando...' : 'Solicitar' }}
-          </button>
-        </form>
-      </div>
-    </div>
-
-    <!-- Tarefas Pendentes -->
-    <div class="tasks-section" *ngIf="pendingTasks.length > 0">
-      <h2>🎯 Minhas Tarefas</h2>
-      <div class="tasks-container">
-        <div class="task-card" *ngFor="let task of pendingTasks">
-          <div class="task-status-badge" [style.backgroundColor]="getTaskStatusColor(task.status)">
-            {{ getTaskStatusText(task.status) }}
-          </div>
-          <h3 class="task-title">{{ task.title }}</h3>
-          <p class="task-description">{{ task.description }}</p>
-          <div class="task-footer">
-            <div class="task-reward">
-              <span class="reward-icon">⭐</span>
-              <span class="reward-value">{{ task.rewardTask }} tokens</span>
-            </div>
-            <button 
-              class="btn-complete" 
-              (click)="completeTask(task.id)"
-              *ngIf="task.status !== 'COMPLETED' && task.status !== 'CONCLUIDA' && task.status !== 'APPROVED' && task.status !== 'APROVADA'"
-              [disabled]="loading"
-            >
-              ✅ Concluir
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Tarefas Completas -->
-    <div class="completed-section" *ngIf="completedTasks.length > 0">
-      <h2>🏆 Tarefas Completas</h2>
-      <div class="completed-container">
-        <div class="completed-card" *ngFor="let task of completedTasks">
-          <div class="completion-icon">✨</div>
-          <h3 class="task-title">{{ task.title }}</h3>
-          <div class="completion-reward">
-            +{{ task.rewardTask }} ⭐
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Empty State -->
-    <div class="empty-state" *ngIf="pendingTasks.length === 0 && completedTasks.length === 0 && !tasksLoading">
-      <p>📭 Nenhuma tarefa no momento</p>
-      <p class="empty-subtitle">⏳ Aguarde por novas tarefas</p>
-    </div>
+    <!-- Aqui o Angular renderiza a tela conforme a rota clicada -->
+    <main class="portal-content-area">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 </div>

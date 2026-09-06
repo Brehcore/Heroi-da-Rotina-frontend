@@ -1,0 +1,60 @@
+<aside class="minor-sidebar">
+  <nav class="nav-menu">
+    <a routerLink="/minor-portal" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">Início</span>
+    </a>
+
+    <a routerLink="/minor-portal/tasks" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">📋</span>
+      <span class="nav-label">Minhas Tarefas</span>
+    </a>
+
+    <a routerLink="/minor-portal/screen-time" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">📺</span>
+      <span class="nav-label">Tempo de Tela</span>
+    </a>
+
+    <a routerLink="/minor-portal/wallet" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">💵</span>
+      <span class="nav-label">Carteira</span>
+    </a>
+
+    <a routerLink="/minor-portal/piggy-bank" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">🐷</span>
+      <span class="nav-label">Cofrinho</span>
+    </a>
+
+    <a routerLink="/minor-portal/history" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">⏰</span>
+      <span class="nav-label">Histórico</span>
+    </a>
+
+    <a routerLink="/minor-portal/achievements" routerLinkActive="active" class="nav-item">
+      <span class="nav-icon">⭐</span>
+      <span class="nav-label">Conquistas</span>
+    </a>
+  </nav>
+
+  <!-- Card de Progresso / Nível do Herói -->
+  <div class="hero-level-card">
+    <div class="level-info">
+      <small>Nível do Herói</small>
+      <strong>Nível {{ level }}</strong>
+      <span class="xp-counter">{{ currentXp }} / {{ targetXp }} XP</span>
+      <div class="progress-track">
+        <div class="progress-fill" [style.width.%]="xpPercentage"></div>
+      </div>
+    </div>
+    <img src="/minor-hero.png" alt="Mascote Herói" class="hero-mascot" />
+  </div>
+
+  <!-- Card da Frase Diária -->
+  <div class="daily-quote-card">
+    <div class="quote-header">
+      <span class="star-icon">⭐</span>
+      <p class="quote-text">"{{ dailyQuote.quote }}"</p>
+    </div>
+    <small class="quote-author">- {{ dailyQuote.author }}</small>
+  </div>
+</aside>

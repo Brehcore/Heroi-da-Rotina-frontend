@@ -1,0 +1,74 @@
+<div class="tasks-page">
+  <header class="page-header">
+    <div class="title-wrapper">
+      <h2>Minhas Tarefas</h2>
+      <p>Cumpra suas missões diárias para ganhar fichas e pontos de experiência.</p>
+    </div>
+
+    <div class="filter-tabs">
+      <button [class.active]="selectedFilter === 'ALL'" (click)="applyFilter('ALL')">Todas</button>
+      <button [class.active]="selectedFilter === 'PENDING'" (click)="applyFilter('PENDING')">Pendentes</button>
+      <button [class.active]="selectedFilter === 'COMPLETED'" (click)="applyFilter('COMPLETED')">Concluídas</button>
+      <button [class.active]="selectedFilter === 'APPROVED'" (click)="applyFilter('APPROVED')">Aprovadas</button>
+    </div>
+  </header>
+
+  @if (successMsg) {
+    <div class="alert-banner success">{{ successMsg }}</div>
+  }
+  @if (error) {
+    <div class="alert-banner error">{{ error }}</div>
+  }
+
+  @if (loading) {
+    <div class="state-container">
+      <p>Carregando tarefas...</p>
+    </div>
+  } @else if (filteredTasks.length === 0) {
+    <div class="state-container empty">
+      <span class="icon">📋</span>
+      <h3>Nenhuma tarefa por aqui</h3>
+      <p>Não há tarefas cadastradas nesta categoria no momento.</p>
+    </div>
+  } @else {
+    <div class="tasks-grid">
+      @for (task of filteredTasks; track task.id) {
+        <article class="task-card">
+          <div class="card-header">
+            <span class="status-pill" [attr.data-status]="task.status">
+              {{ task.status }}
+            </span>
+            <div class="reward-tag">
+              <span class="star">⭐</span> {{ task.rewardTask }} fichas
+            </div>
+          </div>
+
+          <h3 class="task-title">{{ task.title }}</h3>
+          <p class="task-desc">{{ task.description }}</p>
+
+          @if (task.rejectionReason) {
+            <div class="rejection-note">
+              <strong>Motivo da revisão:</strong> {{ task.rejectionReason }}
+            </div>
+          }
+
+          <div class="card-action">
+            @if (task.status === 'PENDING') {
+              <button 
+                class="btn-complete" 
+                (click)="onConcludeTask(task)"
+                [disabled]="actionLoadingId === task.id"
+              >
+                {{ actionLoadingId === task.id ? 'Salvando...' : 'Concluir' }}
+              </button>
+            } @else if (task.status === 'COMPLETED') {
+              <span class="feedback waiting">Aguardando aprovação</span>
+            } @else if (task.status === 'APPROVED') {
+              <span class="feedback approved">Aprovada e creditada</span>
+            }
+          </div>
+        </article>
+      }
+    </div>
+  }
+</div>

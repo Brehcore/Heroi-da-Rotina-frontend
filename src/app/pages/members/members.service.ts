@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { UserResponseDTO } from '../../core/services/models/auth.models';
@@ -19,20 +19,17 @@ export interface CreateUserDTO {
 })
 export class MembersService {
   private http = inject(HttpClient);
-  private authService = inject(AuthService);
   private readonly API_BASE = environment.apiUrl;
 
+  getFamilyMembers(familyId: string | number): Observable<UserResponseDTO[]> {
+    return this.http.get<UserResponseDTO[]>(`${this.API_BASE}/api/families/family/${familyId}`);
+  }
+
   createUser(userDTO: CreateUserDTO): Observable<UserResponseDTO> {
-    const token = this.authService.getToken();
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-    
-    return this.http.post<UserResponseDTO>(`${this.API_BASE}/api/users`, userDTO, options);
+    return this.http.post<UserResponseDTO>(`${this.API_BASE}/api/users`, userDTO);
   }
 
   deleteUser(userId: number): Observable<void> {
-    const token = this.authService.getToken();
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-    
-    return this.http.delete<void>(`${this.API_BASE}/api/users/${userId}`, options);
+    return this.http.delete<void>(`${this.API_BASE}/api/users/${userId}`);
   }
 }

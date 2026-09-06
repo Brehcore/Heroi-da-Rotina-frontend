@@ -1,10 +1,10 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../../environments/environment';
 
-//Mudar para o models depois e alterar os métodos pra chamar o DTO
+//Mudar para o schema OpenAPI
 export interface UserResponseDTO {
   id: number;
   name: string;
@@ -25,21 +25,14 @@ export interface ChangePasswordDTO {
 })
 export class AccountService {
   private http = inject(HttpClient);
-  private authService = inject(AuthService);
   private readonly API_BASE = environment.apiUrl;
 
   getUserProfile(): Observable<UserResponseDTO> {
-    const token = this.authService.getToken();
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-    
-    return this.http.get<UserResponseDTO>(`${this.API_BASE}/api/users/me`, options);
+    return this.http.get<UserResponseDTO>(`${this.API_BASE}/api/users/me`);
   }
 
   changePassword(data: ChangePasswordDTO): Observable<void> {
-    const token = this.authService.getToken();
-    const options = token ? { headers: new HttpHeaders({ 'Authorization': `Bearer ${token}` }) } : {};
-
-    return this.http.post<void>(`${this.API_BASE}/auth/change-password`, data, options);
+    return this.http.post<void>(`${this.API_BASE}/auth/change-password`, data);
   }
 }
 

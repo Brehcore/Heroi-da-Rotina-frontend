@@ -1,0 +1,170 @@
+<div class="wallet-page">
+  <header class="page-header">
+    <div class="title-wrapper">
+      <h2>Minha Carteira</h2>
+      <p>Acompanhe suas fichas conquistadas, seu saldo em dinheiro e seu extrato.</p>
+    </div>
+    <button class="btn-refresh" (click)="loadWalletData(); loadTransactions()" [disabled]="loading || loadingTransactions">
+      🔄 Atualizar
+    </button>
+  </header>
+
+  @if (error) {
+    <div class="alert-banner error">
+      <span>⚠️ {{ error }}</span>
+    </div>
+  }
+
+  @if (loading) {
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Carregando dados da sua carteira...</p>
+    </div>
+  } @else if (wallet) {
+    <!-- Saldos Principais -->
+    <div class="balances-grid">
+      <div class="balance-card tokens-card">
+        <div class="card-icon">⭐</div>
+        <div class="card-info">
+          <small>Saldo de Fichas</small>
+          <h3>{{ wallet.tokensBalance ?? 0 }}</h3>
+          <span class="sub-label">Fichas disponíveis</span>
+        </div>
+      </div>
+
+      <div class="balance-card money-card">
+        <div class="card-icon">💵</div>
+        <div class="card-info">
+          <small>Saldo em Dinheiro</small>
+          <h3>{{ (wallet.moneyBalance ?? 0) | currency:'BRL':'symbol':'1.2-2' }}</h3>
+          <span class="sub-label">Cofrinho acumulado</span>
+        </div>
+      </div>
+
+      <div class="balance-card rate-card">
+        <div class="card-icon">📈</div>
+        <div class="card-info">
+          <small>Cotação da Ficha</small>
+          <h3>1 ⭐ = {{ (wallet.tokenQuotation ?? 1) | currency:'BRL':'symbol':'1.2-2' }}</h3>
+          
+          @if (wallet.interestEnabled) {
+            <span class="interest-badge">
+              Rende {{ ((wallet.interestRate ?? 0) * 100) | number:'1.0-2' }}% ({{ getFrequencyLabel(wallet.interestFrequency) }})
+            </span>
+          } @else {
+            <span class="sub-label">Rendimento inativo</span>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Extrato de Movimentações com Barra de Ações -->
+    <section class="transactions-section">
+      <div class="section-top">
+        <h3>Histórico de Transações</h3>
+
+        <div class="toolbar">
+          <!-- Campo de Busca -->
+          <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              placeholder="Buscar no histórico..." 
+              [(ngModel)]="searchTerm" 
+              (input)="applyLocalSearch()"
+            />
+          </div>
+
+          <!-- Ordenação (Backend) -->
+          <div class="select-wrapper">
+            <label for="sortSelect">Ordenar:</label>
+            <select 
+              id="sortSelect"
+              aria-label="Ordenar transações"
+              [ngModel]="currentSort" 
+              (ngModelChange)="onSortChange($event)"
+            >
+              <option value="id,desc">Mais recentes primeiro</option>
+              <option value="id,asc">Mais antigas primeiro</option>
+            </select>
+          </div>
+
+          <!-- Itens por página -->
+          <div class="select-wrapper">
+            <label for="pageSizeSelect">Itens:</label>
+            <select 
+              id="pageSizeSelect"
+              aria-label="Quantidade de itens por página"
+              [(ngModel)]="pageSize" 
+              (change)="onPageSizeChange()"
+            >
+              @for (opt of pageSizeOptions; track opt) {
+                <option [value]="opt">{{ opt }} por página</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Listagem de Transações -->
+      @if (loadingTransactions) {
+        <div class="loading-state">
+          <div class="spinner"></div>
+          <p>Atualizando extrato...</p>
+        </div>
+      } @else if (filteredTransactions.length === 0) {
+        <div class="empty-state">
+          <p>Nenhuma movimentação encontrada.</p>
+        </div>
+      } @else {
+        <div class="transactions-list">
+          @for (tx of filteredTransactions; track tx.id) {
+            <div class="tx-item">
+              <div class="tx-main">
+                <div class="tx-icon" [class.credit]="tx.type === 'CREDIT'" [class.debit]="tx.type === 'DEBIT'">
+                  {{ tx.type === 'CREDIT' ? '⬇️' : '⬆️' }}
+                </div>
+                <div class="tx-details">
+                  <strong>{{ tx.motive }}</strong>
+                  <small>{{ tx.date | date:'dd/MM/yyyy HH:mm' }}</small>
+                </div>
+              </div>
+
+              <div class="tx-amount" [class.credit]="tx.type === 'CREDIT'" [class.debit]="tx.type === 'DEBIT'">
+                <span>{{ tx.type === 'CREDIT' ? '+' : '-' }}{{ tx.formattedValue }}</span>
+                <small class="type-tag">{{ tx.type === 'CREDIT' ? 'Entrada' : 'Saída' }}</small>
+              </div>
+            </div>
+          }
+        </div>
+
+        <!-- Barra de Paginação -->
+        <footer class="pagination-footer">
+          <span class="pagination-info">
+            Página {{ currentPage + 1 }} de {{ totalPages || 1 }} ({{ totalElements }} registros)
+          </span>
+
+          <div class="pagination-buttons">
+            <button 
+              class="page-btn" 
+              [disabled]="currentPage === 0" 
+              (click)="onPageChange(currentPage - 1)"
+            >
+              Anterior
+            </button>
+
+            <span class="page-current">{{ currentPage + 1 }}</span>
+
+            <button 
+              class="page-btn" 
+              [disabled]="currentPage + 1 >= totalPages" 
+              (click)="onPageChange(currentPage + 1)"
+            >
+              Próxima
+            </button>
+          </div>
+        </footer>
+      }
+    </section>
+  }
+</div>

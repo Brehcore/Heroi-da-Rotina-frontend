@@ -1,0 +1,17 @@
+<header class="minor-header">
+  <div class="user-welcome">
+    <img 
+      [src]="minorProfileUrl || 'https://api.dicebear.com/8.x/bottts/svg?seed=Campeao'" 
+      alt="Avatar" 
+      class="user-avatar"
+    />
+    <div class="welcome-details">
+      <h1>Olá, {{ minorName }}!</h1>
+      <p>Continue assim! Cada conquista te aproxima dos seus objetivos.</p>
+    </div>
+  </div>
+
+  <div class="header-actions">
+    <button class="btn-exit" (click)="onLogout()">Sair</button>
+  </div>
+</header>

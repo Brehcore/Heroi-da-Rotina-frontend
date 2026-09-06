@@ -1,65 +1,49 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { TaskCreateDTO, TaskResponseDTO } from '../../core/services/models/task.model';
-import { AuthService } from '../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TaskService {
-  private apiUrl = `${environment.apiUrl}/api/tasks`;
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
-
-  // Recupera o token via AuthService e monta o cabeçalho de autorização
-  private getHeaders(): HttpHeaders {
-    let token = this.authService.getToken();
-    if (!token && typeof window !== 'undefined' && window.sessionStorage) {
-      token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    }
-    
-    return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : new HttpHeaders();
-  }
+  private http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/api/tasks`;
 
   createTask(task: TaskCreateDTO): Observable<TaskResponseDTO> {
-    return this.http.post<TaskResponseDTO>(this.apiUrl, task, { headers: this.getHeaders() });
+    return this.http.post<TaskResponseDTO>(this.apiUrl, task);
   }
 
   getFamilyTasks(familyId: number, page: number = 0, size: number = 10): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/family/${familyId}?page=${page}&size=${size}&t=${new Date().getTime()}`, { headers: this.getHeaders() });
+    return this.http.get<any>(`${this.apiUrl}/family/${familyId}?page=${page}&size=${size}&t=${new Date().getTime()}`);
   }
 
   getTasksToApprove(familyId: number): Observable<TaskResponseDTO[]> {
-    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/family/${familyId}/approve?t=${new Date().getTime()}`, { headers: this.getHeaders() });
+    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/family/${familyId}/approve?t=${new Date().getTime()}`);
   }
 
   getMinorTasks(minorId: number): Observable<TaskResponseDTO[]> {
-    // Adicionado ?t=timestamp para evitar que o navegador faça cache da requisição e trave a tela
-    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/minor/${minorId}?t=${new Date().getTime()}`, { headers: this.getHeaders() });
+    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/minor/${minorId}?t=${new Date().getTime()}`);
   }
 
   getMinorPendingTasks(minorId: number): Observable<TaskResponseDTO[]> {
-    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/minor/${minorId}/pending?t=${new Date().getTime()}`, { headers: this.getHeaders() });
+    return this.http.get<TaskResponseDTO[]>(`${this.apiUrl}/minor/${minorId}/pending?t=${new Date().getTime()}`);
   }
 
   approveTask(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/approve`, {}, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+    return this.http.patch(`${this.apiUrl}/${id}/approve`, {}, { responseType: 'text' as 'json' });
   }
 
   concludeTask(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/conclude`, {}, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+    return this.http.patch(`${this.apiUrl}/${id}/conclude`, {}, { responseType: 'text' as 'json' });
   }
 
   rejectTask(id: number, reason: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/reject`, { reason }, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+    return this.http.patch(`${this.apiUrl}/${id}/reject`, { reason }, { responseType: 'text' as 'json' });
   }
 
   deleteTask(id: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/${id}`, { headers: this.getHeaders(), responseType: 'text' as 'json' });
+    return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text' as 'json' });
   }
 }

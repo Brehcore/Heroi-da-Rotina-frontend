@@ -1,0 +1,89 @@
+.minor-header {
+  background-color: #ffe600;
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+
+  .user-welcome {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .user-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: #ffffff;
+      padding: 2px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .welcome-details {
+      h1 {
+        margin: 0;
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1E293B;
+      }
+      p {
+        margin: 0.15rem 0 0;
+        font-size: 0.8rem;
+        color: #475569;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+
+    .notification-btn {
+      position: relative;
+      cursor: pointer;
+      font-size: 1.2rem;
+
+      .badge {
+        position: absolute;
+        top: -6px;
+        right: -8px;
+        background: #ef4444;
+        color: #ffffff;
+        font-size: 0.65rem;
+        font-weight: bold;
+        border-radius: 10px;
+        padding: 1px 5px;
+        border: 2px solid #ffe600;
+      }
+    }
+
+    .btn-exit {
+      background-color: #ef4444;
+      color: #ffffff;
+      border: none;
+      padding: 0.45rem 1.4rem;
+      border-radius: 6px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background-color 0.15s;
+
+      &:hover {
+        background-color: #dc2626;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .minor-header {
+    padding: 0.75rem 1rem;
+
+    .welcome-details p {
+      display: none;
+    }
+  }
+}

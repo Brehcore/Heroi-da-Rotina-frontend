@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
+    "api:types": "openapi-typescript http://localhost:8082/v3/api-docs -o src/app/core/types/api-schema.d.ts",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "serve:ssr:hero-frontend": "node dist/hero-frontend/server/server.mjs"
@@ -47,6 +48,7 @@
     "@types/node": "^20.17.19",
     "@types/sockjs-client": "^1.5.4",
     "jsdom": "^27.1.0",
+    "openapi-typescript": "^7.13.0",
     "typescript": "~5.9.2",
     "vitest": "^4.0.8"
   }

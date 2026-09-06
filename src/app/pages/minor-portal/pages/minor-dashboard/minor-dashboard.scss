@@ -1,0 +1,375 @@
+.dashboard-container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Loading & Erros */
+.loading-state {
+  text-align: center;
+  padding: 3rem 0;
+  color: #64748b;
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #e2e8f0;
+    border-top-color: #8b5cf6;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 1rem;
+  }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-banner {
+  background-color: #fef2f2;
+  border-left: 4px solid #ef4444;
+  padding: 1rem;
+  border-radius: 8px;
+  color: #991b1b;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .btn-retry {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+  }
+}
+
+/* Card do Herói / Gamificação */
+.hero-card {
+  background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+  color: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: 0 10px 15px -3px rgba(124, 58, 237, 0.25);
+
+  .hero-badge {
+    background: rgba(255, 255, 255, 0.2);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 16px;
+    padding: 0.8rem 1.2rem;
+    text-align: center;
+    min-width: 80px;
+
+    .level-tag {
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      opacity: 0.9;
+      display: block;
+      font-weight: 700;
+    }
+
+    .level-number {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1;
+    }
+  }
+
+  .hero-info {
+    flex: 1;
+
+    .xp-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+
+      .rank-title {
+        font-size: 1.1rem;
+      }
+
+      .xp-values {
+        font-size: 0.9rem;
+        opacity: 0.9;
+      }
+    }
+
+    .motivational-phrase {
+      margin-top: 0.6rem;
+      font-size: 0.9rem;
+      opacity: 0.95;
+      font-style: italic;
+    }
+  }
+}
+
+/* Barras de Progresso */
+.progress-bar-track {
+  width: 100%;
+  height: 10px;
+  background-color: rgba(255, 255, 255, 0.25);
+  border-radius: 999px;
+  overflow: hidden;
+
+  .progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.4s ease-out;
+
+    &.xp-fill {
+      background-color: #facc15;
+    }
+
+    &.screentime-fill {
+      background-color: #3b82f6;
+    }
+  }
+}
+
+/* Grid de Métricas */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.2rem;
+
+  .metric-card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 1.25rem;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+
+      .card-icon {
+        font-size: 1.3rem;
+      }
+
+      h3 {
+        margin: 0;
+        font-size: 1.05rem;
+        color: #1e293b;
+      }
+    }
+  }
+}
+
+/* Carteira */
+.wallet-card {
+  .wallet-balances {
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+
+    .balance-item {
+      text-align: center;
+
+      .label {
+        display: block;
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.25rem;
+      }
+
+      .value {
+        font-size: 1.6rem;
+        color: #0f172a;
+      }
+    }
+  }
+
+  .wallet-footer {
+    margin-top: 0.8rem;
+    text-align: center;
+    color: #059669;
+    font-weight: 500;
+  }
+}
+
+/* Tempo de Tela */
+.screentime-card {
+  .screentime-overview {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.8rem;
+
+    .time-stat {
+      .label {
+        display: block;
+        font-size: 0.8rem;
+        color: #64748b;
+      }
+
+      .value {
+        font-weight: 700;
+
+        &.remaining {
+          font-size: 1.4rem;
+          color: #2563eb;
+        }
+
+        &.limit {
+          font-size: 1rem;
+          color: #475569;
+        }
+      }
+    }
+  }
+
+  .progress-bar-track {
+    background-color: #e2e8f0;
+    margin-bottom: 0.8rem;
+  }
+
+  .screentime-footer {
+    color: #64748b;
+    font-size: 0.85rem;
+  }
+}
+
+/* Seção de Tarefas */
+.tasks-section {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 1.25rem;
+  border: 1px solid #e2e8f0;
+
+  .section-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      font-size: 1.15rem;
+      margin: 0;
+      color: #1e293b;
+    }
+
+    .see-all-link {
+      font-size: 0.85rem;
+      color: #7c3aed;
+      text-decoration: none;
+      font-weight: 600;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .tasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .task-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.85rem 1rem;
+      border: 1px solid #f1f5f9;
+      background: #f8fafc;
+      border-radius: 10px;
+
+      &.task-done {
+        opacity: 0.6;
+        text-decoration: line-through;
+      }
+
+      .task-details {
+        h4 {
+          margin: 0 0 0.2rem 0;
+          font-size: 0.95rem;
+          color: #0f172a;
+        }
+
+        p {
+          margin: 0;
+          font-size: 0.8rem;
+          color: #64748b;
+        }
+      }
+
+      .task-aside {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+
+        .token-tag {
+          font-size: 0.85rem;
+          font-weight: 700;
+          color: #ca8a04;
+          background: #fef9c3;
+          padding: 0.2rem 0.5rem;
+          border-radius: 6px;
+        }
+
+        .status-badge {
+          font-size: 0.75rem;
+          padding: 0.2rem 0.5rem;
+          border-radius: 6px;
+          font-weight: 600;
+
+          &[data-status="PENDING"] {
+            background: #e0e7ff;
+            color: #4338ca;
+          }
+
+          &[data-status="COMPLETED"] {
+            background: #ffedd5;
+            color: #c2410c;
+          }
+
+          &[data-status="APPROVED"] {
+            background: #dcfce7;
+            color: #15803d;
+          }
+        }
+      }
+    }
+  }
+
+  .empty-tasks {
+    padding: 1.5rem;
+    text-align: center;
+    color: #64748b;
+    font-size: 0.9rem;
+  }
+}
+
+/* Lembrete Diário */
+.reminder-banner {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 12px;
+  padding: 0.85rem 1.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #166534;
+  font-size: 0.9rem;
+
+  .reminder-icon {
+    font-size: 1.2rem;
+  }
+
+  p {
+    margin: 0;
+  }
+}

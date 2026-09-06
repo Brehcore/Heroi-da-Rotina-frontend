@@ -12,6 +12,10 @@ import { MinorPortal } from './pages/minor-portal/minor-portal';
 import { Principal } from './pages/principal/principal';
 import { Configs } from './pages/configs/configs'; 
 import { Account } from './pages/configs/account/account';
+import { MinorTasks } from './pages/minor-portal/pages/minor-tasks/minor-tasks';
+import { MinorScreenTime } from './pages/minor-portal/pages/minor-screentime/minor-screentime';
+import { MinorWallet } from './pages/minor-portal/pages/minor-wallet/minor-wallet';
+import { MinorDashboard } from './pages/minor-portal/pages/minor-dashboard/minor-dashboard'
 
 export const routes: Routes = [
   // Rota raiz carregando a landing page
@@ -30,7 +34,25 @@ export const routes: Routes = [
   { path: 'screentime', component: ScreenTime },
   { path: 'family-selection', component: FamilySelection },
   { path: 'minor', component: Minor },
-  { path: 'minor-portal', component: MinorPortal },
+
+  // Portal do Menor com Rotas Filhas
+  { 
+    path: 'minor-portal', 
+    component: MinorPortal,
+    children: [
+      // Ao entrar em /minor-portal, redireciona para tarefas temporariamente
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+      { path: 'tasks', component: MinorTasks },
+      
+      // As próximas rotas entrarão aqui conforme forem criadas:
+      { path: 'dashboard', component: MinorDashboard },
+      { path: 'screen-time', component: MinorScreenTime },
+      { path: 'wallet', component: MinorWallet },
+      // { path: 'piggy-bank', component: MinorPiggyBank },
+      // { path: 'history', component: MinorHistory },
+      // { path: 'achievements', component: MinorAchievements }
+    ]
+  },
 
   // Configurações
   { 

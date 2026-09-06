@@ -1,0 +1,90 @@
+<div class="screentime-page">
+  <header class="page-header">
+    <div class="title-wrapper">
+      <h2>Trocar Fichas por Tempo de Tela</h2>
+      <p>Use as fichas conquistadas nas suas missões para desbloquear minutos de tela.</p>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert-banner error">
+      <span class="icon">⚠️</span>
+      <span>{{ errorMessage }}</span>
+    </div>
+  }
+
+  @if (successResult) {
+    <div class="success-card">
+      <div class="badge-icon">🎉</div>
+      <h3>Solicitação Enviada!</h3>
+      <p>Seu pedido foi registrado e está pronto para uso ou aprovação.</p>
+
+      <div class="summary-box">
+        <div class="summary-item">
+          <small>Tempo Solicitado</small>
+          <strong>+{{ successResult.requestedMinutes || 0 }} min</strong>
+        </div>
+        <div class="summary-item">
+          <small>Status</small>
+          <span class="status-pill">{{ successResult.status || 'PENDING' }}</span>
+        </div>
+        @if (successResult.remainingBalance !== undefined) {
+          <div class="summary-item">
+            <small>Saldo Restante de Fichas</small>
+            <strong>{{ successResult.remainingBalance }} ⭐</strong>
+          </div>
+        }
+      </div>
+
+      <button class="btn-new-request" (click)="successResult = null">
+        Fazer nova troca
+      </button>
+    </div>
+  } @else {
+    <div class="exchange-card">
+      <div class="card-intro">
+        <div class="tv-icon">📺</div>
+        <div>
+          <h3>Quantas fichas você quer trocar?</h3>
+          <small>O tempo concedido é calculado com base nas regras da sua família.</small>
+        </div>
+      </div>
+
+      <div class="quick-options">
+        @for (option of quickTokenOptions; track option) {
+          <button 
+            type="button" 
+            class="chip-button" 
+            [class.active]="tokensToExchange === option"
+            (click)="selectQuickOption(option)"
+          >
+            ⭐ {{ option }} Fichas
+          </button>
+        }
+      </div>
+
+      <div class="input-container">
+        <label for="tokensInput">Ou digite outro valor:</label>
+        <div class="number-input-wrapper">
+          <input 
+            id="tokensInput"
+            type="number" 
+            [(ngModel)]="tokensToExchange" 
+            min="1" 
+            step="1"
+            placeholder="Ex: 5"
+          />
+          <span class="input-suffix">fichas</span>
+        </div>
+      </div>
+
+      <button 
+        class="btn-submit" 
+        (click)="onExchangeTokens()"
+        [disabled]="submitting || !tokensToExchange || tokensToExchange <= 0"
+      >
+        {{ submitting ? 'Processando troca...' : 'Solicitar Tempo de Tela' }}
+      </button>
+    </div>
+  }
+</div>

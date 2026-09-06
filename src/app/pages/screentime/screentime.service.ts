@@ -1,52 +1,39 @@
-import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { AuthService } from '../../core/services/auth.service';
-import { ScreenTimeConfigDTO, ScreenTimeRequest, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
+import { ScreenTimeConfigDTO, ScreenTimeResponseDTO } from '../../core/services/models/screentime.model';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ScreenTimeService {
+  private http = inject(HttpClient);
 
-  private apiUrlRequest = `${environment.apiUrl}/api/screentime/request`;
-  private apiUrlConfig = `${environment.apiUrl}/api/screentime/config`;
-
-  constructor(
-    private http: HttpClient,
-    private authService: AuthService
-  ) {}
-
-  private getHeaders(): HttpHeaders {
-    let token = this.authService.getToken();
-    if (!token && typeof window !== 'undefined' && window.sessionStorage) {
-      token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    }
-    return token ? new HttpHeaders({ 'Authorization': `Bearer ${token}` }) : new HttpHeaders();
-  }
+  private readonly apiUrlRequest = `${environment.apiUrl}/api/screentime/request`;
+  private readonly apiUrlConfig = `${environment.apiUrl}/api/screentime/config`;
 
   exchangeTokens(requestDTO: { minorId: number; tokens: number }): Observable<ScreenTimeResponseDTO> {
-    return this.http.post<ScreenTimeResponseDTO>(`${this.apiUrlRequest}/exchange-tokens`, requestDTO, { headers: this.getHeaders() });
+    return this.http.post<ScreenTimeResponseDTO>(`${this.apiUrlRequest}/exchange-tokens`, requestDTO);
   }
 
   approveRequest(requestId: number, monitorId: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/approve?monitorId=${monitorId}`, {}, { headers: this.getHeaders() });
+    return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/approve?monitorId=${monitorId}`, {});
   }
 
   rejectRequest(requestId: number, monitorId: number): Observable<void> {
-    return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/reject?monitorId=${monitorId}`, {}, { headers: this.getHeaders() });
+    return this.http.patch<void>(`${this.apiUrlRequest}/${requestId}/reject?monitorId=${monitorId}`, {});
   }
 
   getPendingRequests(familyId: number): Observable<ScreenTimeResponseDTO[]> {
-    return this.http.get<ScreenTimeResponseDTO[]>(`${this.apiUrlRequest}/family/${familyId}/pending?t=${new Date().getTime()}`, { headers: this.getHeaders() });
+    return this.http.get<ScreenTimeResponseDTO[]>(`${this.apiUrlRequest}/family/${familyId}/pending?t=${new Date().getTime()}`);
   }
 
   getConfig(minorId: number): Observable<ScreenTimeConfigDTO> {
-    return this.http.get<ScreenTimeConfigDTO>(`${this.apiUrlConfig}/minor/${minorId}`, { headers: this.getHeaders() });
+    return this.http.get<ScreenTimeConfigDTO>(`${this.apiUrlConfig}/minor/${minorId}`);
   }
 
   updateConfig(minorId: number, config: ScreenTimeConfigDTO): Observable<ScreenTimeConfigDTO> {
-    return this.http.put<ScreenTimeConfigDTO>(`${this.apiUrlConfig}/minor/${minorId}`, config, { headers: this.getHeaders() });
+    return this.http.put<ScreenTimeConfigDTO>(`${this.apiUrlConfig}/minor/${minorId}`, config);
   }
 }
